@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ăn Mày vs. Đại Gia - TikTok Live Interactive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #2B1F1A;
+      --beggar: #38BDF8;
+      --beggar-dark: #0284C7;
+      --tycoon: #F59E0B;
+      --tycoon-pink: #EC4899;
+      --gold: #FFD166;
+      --mint: #10B981;
+      --font-main: 'Baloo 2', 'Nunito', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1E293B 0%, #312E81 50%, #1F2937 100%);
+      color: #FFFFFF;
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    /* ================= KHUNG DỌC 9:16 FULL-SCENE ================= */
+    .phone-frame {
+      position: relative;
+      height: min(94vh, 860px);
+      aspect-ratio: 9 / 16;
+      width: auto;
+      flex-shrink: 0;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #1B1714;
+      border: 3.5px solid #1E1612;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+    }
+
+    .phone-frame.sudden-death-frame {
+      border-color: #EF4444;
+      box-shadow: 0 0 0 3px #FFD166, 0 12px 36px rgba(239, 68, 68, 0.45);
+    }
+
+    #sceneCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ================= HUD NỔI BÁN TRONG SUỐT ================= */
+    .hud-top {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .top-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding-right: 68px; /* Chừa góc trên phải thoáng cho webcam */
+    }
+
+    .round-badge {
+      background: rgba(20, 16, 14, 0.72);
+      backdrop-filter: blur(4px);
+      border: 1.5px solid rgba(255, 209, 102, 0.75);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #FFD166;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px #000;
+    }
+
+    .timer-pill {
+      background: rgba(20, 16, 14, 0.76);
+      border: 1.5px solid rgba(255, 255, 255, 0.65);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #FFFFFF;
+    }
+
+    .timer-pill.sudden-death {
+      background: rgba(220, 38, 38, 0.9);
+      border-color: #FFD166;
+      animation: pulseTick 0.6s infinite alternate;
+    }
+
+    @keyframes pulseTick {
+      from { transform: scale(1); }
+      to { transform: scale(1.06); }
+    }
+
+    .score-pills-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .score-pill {
+      background: rgba(20, 16, 14, 0.65);
+      backdrop-filter: blur(4px);
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-shadow: 0 1px 2px #000;
+    }
+
+    .lbl-beggar { color: #7DD3FC; border-color: rgba(56, 189, 248, 0.55); }
+    .lbl-tycoon { color: #FDE047; border-color: rgba(250, 204, 21, 0.55); }
+
+    /* 2 Bảng Top 3 hai bên trên (Ăn Mày vs Đại Gia) */
+    .top-leaderboard {
+      position: absolute;
+      top: 72px;
+      z-index: 14;
+      width: 148px;
+      background: rgba(18, 15, 13, 0.62);
+      backdrop-filter: blur(4px);
+      border: 1.2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 5px 7px;
+      pointer-events: none;
+    }
+    .top-leaderboard.left { left: 8px; border-color: rgba(56, 189, 248, 0.55); }
+    .top-leaderboard.right { right: 8px; border-color: rgba(250, 204, 21, 0.55); }
+
+    .top-lb-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: #FDE047;
+      letter-spacing: 0.4px;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+    }
+
+    .top-lb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .top-lb-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+
+    .top-lb-rank {
+      width: 15px;
+      font-weight: 900;
+      color: #FFD166;
+      flex-shrink: 0;
+    }
+
+    .top-lb-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-lb-pts {
+      font-weight: 800;
+      color: #A7F3D0;
+      flex-shrink: 0;
+    }
+
+    /* Thanh Nhiệt Kế Combo dọc 2 bên */
+    .combo-meter {
+      position: absolute;
+      top: 38%;
+      width: 7px;
+      height: 110px;
+      background: rgba(15, 15, 15, 0.48);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 999px;
+      overflow: hidden;
+      z-index: 12;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      pointer-events: none;
+    }
+    .combo-meter.left { left: 6px; }
+    .combo-meter.right { right: 6px; }
+    .combo-fill {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #FFD166, #F43F5E);
+      transition: height 0.25s ease-out;
+    }
+
+    /* Toast & Banner sự kiện */
+    .event-banners {
+      position: absolute;
+      top: 150px;
+      right: 10px;
+      z-index: 16;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      pointer-events: none;
+      max-width: 56%;
+    }
+
+    .pill-banner {
+      display: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 800;
+      border: 1.5px solid #1E1612;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      text-align: right;
+    }
+    .pill-banner.active { display: inline-block; }
+    .pill-banner.sd { background: #EF4444; color: #FFF; }
+    .pill-banner.hr { background: #EC4899; color: #FFF; }
+    .pill-banner.shield { background: #0284C7; color: #FFF; border-color: #FDE047; }
+    .pill-banner.beggar-shield { background: #15803D; color: #FFF; border-color: #86EFAC; text-align: left; }
+    .event-banners-left {
+      position: absolute;
+      top: 152px;
+      left: 8px;
+      z-index: 16;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    .toast-stack {
+      position: absolute;
+      top: 148px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86%;
+      z-index: 18;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    .toast-pill {
+      background: rgba(20, 16, 14, 0.82);
+      border: 1.5px solid rgba(255, 209, 102, 0.75);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #FFF;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+      animation: fadeToast 2.8s forwards;
+    }
+
+    @keyframes fadeToast {
+      0% { opacity: 0; transform: translateY(-6px) scale(0.95); }
+      12% { opacity: 1; transform: translateY(0) scale(1); }
+      82% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-8px); }
+    }
+
+    /* Bảng hướng dẫn & quà tặng góc dưới phải */
+    .guide-corner-card {
+      position: absolute;
+      right: 8px;
+      bottom: 6%;
+      z-index: 14;
+      width: 182px;
+      background: rgba(18, 15, 13, 0.62);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      padding: 6px 8px;
+      pointer-events: none;
+    }
+
+    .guide-corner-title {
+      font-size: 10px;
+      font-weight: 900;
+      color: #FFD166;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .guide-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #F8FAFC;
+      line-height: 1.38;
+    }
+
+    .guide-row b {
+      color: #7DD3FC;
+      font-weight: 800;
+    }
+
+    .guide-row b.ty {
+      color: #FDE047;
+    }
+
+    .guide-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.16);
+      margin: 3px 0;
+    }
+
+    /* Safe Zone 15% đáy sạch sẽ cho khung chat TikTok */
+    .safe-zone-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 15%;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.45) 100%);
+    }
+
+    .safe-zone-hint {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* Màn hình Tổng Kết Vòng */
+    .verdict-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 25;
+      background: rgba(15, 12, 10, 0.82);
+      backdrop-filter: blur(5px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      gap: 10px;
+    }
+    .verdict-overlay.active { display: flex; }
+
+    .verdict-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #FFD166;
+      text-shadow: 0 2px 6px #000;
+    }
+
+    .verdict-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #FFD166;
+      border-radius: 18px;
+      padding: 12px 16px;
+      width: 90%;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    /* ================= BẢNG ĐIỀU KHIỂN STREAMER (BÊN NGOÀI) ================= */
+    .control-panel {
+      width: 340px;
+      max-height: 94vh;
+      overflow-y: auto;
+      background: #FFFDF8;
+      color: #2B1F1A;
+      border: 3px solid #2B1F1A;
+      border-radius: 22px;
+      box-shadow: 0 8px 0 #2B1F1A;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      color: #2B1F1A;
+    }
+
+    .tiktok-box {
+      background: #FEF2F2;
+      border: 2px solid #2B1F1A;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #574842;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 2px solid #2B1F1A;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 700;
+      background: #FFF;
+      color: #2B1F1A;
+    }
+
+    .row-flex { display: flex; gap: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #9CA3AF;
+      border: 1.5px solid #2B1F1A;
+    }
+    .dot.ok { background: #10B981; }
+    .dot.wait { background: #F59E0B; }
+
+    .btn {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid #2B1F1A;
+      border-bottom: 4px solid #2B1F1A;
+      font-family: var(--font-main);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #2B1F1A;
+      background: #F3F4F6;
+      transition: transform 0.08s;
+    }
+    .btn:active { transform: translateY(2px); }
+    .btn-live { background: #FB7185; color: #FFF; white-space: nowrap; }
+    .btn-beggar { background: #7DD3FC; }
+    .btn-tycoon { background: #FDE047; }
+    .btn-rose { background: #FDA4AF; }
+    .btn-donut { background: #FDBA74; }
+    .btn-big { background: #C4B5FD; }
+    .btn-bot { background: #6EE7B7; }
+    .btn-bot.off { background: #E5E7EB; }
+  </style>
+</head>
+<body>
+  <!-- ================= KHUNG GAME 9:16 FULL-SCENE ================= -->
+  <main class="phone-frame" id="phoneFrame">
+    <canvas id="sceneCanvas"></canvas>
+
+    <!-- HUD Trên cùng -->
+    <header class="hud-top">
+      <div class="top-meta-row">
+        <span class="round-badge" id="roundBadge">🥣💎 ĂN MÀY vs ĐẠI GIA · HIỆP 1</span>
+        <span class="timer-pill" id="timerDisplay">03:00</span>
+      </div>
+      <div class="score-pills-row">
+        <span class="score-pill lbl-beggar" id="scoreBeggarLbl">🥣 Ăn Mày: 0</span>
+        <span class="score-pill lbl-tycoon" id="scoreTycoonLbl">Đại Gia: 0 💎</span>
+      </div>
+    </header>
+
+    <!-- 2 Bảng Vàng Top 3 mỗi phe -->
+    <aside class="top-leaderboard left">
+      <div class="top-lb-title" style="color:#7DD3FC;">🥣 Top 3 Ăn Mày</div>
+      <div class="top-lb-list" id="topLbLeft">
+        <div class="top-lb-item"><span class="top-lb-rank">#1</span><span class="top-lb-name">Chờ...</span><span class="top-lb-pts">0đ</span></div>
+      </div>
+    </aside>
+    <aside class="top-leaderboard right">
+      <div class="top-lb-title">💎 Top 3 Đại Gia</div>
+      <div class="top-lb-list" id="topLbRight">
+        <div class="top-lb-item"><span class="top-lb-rank">#1</span><span class="top-lb-name">Chờ...</span><span class="top-lb-pts">0đ</span></div>
+      </div>
+    </aside>
+
+    <!-- Banner Cao Trào (góc trên phải dưới vùng webcam) -->
+    <div class="event-banners">
+      <div class="pill-banner sd" id="suddenDeathBanner">⚡ 30S CUỐI: X2 SỨC MẠNH!</div>
+      <div class="pill-banner hr" id="heartRainBanner">💖 CƠN MƯA THẢ TIM (15s)!</div>
+      <div class="pill-banner shield" id="tycoonShieldBanner">🛡️ KHIÊN CHẶN DÉP!</div>
+    </div>
+    <div class="event-banners-left">
+      <div class="pill-banner beggar-shield" id="beggarShieldBanner">🎍 RÀO TRE CHẶN ĐÁ!</div>
+    </div>
+
+    <!-- Nhiệt kế Combo 2 bên -->
+    <div class="combo-meter left"><div class="combo-fill" id="comboFillLeft"></div></div>
+    <div class="combo-meter right"><div class="combo-fill" id="comboFillRight"></div></div>
+
+    <!-- Toast Thông báo nổi -->
+    <div class="toast-stack" id="toastStack"></div>
+
+    <!-- Bảng hướng dẫn & quà tặng góc dưới phải (giống ảnh mẫu) -->
+    <aside class="guide-corner-card">
+      <div class="guide-corner-title">🎮 Cách Tham Gia</div>
+      <div class="guide-row"><span>💬 Gõ <b>"ăn mày"</b></span><span>Vào bên trái 🥣</span></div>
+      <div class="guide-row"><span>💬 Gõ <b class="ty">"đại gia"</b></span><span>Vào bên phải 💎</span></div>
+      <div class="guide-row"><span>❤️ Thả tim</span><span>Xin tiền / Phát tiền</span></div>
+      <div class="guide-row"><span>📣 Chia sẻ</span><span>Tiếp sức phe</span></div>
+      <div class="guide-divider"></div>
+      <div class="guide-row"><span>🌹 Cổ vũ</span><span>Ném dép / Khiên+Đá</span></div>
+      <div class="guide-row"><span>🍩 Tăng tốc</span><span>Mưa dép / Đá nhóm</span></div>
+      <div class="guide-row"><span>⭐ Bứt phá</span><span>Siêu dép / Siêu xe</span></div>
+    </aside>
+
+    <!-- Safe Zone đáy cho khung chat TikTok -->
+    <div class="safe-zone-bottom"></div>
+
+    <!-- Màn hình Tổng Kết Vòng -->
+    <div class="verdict-overlay" id="verdictOverlay">
+      <div style="font-size:44px;">🏆</div>
+      <div class="verdict-title" id="verdictTitle">PHE ĂN MÀY THẮNG LỚN!</div>
+      <div class="verdict-box" id="verdictBox">Đang tổng kết...</div>
+      <div style="font-size:12px;color:#E2E8F0;font-weight:700;">Tự động sang vòng mới sau 8 giây...</div>
+    </div>
+  </main>
+
+  <!-- ================= BẢNG ĐIỀU KHIỂN TEST BÊN NGOÀI ================= -->
+  <aside class="control-panel" id="controlPanel">
+    <div class="panel-title">🥣💎 Điều Khiển: Ăn Mày vs. Đại Gia</div>
+
+    <div class="tiktok-box">
+      <label>🔴 Kết nối TikTok Live (Dùng chung Server Core)</label>
+      <div class="row-flex">
+        <input type="text" id="tiktokUserInput" placeholder="Nhập ID TikTok (VD: daichien63tinh)" />
+        <button class="btn btn-live" id="btnConnectLive">KẾT NỐI</button>
+      </div>
+      <div class="status-line">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Đang kết nối tới Server...</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Tên người chơi test</label>
+        <input type="text" id="testPlayerName" value="Thánh Cà Khịa" />
+      </div>
+      <div>
+        <label>Phe test Tim / Quà</label>
+        <select id="testSideSelect">
+          <option value="1">🥣 Bên Ăn Mày</option>
+          <option value="2">💎 Bên Đại Gia</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-beggar" id="btnTestBeggar">🥣 Comment "ăn mày"</button>
+      <button class="btn btn-tycoon" id="btnTestTycoon">💎 Comment "đại gia"</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn" id="btnTestLike">❤️ Thả Tim (Xin/Phát)</button>
+      <button class="btn" id="btnTestShare">📣 Giả lập Chia sẻ</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-rose" id="btnTestRose">🌹 Quà Nhỏ (Dép/Đá)</button>
+      <button class="btn btn-donut" id="btnTestDonut">🍩 Quà Vừa (Mưa)</button>
+    </div>
+
+    <button class="btn btn-big" id="btnTestBigGift">⭐ Quà Lớn (Siêu Dép / Siêu Xe Quét Sân)</button>
+
+    <div class="grid-2">
+      <button class="btn btn-bot" id="btnToggleBot">🤖 Auto-Bot: BẬT</button>
+      <button class="btn" id="btnNextRound">⏭️ Hiệp Tiếp Theo</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn" id="btnResetRound">🔄 Reset Hiệp 1</button>
+      <button class="btn" id="btnToggleAudio">🔊 Âm thanh: BẬT</button>
+    </div>
+
+    <button class="btn" id="btnHidePanel">🎥 Ẩn Panel (Phím H)</button>
+  </aside>
+
+  <script>
+    /********************************************************************
+     * BỘ CÂU THOẠI CÀ KHỊA ĐẶC TRƯNG: ĂN MÀY vs. ĐẠI GIA
+     ********************************************************************/
+    const BEGGAR_QUIPS = [
+      "Cho xin ít lẻ đi!",
+      "Ném dép nè!",
+      "Cứu đói anh em ơi!",
+      "Bát sứt nhưng tình đầy!",
+      "Nghèo mà chơi tới bến!",
+      "Xin nhẹ một đồng xu!",
+      "Đại gia ơi rớt tiền kìa!",
+      "Đừng coi thường Cái Bang!"
+    ];
+    const TYCOON_QUIPS = [
+      "Cầm tiền đi các em!",
+      "Tiền đè chết người!",
+      "Hôm nay Chủ tịch bao!",
+      "Đá văng hết ra ngoài!",
+      "Tiền không thành vấn đề!",
+      "Nhìn túi tiền anh đây!",
+      "Đứng gọn vào cho xe đi!",
+      "Đẳng cấp hào môn là đây!"
+    ];
+
+    /********************************************************************
+     * WEB AUDIO API SYNTH + HÀNG ĐỢI GIỌNG NÓI AI (TTS VI-VN)
+     ********************************************************************/
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.ttsQueue = [];
+        this.isSpeaking = false;
+        this.lastCoinAt = 0;
+        this.lastTtsEndAt = 0;
+        this._currentUtterance = null;
+        this._ttsWatchdog = null;
+        this._lastSpoken = "";
+        this.viVoice = null;
+        this._loadVoices();
+      }
+      _loadVoices() {
+        if (!("speechSynthesis" in window)) return;
+        const pick = () => {
+          const list = window.speechSynthesis.getVoices() || [];
+          this.viVoice = list.find(v => v.lang && v.lang.toLowerCase().startsWith("vi")) || null;
+        };
+        pick();
+        if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
+          window.speechSynthesis.onvoiceschanged = pick;
+        }
+      }
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+      }
+      tone(freq, dur = 0.08, type = "sine", vol = 0.07) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur);
+      }
+      playCoin() {
+        const now = performance.now();
+        if (now - this.lastCoinAt < 80) return;
+        this.lastCoinAt = now;
+        this.tone(1180, 0.07, "sine", 0.06);
+        setTimeout(() => this.tone(1560, 0.1, "sine", 0.06), 45);
+      }
+      _canSfx(key, cooldownMs = 70) {
+        if (!this._sfxAt) this._sfxAt = {};
+        const now = performance.now();
+        if (now - (this._sfxAt[key] || 0) < cooldownMs) return false;
+        this._sfxAt[key] = now;
+        return true;
+      }
+      playSlipperHit() {
+        if (!this._canSfx("slip", 70)) return;
+        this.tone(240, 0.09, "triangle", 0.12);
+        setTimeout(() => this.tone(140, 0.12, "sawtooth", 0.08), 30);
+      }
+      playKick() {
+        if (!this._canSfx("kick", 70)) return;
+        this.tone(180, 0.12, "square", 0.11);
+        setTimeout(() => this.tone(95, 0.16, "triangle", 0.12), 40);
+      }
+      playImpactPop(isBeggarAttack = true) {
+        if (!this._canSfx("pop", 65)) return;
+        this.tone(isBeggarAttack ? 310 : 140, 0.06, "triangle", 0.08);
+        setTimeout(() => this.tone(isBeggarAttack ? 210 : 88, 0.08, "sine", 0.06), 35);
+      }
+      playShieldBlock() {
+        if (!this._canSfx("shield", 70)) return;
+        this.tone(880, 0.07, "sine", 0.08);
+        setTimeout(() => this.tone(1320, 0.09, "triangle", 0.07), 30);
+      }
+      playFanfare() {
+        [523, 659, 784, 1046].forEach((f, idx) => setTimeout(() => this.tone(f, 0.14, "triangle", 0.08), idx * 75));
+      }
+      enqueueTTS(text, priority = false) {
+        if (!this.enabled || !("speechSynthesis" in window) || !text) return;
+        if (text === this._lastSpoken && Date.now() - this.lastTtsEndAt < 10000) return;
+        if (priority) {
+          this.ttsQueue.unshift(text);
+          if (this.ttsQueue.length > 3) this.ttsQueue.length = 3;
+        } else {
+          if (this.ttsQueue.length >= 2) return;
+          this.ttsQueue.push(text);
+        }
+        this.processTTS();
+      }
+      processTTS() {
+        if (!this.enabled || this.isSpeaking || this.ttsQueue.length === 0) return;
+        const text = this.ttsQueue.shift();
+        this._lastSpoken = text;
+        this.isSpeaking = true;
+        clearTimeout(this._ttsWatchdog);
+        const finish = () => {
+          clearTimeout(this._ttsWatchdog);
+          this.isSpeaking = false;
+          this.lastTtsEndAt = Date.now();
+          this._currentUtterance = null;
+          setTimeout(() => this.processTTS(), 220);
+        };
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "vi-VN";
+        if (this.viVoice) u.voice = this.viVoice;
+        u.rate = 1.12;
+        u.pitch = 1.05;
+        u.onend = finish;
+        u.onerror = finish;
+        this._currentUtterance = u;
+        this._ttsWatchdog = setTimeout(() => {
+          try { window.speechSynthesis.cancel(); } catch (_) {}
+          finish();
+        }, 9000);
+        try {
+          if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+          window.speechSynthesis.speak(u);
+        } catch (_) {
+          finish();
+        }
+      }
+    }
+    const audio = new SoundEngine();
+
+    /********************************************************************
+     * TRẠNG THÁI ĐẤU TRƯỜNG & NHÂN VẬT
+     ********************************************************************/
+    const canvas = document.getElementById("sceneCanvas");
+    const ctx = canvas.getContext("2d");
+    const phoneFrame = document.getElementById("phoneFrame");
+
+    function resizeCanvas() {
+      const rect = phoneFrame.getBoundingClientRect();
+      const dpr = Math.max(2.5, Math.min(window.devicePixelRatio || 1, 3));
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const ROUND_SEC = 180;
+    let remainingSec = ROUND_SEC;
+    let currentRoundIdx = 0;
+    let gamePhase = "ACTIVE";
+    let scoreBeggar = 0;
+    let scoreTycoon = 0;
+
+    let lastRealInteractionAt = 0;
+    const comboEvents = [];
+    let heartRainUntil = 0;
+    let screenShakeUntil = 0;
+    let freezeBeggarUntil = 0;
+    let freezeTycoonUntil = 0;
+    let tycoonShieldUntil = 0;
+    let beggarShieldUntil = 0;
+    let mvpBeggarId = null;
+    let mvpTycoonId = null;
+
+    const playersMap = new Map();
+    const actors = [];       // Danh sách nhân vật đang đứng trên sân (có vị trí & hoạt ảnh)
+    const projectiles = [];  // Dép bay / Cú đá / Siêu xe / Siêu dép
+    const fxParticles = [];  // Đồng xu, tiền giấy, trái tim, ngôi sao
+    const floatingTexts = []; // Chữ bay sát thương / +điểm / đóng băng
+    const speechBubbles = [];
+    const avatarCache = new Map();
+
+    function getAvatarRecord(url) {
+      if (!url) return null;
+      if (avatarCache.has(url)) return avatarCache.get(url);
+      const rec = { img: new Image(), loaded: false };
+      rec.img.crossOrigin = "anonymous";
+      rec.img.onload = () => { rec.loaded = true; };
+      rec.img.onerror = () => { rec.loaded = false; };
+      rec.img.src = url;
+      avatarCache.set(url, rec);
+      return rec;
+    }
+
+    let lastToastHtml = "";
+    let lastToastAt = 0;
+    function showToast(html) {
+      const now = Date.now();
+      if (html === lastToastHtml && now - lastToastAt < 650) return;
+      lastToastHtml = html;
+      lastToastAt = now;
+      const stack = document.getElementById("toastStack");
+      const el = document.createElement("div");
+      el.className = "toast-pill";
+      el.innerHTML = html;
+      stack.appendChild(el);
+      if (stack.children.length > 3) stack.removeChild(stack.firstChild);
+      setTimeout(() => { if (el.parentNode) el.remove(); }, 2800);
+    }
+
+    function registerCombo() {
+      const now = Date.now();
+      comboEvents.push(now);
+      while (comboEvents.length && now - comboEvents[0] > 10000) comboEvents.shift();
+      const pct = Math.min(100, Math.round((comboEvents.length / 18) * 100));
+      document.getElementById("comboFillLeft").style.height = `${pct}%`;
+      document.getElementById("comboFillRight").style.height = `${pct}%`;
+      if (pct >= 100 && now > heartRainUntil) {
+        heartRainUntil = now + 15000;
+        document.getElementById("heartRainBanner").classList.add("active");
+        showToast("💖 <b>CƠN MƯA THẢ TIM!</b> X2 sức mạnh trong 15 giây!");
+        audio.enqueueTTS("Bùng nổ! Cơn mưa thả tim nhân đôi sức mạnh trong 15 giây!", false);
+      }
+    }
+
+    function pickActorSlot(side) {
+      const W = phoneFrame.clientWidth;
+      const H = phoneFrame.clientHeight;
+      const minY = side === 1 ? H * 0.48 : H * 0.45;
+      const maxY = side === 1 ? H * 0.77 : H * 0.62;
+      const minX = side === 1 ? 42 : W * 0.55;
+      const maxX = side === 1 ? W * 0.45 : W - 42;
+      return {
+        x: minX + Math.random() * Math.max(20, maxX - minX),
+        y: minY + Math.random() * Math.max(20, maxY - minY)
+      };
+    }
+
+    function ensurePlayer({ uniqueId, nickname, profilePictureUrl = "", side, isBot = false }) {
+      const now = Date.now();
+      let p = playersMap.get(uniqueId);
+      function pickVariantIdx(sideId, idStr) {
+        let h = 0;
+        const s = String(idStr);
+        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+        const absH = Math.abs(h);
+        if (sideId === 1) {
+          // 50% ngồi xin tiền (index 4-5), 50% đứng xin (index 0-3)
+          return (absH % 2 === 0) ? (4 + ((absH >> 1) % 2)) : ((absH >> 1) % 4);
+        }
+        return absH % 7;
+      }
+
+      if (!p) {
+        const pos = pickActorSlot(side);
+        p = {
+          userId: uniqueId,
+          nickname: nickname || "Người chơi",
+          avatarRecord: getAvatarRecord(profilePictureUrl),
+          side,
+          variantIdx: pickVariantIdx(side, uniqueId),
+          score: 0,
+          isBot,
+          lastCommentAt: 0,
+          lastShareAt: 0,
+          x: pos.x,
+          y: pos.y,
+          baseX: pos.x,
+          baseY: pos.y,
+          vx: 0,
+          vy: 0,
+          actionType: "idle",
+          actionUntil: 0,
+          stunnedUntil: 0,
+          nextMoveAt: now + 1800 + Math.random() * 3500,
+          isWalking: false,
+          bobPhase: Math.random() * Math.PI * 2
+        };
+        playersMap.set(uniqueId, p);
+        actors.push(p);
+        if (actors.length > 36) {
+          const dropIdx = actors.findIndex(a => a.isBot);
+          const remIdx = dropIdx !== -1 ? dropIdx : 0;
+          const [removed] = actors.splice(remIdx, 1);
+          playersMap.delete(removed.userId);
+        }
+      } else if (side && p.side !== side) {
+        p.side = side;
+        p.variantIdx = pickVariantIdx(side, uniqueId);
+        const pos = pickActorSlot(side);
+        p.baseX = pos.x;
+        p.baseY = pos.y;
+        p.x = pos.x;
+        p.y = pos.y;
+        const sideLabel = side === 1 ? "🥣 Ăn Mày" : "💎 Đại Gia";
+        showToast(`🔄 <b>${p.nickname}</b> vừa quay xe sang phe <b>${sideLabel}</b>!`);
+      }
+      return p;
+    }
+
+    const PARTICLE_SPRITES = {};
+    [["coin", "🪙"], ["cash", "💵"], ["heart", "💖"], ["star", "⭐"]].forEach(([key, glyph]) => {
+      const c = document.createElement("canvas");
+      c.width = 24;
+      c.height = 24;
+      const pctx = c.getContext("2d");
+      pctx.font = "16px sans-serif";
+      pctx.textAlign = "center";
+      pctx.textBaseline = "middle";
+      pctx.fillText(glyph, 12, 12);
+      PARTICLE_SPRITES[key] = c;
+    });
+
+    function pushProjectile(pr) {
+      projectiles.push(pr);
+      if (projectiles.length > 24) {
+        const dropIdx = projectiles.findIndex(item => item.kind !== "mega_kick_car" && item.kind !== "mega_slipper");
+        projectiles.splice(dropIdx !== -1 ? dropIdx : 0, 1);
+      }
+    }
+
+    function spawnParticles(x, y, type, count = 8, inward = false) {
+      const maxAdd = fxParticles.length > 75 ? Math.min(2, count) : count;
+      for (let i = 0; i < maxAdd; i++) {
+        if (inward) {
+          const offX = (Math.random() - 0.5) * 44;
+          const offY = -58 - Math.random() * 28;
+          fxParticles.push({
+            x: x + offX,
+            y: y + offY,
+            vx: -offX * 0.045,
+            vy: 1.5 + Math.random() * 1.1,
+            type,
+            life: 28,
+            maxLife: 28,
+            rot: 0
+          });
+        } else {
+          fxParticles.push({
+            x: x + (Math.random() - 0.5) * 24,
+            y: y + (Math.random() - 0.5) * 16,
+            vx: (Math.random() - 0.5) * 3.4,
+            vy: -1.8 - Math.random() * 2.8,
+            type,
+            life: 40 + Math.random() * 18,
+            maxLife: 58,
+            rot: 0
+          });
+        }
+      }
+      if (fxParticles.length > 90) fxParticles.splice(0, fxParticles.length - 90);
+    }
+
+    function addBubble(actor, text) {
+      speechBubbles.push({
+        actor,
+        text,
+        life: 160
+      });
+      if (speechBubbles.length > 5) speechBubbles.shift();
+    }
+
+    function getRankInfo(side, score) {
+      if (side === 1) {
+        if (score >= 200) return { title: "Bang Chủ", scale: 1.18 };
+        if (score >= 80) return { title: "Trưởng Lão", scale: 1.12 };
+        if (score >= 30) return { title: "Lão Làng", scale: 1.06 };
+        return { title: "Ăn Xin", scale: 1.0 };
+      } else {
+        if (score >= 200) return { title: "Chủ Tịch", scale: 1.18 };
+        if (score >= 80) return { title: "Tỷ Phú", scale: 1.12 };
+        if (score >= 30) return { title: "Giám Đốc", scale: 1.06 };
+        return { title: "Thiếu Gia", scale: 1.0 };
+      }
+    }
+
+    function spawnFloatingText(x, y, text, color = "#FFD166") {
+      floatingTexts.push({ x, y, text, color, life: 46 });
+      if (floatingTexts.length > 10) floatingTexts.shift();
+    }
+
+    function renderSideTop3(elId, list) {
+      const el = document.getElementById(elId);
+      el.innerHTML = "";
+      if (list.length === 0) {
+        el.innerHTML = `<div class="top-lb-item"><span class="top-lb-rank">#1</span><span class="top-lb-name">Chờ...</span><span class="top-lb-pts">0đ</span></div>`;
+        return;
+      }
+      list.slice(0, 3).forEach((pl, idx) => {
+        const row = document.createElement("div");
+        row.className = "top-lb-item";
+        row.innerHTML = `<span class="top-lb-rank">#${idx + 1}</span><span class="top-lb-name">${pl.nickname}</span><span class="top-lb-pts">${pl.score}</span>`;
+        el.appendChild(row);
+      });
+    }
+
+    let hudTimer = null;
+    let lastHudAt = 0;
+    function updateHUD() {
+      const now = performance.now();
+      if (now - lastHudAt < 80) {
+        if (!hudTimer) {
+          hudTimer = setTimeout(() => {
+            hudTimer = null;
+            updateHUD();
+          }, 80);
+        }
+        return;
+      }
+      lastHudAt = now;
+      document.getElementById("scoreBeggarLbl").textContent = `🥣 Ăn Mày: ${scoreBeggar}`;
+      document.getElementById("scoreTycoonLbl").textContent = `Đại Gia: ${scoreTycoon} 💎`;
+
+      const sortedAll = Array.from(playersMap.values()).sort((a, b) => b.score - a.score);
+      const topBeggarList = sortedAll.filter(p => p.side === 1).slice(0, 3);
+      const topTycoonList = sortedAll.filter(p => p.side === 2).slice(0, 3);
+      renderSideTop3("topLbLeft", topBeggarList);
+      renderSideTop3("topLbRight", topTycoonList);
+
+      // Thông báo Soán Ngôi Top 1 cho người chơi thật
+      const realBeggarTop = sortedAll.find(p => p.side === 1 && !p.isBot && p.score > 0);
+      if (realBeggarTop && realBeggarTop.userId !== mvpBeggarId) {
+        if (mvpBeggarId !== null) {
+          showToast(`👑 <b>${realBeggarTop.nickname}</b> vừa SOÁN NGÔI Bang Chủ Ăn Mày!`);
+          audio.playFanfare();
+          audio.enqueueTTS(`Chấn động! ${realBeggarTop.nickname} vừa soán ngôi Bang Chủ Ăn Mày!`, false);
+        }
+        mvpBeggarId = realBeggarTop.userId;
+      }
+      const realTycoonTop = sortedAll.find(p => p.side === 2 && !p.isBot && p.score > 0);
+      if (realTycoonTop && realTycoonTop.userId !== mvpTycoonId) {
+        if (mvpTycoonId !== null) {
+          showToast(`👑 <b>${realTycoonTop.nickname}</b> vừa SOÁN NGÔI Chủ Tịch Đại Gia!`);
+          audio.playFanfare();
+          audio.enqueueTTS(`Chấn động! ${realTycoonTop.nickname} vừa soán ngôi Chủ Tịch Đại Gia!`, false);
+        }
+        mvpTycoonId = realTycoonTop.userId;
+      }
+    }
+
+    /********************************************************************
+     * XỬ LÝ TƯƠNG TÁC: COMMENT / LIKE / SHARE / GIFT
+     ********************************************************************/
+    function getMult() {
+      let m = 1;
+      if (Date.now() < heartRainUntil) m *= 2;
+      if (gamePhase === "SUDDEN_DEATH") m *= 2;
+      return m;
+    }
+
+    function handleComment({ uniqueId, nickname, profilePictureUrl = "", comment = "", isBot = false }) {
+      if (gamePhase === "VERDICT") return;
+      const clean = String(comment || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d");
+      const compact = clean.replace(/\s+/g, "");
+      let targetSide = null;
+      if (clean.includes("an may") || compact.includes("anmay") || clean.includes("cai bang") || /\b1\b/.test(clean)) targetSide = 1;
+      else if (clean.includes("dai gia") || compact.includes("daigia") || clean.includes("hao mon") || /\b2\b/.test(clean)) targetSide = 2;
+      if (!targetSide) return;
+
+      const now = Date.now();
+      if (!isBot) {
+        lastRealInteractionAt = now;
+        registerCombo();
+      }
+
+      const player = ensurePlayer({ uniqueId, nickname, profilePictureUrl, side: targetSide, isBot });
+      if (now - player.lastCommentAt < 4000) return;
+      player.lastCommentAt = now;
+
+      const isSideFrozen = (targetSide === 1 && now < freezeBeggarUntil) || (targetSide === 2 && now < freezeTycoonUntil);
+      if (isSideFrozen) {
+        spawnFloatingText(player.x, player.y - 80, "❄️ Đang đóng băng!", "#93C5FD");
+        return;
+      }
+
+      const pts = (isBot ? 3 : 5) * getMult();
+      player.score += pts;
+      if (targetSide === 1) scoreBeggar += pts;
+      else scoreTycoon += pts;
+
+      player.actionType = targetSide === 1 ? "beg" : "flaunt";
+      player.actionUntil = now + 1400;
+
+      const quips = targetSide === 1 ? BEGGAR_QUIPS : TYCOON_QUIPS;
+      const quipText = quips[Math.floor(Math.random() * quips.length)];
+      addBubble(player, quipText);
+      if (!isBot) {
+        audio.enqueueTTS(
+          targetSide === 1
+            ? `${player.nickname} vừa vào phe ăn mày: ${quipText}`
+            : `Chào mừng đại gia ${player.nickname}! ${quipText}`,
+          false
+        );
+      }
+      spawnParticles(player.x, player.y - 30, targetSide === 1 ? "coin" : "cash", 5, targetSide === 1);
+      audio.playCoin();
+      updateHUD();
+    }
+
+    function handleLike({ uniqueId, nickname = "Người xem", profilePictureUrl = "", likeCount = 1, sideOverride = null }) {
+      if (gamePhase === "VERDICT") return;
+      const now = Date.now();
+      lastRealInteractionAt = now;
+      registerCombo();
+
+      let player = playersMap.get(uniqueId);
+      if (!player) {
+        const chosenSide = sideOverride || (scoreBeggar <= scoreTycoon ? 1 : 2);
+        player = ensurePlayer({ uniqueId, nickname, profilePictureUrl, side: chosenSide, isBot: false });
+      }
+      if (now < player.stunnedUntil) {
+        spawnFloatingText(player.x, player.y - 80, "😵 Đang choáng!", "#FCA5A5");
+        return;
+      }
+      if ((player.side === 1 && now < freezeBeggarUntil) || (player.side === 2 && now < freezeTycoonUntil)) {
+        spawnFloatingText(player.x, player.y - 80, "❄️ Đóng băng!", "#93C5FD");
+        return;
+      }
+
+      const pts = Math.max(2, Math.round(likeCount / 3)) * getMult();
+      player.score += pts;
+      spawnFloatingText(player.x, player.y - 86, `+${pts}`, player.side === 1 ? "#7DD3FC" : "#FDE047");
+      if (player.side === 1) {
+        scoreBeggar += pts;
+        player.actionType = "beg";
+        player.actionUntil = now + 2600;
+        spawnParticles(player.x, player.y - 28, "coin", 8, true);
+        addBubble(player, "🥣 Giơ bát xin tiền nè!");
+      } else {
+        scoreTycoon += pts;
+        player.actionType = "rain_cash";
+        player.actionUntil = now + 1500;
+        spawnParticles(player.x, player.y - 26, "cash", 8);
+        addBubble(player, "💵 Phát tiền cho anh em!");
+
+        // Tìm ăn mày đang giơ bát xin (nếu nhiều người xin -> chọn random; nếu chưa ai xin -> chọn random ăn mày trên sân)
+        const beggingPool = actors.filter(a => a.side === 1 && a.actionType === "beg" && now < a.actionUntil);
+        const fallbackPool = actors.filter(a => a.side === 1);
+        const targetPool = beggingPool.length ? beggingPool : fallbackPool;
+        if (targetPool.length > 0) {
+          for (let i = 0; i < 3; i++) {
+            const receiver = targetPool[Math.floor(Math.random() * targetPool.length)];
+            projectiles.push({
+              kind: "gift_cash",
+              isHelpfulCash: true,
+              x: player.x,
+              y: player.y - 34,
+              startX: player.x,
+              startY: player.y - 34,
+              targetX: receiver.x + (Math.random() - 0.5) * 14,
+              targetY: receiver.y - 26,
+              progress: -i * 0.14,
+              speed: 0.042,
+              targetActor: receiver,
+              ownerSide: 2
+            });
+          }
+        }
+      }
+      audio.playCoin();
+      updateHUD();
+    }
+
+    function handleShare({ uniqueId, nickname = "Khách quý", profilePictureUrl = "" }) {
+      if (gamePhase === "VERDICT") return;
+      const now = Date.now();
+      lastRealInteractionAt = now;
+      registerCombo();
+
+      let player = playersMap.get(uniqueId);
+      if (!player) {
+        const chosenSide = scoreBeggar <= scoreTycoon ? 1 : 2;
+        player = ensurePlayer({ uniqueId, nickname, profilePictureUrl, side: chosenSide, isBot: false });
+      }
+      if (now - player.lastShareAt < 5000) return;
+      player.lastShareAt = now;
+
+      const pts = 12 * getMult();
+      player.score += pts;
+      if (player.side === 1) scoreBeggar += pts;
+      else scoreTycoon += pts;
+
+      spawnParticles(player.x, player.y - 30, "star", 12);
+      showToast(`📣 Cảm ơn <b>${player.nickname}</b> đã chia sẻ LIVE! Tiếp sức cực mạnh!`);
+      audio.playFanfare();
+      audio.enqueueTTS(`Cảm ơn ${player.nickname} đã chia sẻ phiên live, tiếp sức cực mạnh cho phe ${player.side === 1 ? "ăn mày" : "đại gia"}!`, false);
+      updateHUD();
+    }
+
+    function handleGift({ uniqueId, nickname = "Đại Hiệp", profilePictureUrl = "", sideOverride = null, diamondCount = 1 }) {
+      if (gamePhase === "VERDICT") return;
+      const now = Date.now();
+      lastRealInteractionAt = now;
+      registerCombo();
+
+      let player = playersMap.get(uniqueId);
+      if (!player) {
+        const chosenSide = sideOverride || (scoreBeggar <= scoreTycoon ? 1 : 2);
+        player = ensurePlayer({ uniqueId, nickname, profilePictureUrl, side: chosenSide, isBot: false });
+      }
+
+      const tier = diamondCount >= 100 ? 3 : (diamondCount >= 10 ? 2 : 1);
+      const pts = (tier === 3 ? 200 : tier === 2 ? 60 : 18) * getMult();
+      player.score += pts;
+
+      const enemies = actors.filter(a => a.side !== player.side);
+      const W = phoneFrame.clientWidth;
+      const H = phoneFrame.clientHeight;
+
+      if (player.side === 1) {
+        // ĂN MÀY TẶNG QUÀ -> NÉM DÉP VÀO ĐẠI GIA + BẬT RÀO TRE CHẶN ĐÁ
+        scoreBeggar += pts;
+        const shieldSec = tier === 3 ? 20 : (tier === 2 ? 12 : 5);
+        beggarShieldUntil = Math.max(beggarShieldUntil, now + shieldSec * 1000);
+        document.getElementById("beggarShieldBanner").classList.add("active");
+        document.getElementById("beggarShieldBanner").textContent = `🎍 RÀO TRE CHẶN ĐÁ (${Math.ceil((beggarShieldUntil - now) / 1000)}s)`;
+
+        if (tier === 3) {
+          pushProjectile({
+            kind: "mega_slipper",
+            x: player.x,
+            y: player.y - 30,
+            startX: player.x,
+            startY: player.y - 30,
+            targetX: W * 0.74,
+            targetY: H * 0.56,
+            progress: 0,
+            speed: 0.022,
+            targetActor: null,
+            ownerSide: 1
+          });
+        } else {
+          const rawCount = tier === 2 ? 5 : 1;
+          const count = projectiles.length > 16 ? Math.min(2, rawCount) : rawCount;
+          for (let i = 0; i < count; i++) {
+            const target = enemies.length ? enemies[Math.floor(Math.random() * enemies.length)] : { x: W * 0.76, y: H * 0.56 };
+            pushProjectile({
+              kind: "slipper",
+              x: player.x,
+              y: player.y - 24,
+              startX: player.x,
+              startY: player.y - 24,
+              targetX: target.x + (Math.random() - 0.5) * 20,
+              targetY: target.y - 16,
+              progress: -i * 0.12,
+              speed: 0.045,
+              targetActor: target.userId ? target : null,
+              ownerSide: 1
+            });
+          }
+        }
+        if (tier === 3) {
+          if (now < tycoonShieldUntil) {
+            screenShakeUntil = now + 400;
+            showToast(`🛡️ Khiên Đại Gia đã CHẶN đứng SIÊU DÉP của <b>${player.nickname}</b>!`);
+            audio.enqueueTTS(`Đại gia đã bật khiên chắn, chặn đứng siêu dép của ${player.nickname}!`, true);
+          } else {
+            const steal = Math.round(scoreTycoon * 0.2);
+            scoreTycoon = Math.max(0, scoreTycoon - steal);
+            scoreBeggar += steal;
+            screenShakeUntil = now + 700;
+            freezeTycoonUntil = now + 5000;
+            showToast(`🩴🔥 <b>${player.nickname}</b> tung SIÊU DÉP TỔ ONG quét sạch phe Đại Gia!`);
+            audio.enqueueTTS(`Báo động! Ăn mày ${player.nickname} vừa ném siêu dép tổ ong thẳng vào đội hình đại gia!`, true);
+          }
+        } else {
+          showToast(`🩴🎍 <b>${player.nickname}</b> ném dép & dựng RÀO TRE CHẶN ĐÁ (${shieldSec}s)!`);
+          if (tier === 2) audio.enqueueTTS(`${player.nickname} dựng rào tre bảo vệ và tung mưa dép sang phe đại gia!`, false);
+        }
+        audio.playSlipperHit();
+      } else {
+        // ĐẠI GIA TẶNG QUÀ -> ĐÁ ĂN MÀY + BẬT KHIÊN CHẶN DÉP
+        scoreTycoon += pts;
+        const shieldSec = tier === 3 ? 20 : (tier === 2 ? 12 : 5);
+        tycoonShieldUntil = Math.max(tycoonShieldUntil, now + shieldSec * 1000);
+        document.getElementById("tycoonShieldBanner").classList.add("active");
+        document.getElementById("tycoonShieldBanner").textContent = `🛡️ KHIÊN CHẶN DÉP (${Math.ceil((tycoonShieldUntil - now) / 1000)}s)`;
+
+        if (tier === 3) {
+          pushProjectile({
+            kind: "mega_kick_car",
+            x: W * 0.25,
+            y: H * 0.14,
+            startX: W * 0.25,
+            startY: H * 0.14,
+            targetX: W * 0.25,
+            targetY: H * 0.92,
+            progress: 0,
+            speed: 0.014,
+            targetActor: null,
+            hitIds: new Set(),
+            ownerSide: 2
+          });
+          screenShakeUntil = now + 1100;
+          if (now >= beggarShieldUntil) {
+            freezeBeggarUntil = now + 5000;
+          }
+          showToast(`🚘🔥 <b>${player.nickname}</b> phóng SIÊU XE càn quét dọc Xóm Ăn Mày & bật KHIÊN ${shieldSec}s!`);
+          audio.enqueueTTS(`Chủ tịch ${player.nickname} bật khiên chặn dép và phóng siêu xe càn quét toàn bộ phe ăn mày!`, true);
+        } else {
+          const rawCount = tier === 2 ? 4 : 1;
+          const count = projectiles.length > 16 ? Math.min(2, rawCount) : rawCount;
+          for (let i = 0; i < count; i++) {
+            const target = enemies.length ? enemies[Math.floor(Math.random() * enemies.length)] : { x: W * 0.24, y: H * 0.56 };
+            pushProjectile({
+              kind: "kick",
+              x: player.x,
+              y: player.y - 20,
+              startX: player.x,
+              startY: player.y - 20,
+              targetX: target.x,
+              targetY: target.y - 10,
+              progress: -i * 0.14,
+              speed: 0.05,
+              targetActor: target.userId ? target : null,
+              ownerSide: 2
+            });
+          }
+          showToast(`🦶🛡️ <b>${player.nickname}</b> đá Ăn Mày & bật KHIÊN CHẶN DÉP (${shieldSec}s)!`);
+          if (tier === 2) audio.enqueueTTS(`Đại gia ${player.nickname} bật khiên chặn dép và tung liên hoàn cước!`, false);
+        }
+        audio.playKick();
+      }
+      updateHUD();
+    }
+
+    /********************************************************************
+     * TẢI TÀI NGUYÊN ART & TÁCH NỀN TỰ ĐỘNG (SPRITES + BACKGROUND)
+     ********************************************************************/
+    const bgSceneImg = new Image();
+    bgSceneImg.src = "./assets/bg-scene.jpg";
+
+    const beggarCutouts = [null, null, null, null, null, null];
+    const tycoonCutouts = [null, null, null, null, null, null, null];
+
+    function makeCutoutSprite(img, targetH = 260, flipX = false) {
+      const w = Math.max(1, Math.round((img.width * targetH) / img.height));
+      const h = targetH;
+      const off = document.createElement("canvas");
+      off.width = w;
+      off.height = h;
+      const octx = off.getContext("2d");
+      if (flipX) {
+        octx.translate(w, 0);
+        octx.scale(-1, 1);
+      }
+      octx.drawImage(img, 0, 0, w, h);
+
+      const imgData = octx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      const visited = new Uint8Array(w * h);
+      const queue = new Int32Array(w * h);
+      let head = 0, tail = 0;
+
+      const isBg = (idx) => {
+        const p = idx * 4;
+        const r = data[p], g = data[p + 1], b = data[p + 2];
+        const maxC = Math.max(r, g, b);
+        const minC = Math.min(r, g, b);
+        return minC > 192 && (maxC - minC) < 26;
+      };
+
+      for (let x = 0; x < w; x++) {
+        const top = x;
+        const bot = (h - 1) * w + x;
+        if (!visited[top] && isBg(top)) { visited[top] = 1; queue[tail++] = top; }
+        if (!visited[bot] && isBg(bot)) { visited[bot] = 1; queue[tail++] = bot; }
+      }
+      for (let y = 0; y < h; y++) {
+        const left = y * w;
+        const right = y * w + (w - 1);
+        if (!visited[left] && isBg(left)) { visited[left] = 1; queue[tail++] = left; }
+        if (!visited[right] && isBg(right)) { visited[right] = 1; queue[tail++] = right; }
+      }
+
+      while (head < tail) {
+        const cur = queue[head++];
+        data[cur * 4 + 3] = 0;
+        const cx = cur % w;
+        const cy = (cur - cx) / w;
+        if (cx > 0) { const n = cur - 1; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+        if (cx < w - 1) { const n = cur + 1; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+        if (cy > 0) { const n = cur - w; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+        if (cy < h - 1) { const n = cur + w; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+      }
+
+      // Loại bỏ thêm các vùng nền trắng kẹt bên trong (khe giữa gậy/tay/chân)
+      const isPureWhite = (idx) => {
+        const p = idx * 4;
+        if (data[p + 3] === 0) return false;
+        const r = data[p], g = data[p + 1], b = data[p + 2];
+        const maxC = Math.max(r, g, b);
+        const minC = Math.min(r, g, b);
+        return minC > 228 && (maxC - minC) < 14;
+      };
+      const holeVisited = new Uint8Array(w * h);
+      for (let i = 0; i < w * h; i++) {
+        if (holeVisited[i] || !isPureWhite(i)) continue;
+        let hHead = 0, hTail = 0;
+        const comp = [];
+        holeVisited[i] = 1;
+        queue[hTail++] = i;
+        while (hHead < hTail) {
+          const cur = queue[hHead++];
+          comp.push(cur);
+          const cx = cur % w;
+          const cy = (cur - cx) / w;
+          if (cx > 0) { const n = cur - 1; if (!holeVisited[n] && isPureWhite(n)) { holeVisited[n] = 1; queue[hTail++] = n; } }
+          if (cx < w - 1) { const n = cur + 1; if (!holeVisited[n] && isPureWhite(n)) { holeVisited[n] = 1; queue[hTail++] = n; } }
+          if (cy > 0) { const n = cur - w; if (!holeVisited[n] && isPureWhite(n)) { holeVisited[n] = 1; queue[hTail++] = n; } }
+          if (cy < h - 1) { const n = cur + w; if (!holeVisited[n] && isPureWhite(n)) { holeVisited[n] = 1; queue[hTail++] = n; } }
+        }
+        if (comp.length >= 25) {
+          for (let k = 0; k < comp.length; k++) data[comp[k] * 4 + 3] = 0;
+        }
+      }
+
+      // Khử viền trắng mảnh 2 lượt để đường viền nhân vật sạch hoàn toàn
+      for (let pass = 0; pass < 2; pass++) {
+        const toFade = [];
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const idx = y * w + x;
+            const p = idx * 4;
+            if (data[p + 3] === 0) continue;
+            const hasTrans =
+              data[(idx - 1) * 4 + 3] === 0 || data[(idx + 1) * 4 + 3] === 0 ||
+              data[(idx - w) * 4 + 3] === 0 || data[(idx + w) * 4 + 3] === 0;
+            if (hasTrans) {
+              const r = data[p], g = data[p + 1], b = data[p + 2];
+              const minC = Math.min(r, g, b);
+              const maxC = Math.max(r, g, b);
+              if (minC > 165 && (maxC - minC) < 28) {
+                toFade.push(p, minC > 195 ? 0 : Math.max(0, Math.round((210 - minC) * 4)));
+              }
+            }
+          }
+        }
+        for (let k = 0; k < toFade.length; k += 2) data[toFade[k] + 3] = toFade[k + 1];
+      }
+
+      octx.putImageData(imgData, 0, 0);
+      return off;
+    }
+
+    const BEGGAR_FILES = [
+      "./assets/beggar.jpg",
+      "./assets/beggar-2.jpg",
+      "./assets/beggar-3.jpg",
+      "./assets/beggar-4.jpg",
+      "./assets/beggar-sit-1.jpg",
+      "./assets/beggar-sit-2.jpg"
+    ];
+    const TYCOON_FILES = [
+      { src: "./assets/tycoon.jpg", flip: false },
+      { src: "./assets/tycoon-2.jpg", flip: false },
+      { src: "./assets/tycoon-3.jpg", flip: false },
+      { src: "./assets/tycoon-4.jpg", flip: true },
+      { src: "./assets/tycoon-5.jpg", flip: false },
+      { src: "./assets/tycoon-6.jpg", flip: false },
+      { src: "./assets/tycoon-7.jpg", flip: false }
+    ];
+
+    BEGGAR_FILES.forEach((src, idx) => {
+      const im = new Image();
+      im.onload = () => { beggarCutouts[idx] = makeCutoutSprite(im, 420, false); };
+      im.src = src;
+    });
+
+    TYCOON_FILES.forEach((cfg, idx) => {
+      const im = new Image();
+      im.onload = () => { tycoonCutouts[idx] = makeCutoutSprite(im, 420, cfg.flip); };
+      im.src = cfg.src;
+    });
+
+    let supercarCutout = null;
+    const supercarImg = new Image();
+    supercarImg.onload = () => { supercarCutout = makeCutoutSprite(supercarImg, 440, false); };
+    supercarImg.src = "./assets/supercar.jpg";
+
+    let megaSlipperCutout = null;
+    const megaSlipperImg = new Image();
+    megaSlipperImg.onload = () => { megaSlipperCutout = makeCutoutSprite(megaSlipperImg, 360, false); };
+    megaSlipperImg.src = "./assets/mega-slipper.jpg";
+
+    let kickShoeCutout = null;
+    const kickShoeImg = new Image();
+    kickShoeImg.onload = () => { kickShoeCutout = makeCutoutSprite(kickShoeImg, 240, false); };
+    kickShoeImg.src = "./assets/kick-shoe.jpg";
+
+    function drawSceneBackground(W, H) {
+      if (bgSceneImg.complete && bgSceneImg.naturalWidth > 0) {
+        const scale = Math.max(W / bgSceneImg.naturalWidth, H / bgSceneImg.naturalHeight);
+        const dw = bgSceneImg.naturalWidth * scale;
+        const dh = bgSceneImg.naturalHeight * scale;
+        ctx.drawImage(bgSceneImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      } else {
+        ctx.fillStyle = "#1E1B18";
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // Làm mờ tự nhiên phần mái nhà tầng phía trên bên trái vào bầu trời đêm u ám (không vẽ mảng phẳng)
+      const halfW = W * 0.498;
+      const fadeEndY = H * 0.48;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, halfW, fadeEndY);
+      ctx.clip();
+
+      const darkSky = ctx.createLinearGradient(0, 0, 0, fadeEndY);
+      darkSky.addColorStop(0, "rgba(10, 15, 28, 0.98)");
+      darkSky.addColorStop(0.58, "rgba(15, 23, 42, 0.94)");
+      darkSky.addColorStop(0.82, "rgba(20, 28, 44, 0.55)");
+      darkSky.addColorStop(1, "rgba(20, 28, 44, 0)");
+      ctx.fillStyle = darkSky;
+      ctx.fillRect(0, 0, halfW, fadeEndY);
+
+      // Dây điện chùng ngang bầu trời đêm
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.75)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(0, H * 0.16);
+      ctx.quadraticCurveTo(halfW * 0.45, H * 0.24, halfW, H * 0.19);
+      ctx.moveTo(0, H * 0.22);
+      ctx.quadraticCurveTo(halfW * 0.55, H * 0.28, halfW, H * 0.23);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Hiệu ứng thời tiết thê lương bên phe Ăn Mày: Gió thổi, Bông tuyết, Lá khô rơi
+    const beggarWeather = {
+      snow: Array.from({ length: 24 }, () => ({
+        x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.2,
+        vy: 0.45 + Math.random() * 0.65, vx: -0.25 - Math.random() * 0.35, phase: Math.random() * 6.28
+      })),
+      leaves: Array.from({ length: 10 }, () => ({
+        x: Math.random(), y: Math.random(), size: 11 + Math.random() * 5,
+        vy: 0.7 + Math.random() * 0.7, vx: -0.45 - Math.random() * 0.45, rot: Math.random() * 6.28, vrot: (Math.random() - 0.5) * 0.05
+      })),
+      winds: Array.from({ length: 7 }, () => ({
+        x: Math.random(), y: 0.15 + Math.random() * 0.68, len: 36 + Math.random() * 44,
+        vx: -2.6 - Math.random() * 1.8, alpha: 0.14 + Math.random() * 0.18
+      }))
+    };
+
+    function drawBeggarWeather(W, H, t) {
+      const halfW = W * 0.5;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, halfW, H * 0.86);
+      ctx.clip();
+
+      // 1. Vệt gió lạnh thổi ngang
+      ctx.lineCap = "round";
+      beggarWeather.winds.forEach(w => {
+        w.x += w.vx / halfW;
+        if (w.x < -0.35) { w.x = 1.15; w.y = 0.15 + Math.random() * 0.68; }
+        const px = w.x * halfW;
+        const py = w.y * H;
+        ctx.strokeStyle = `rgba(224, 242, 254, ${w.alpha})`;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.quadraticCurveTo(px + w.len * 0.5, py - 4, px + w.len, py + 3);
+        ctx.stroke();
+      });
+
+      // 2. Bông tuyết rơi lất phất
+      beggarWeather.snow.forEach(s => {
+        s.x += (s.vx + Math.sin(t * 0.002 + s.phase) * 0.25) / halfW;
+        s.y += s.vy / H;
+        if (s.y > 0.86) { s.y = -0.03; s.x = Math.random(); }
+        if (s.x < -0.05) s.x = 1.02;
+        ctx.fillStyle = "rgba(240, 249, 255, 0.78)";
+        ctx.beginPath();
+        ctx.arc(s.x * halfW, s.y * H, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 3. Lá khô rơi bay theo gió
+      beggarWeather.leaves.forEach(l => {
+        l.x += l.vx / halfW;
+        l.y += l.vy / H;
+        l.rot += l.vrot;
+        if (l.y > 0.86) { l.y = -0.04; l.x = 0.2 + Math.random() * 0.8; }
+        if (l.x < -0.08) l.x = 1.05;
+        ctx.save();
+        ctx.translate(l.x * halfW, l.y * H);
+        ctx.rotate(l.rot);
+        ctx.globalAlpha = 0.82;
+        ctx.font = `${l.size}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("🍂", 0, 0);
+        ctx.restore();
+      });
+
+      ctx.restore();
+    }
+
+    function drawCharacterArt(p, t, isMvp, H) {
+      const list = p.side === 1 ? beggarCutouts : tycoonCutouts;
+      const sprite = list[p.variantIdx || 0] || list.find(Boolean);
+      const accentColor = p.side === 1 ? "#38BDF8" : "#FDE047";
+      const depthRatio = Math.max(0, Math.min(1, (p.y - H * 0.48) / (H * 0.30)));
+      const depthScale = 0.8 + depthRatio * 0.28;
+      const rankInfo = getRankInfo(p.side, p.score);
+      const isSitting = p.side === 1 && (p.variantIdx || 0) >= 4;
+      const drawH = (isSitting ? 74 : 100) * depthScale * rankInfo.scale;
+
+      const spriteBob = Math.sin(t * (p.isWalking ? 0.008 : 0.0035) + p.bobPhase) * (p.isWalking ? 1.5 : 0.9);
+      const isStunned = Date.now() < p.stunnedUntil;
+      const isActing = Date.now() < p.actionUntil;
+      const shakeX = isStunned ? Math.sin(t * 0.06) * 4.5 : 0;
+      const actionTilt = isActing
+        ? Math.sin(t * 0.02) * 0.05
+        : (p.isWalking ? Math.sin(t * 0.008 + p.bobPhase) * 0.018 : 0);
+
+      ctx.save();
+      ctx.translate(p.x + shakeX, p.y);
+
+      // Hào quang vàng rực rỡ xoay tròn cho Top 1 (Bang Chủ / Chủ Tịch)
+      if (isMvp) {
+        ctx.save();
+        ctx.translate(0, -drawH * 0.52);
+        ctx.rotate(t * 0.0018 * (p.side === 1 ? 1 : -1));
+        const halo = ctx.createRadialGradient(0, 0, 8, 0, 0, drawH * 0.56);
+        halo.addColorStop(0, "rgba(255, 215, 102, 0.92)");
+        halo.addColorStop(0.55, "rgba(250, 204, 21, 0.35)");
+        halo.addColorStop(1, "rgba(250, 204, 21, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(0, 0, drawH * 0.56, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Bóng đổ dưới chân (cố định trên mặt đất, không rung)
+      ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+      ctx.beginPath();
+      ctx.ellipse(0, 2, (isSitting ? 26 : 22) * depthScale, 6.5 * depthScale, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Vẽ hình Art nhân vật tỷ lệ người thật
+      if (sprite) {
+        const drawW = (sprite.width / sprite.height) * drawH;
+        ctx.save();
+        ctx.translate(0, spriteBob);
+        ctx.rotate(actionTilt);
+        ctx.drawImage(sprite, -drawW / 2, -drawH + 4, drawW, drawH);
+        ctx.restore();
+      }
+
+      // Vòng khiên năng lượng bảo vệ: Đại Gia (xanh dương) / Ăn Mày (xanh lá Rào Tre)
+      if ((p.side === 2 && Date.now() < tycoonShieldUntil) || (p.side === 1 && Date.now() < beggarShieldUntil)) {
+        const isTycoon = p.side === 2;
+        ctx.save();
+        ctx.strokeStyle = isTycoon ? "rgba(56, 189, 248, 0.85)" : "rgba(74, 222, 128, 0.85)";
+        ctx.fillStyle = isTycoon ? "rgba(56, 189, 248, 0.12)" : "rgba(74, 222, 128, 0.12)";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.ellipse(0, -drawH * 0.48, 28 * depthScale, drawH * 0.54, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Icon trạng thái Choáng / Đóng băng trên đầu nhân vật
+      const isSideFrozen = (p.side === 1 && Date.now() < freezeBeggarUntil) || (p.side === 2 && Date.now() < freezeTycoonUntil);
+      if (isStunned || isSideFrozen) {
+        ctx.font = "16px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(isSideFrozen ? "❄️" : "😵", 0, -drawH - 2);
+      }
+
+      // Thẻ định danh gắn Avatar tròn + Tên + Cấp bậc & Điểm ngay dưới chân nhân vật
+      drawNameplate(p, isMvp ? "👑 " : "", accentColor, rankInfo.title);
+      ctx.restore();
+    }
+
+    function drawNameplate(p, prefix, accentColor, rankTitle) {
+      const label = `${prefix}${p.nickname}`;
+      const shortLabel = label.length > 13 ? label.slice(0, 12) + "…" : label;
+      const ptsLabel = `${rankTitle} · ${p.score}đ`;
+
+      ctx.save();
+      ctx.font = "800 9.5px 'Baloo 2', sans-serif";
+      const textW = Math.max(ctx.measureText(shortLabel).width, ctx.measureText(ptsLabel).width);
+      const pillW = Math.max(76, Math.min(124, textW + 34));
+      const pillH = 26;
+
+      ctx.fillStyle = "rgba(15, 12, 10, 0.84)";
+      ctx.strokeStyle = accentColor;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.roundRect(-pillW / 2, 5, pillW, pillH, 999);
+      ctx.fill();
+      ctx.stroke();
+
+      // Avatar tròn bên trái thẻ tên
+      const avX = -pillW / 2 + 13;
+      const avY = 5 + pillH / 2;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(avX, avY, 10, 0, Math.PI * 2);
+      ctx.fillStyle = p.side === 1 ? "#0284C7" : "#D97706";
+      ctx.fill();
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.stroke();
+      ctx.clip();
+      if (p.avatarRecord && p.avatarRecord.loaded) {
+        ctx.drawImage(p.avatarRecord.img, avX - 10, avY - 10, 20, 20);
+      } else {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "900 9px 'Baloo 2', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.nickname.slice(0, 2).toUpperCase(), avX, avY + 0.5);
+      }
+      ctx.restore();
+
+      // Tên & Điểm bên phải Avatar
+      const tx = -pillW / 2 + 27;
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "800 9.5px 'Baloo 2', sans-serif";
+      ctx.fillText(shortLabel, tx, 15, pillW - 32);
+      ctx.fillStyle = accentColor;
+      ctx.font = "800 8.5px 'Baloo 2', sans-serif";
+      ctx.fillText(ptsLabel, tx, 25.5);
+      ctx.restore();
+    }
+
+    function renderFrame() {
+      const W = phoneFrame.clientWidth;
+      const H = phoneFrame.clientHeight;
+      const now = Date.now();
+      const t = performance.now();
+
+      ctx.save();
+      if (now < screenShakeUntil) {
+        ctx.translate((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
+      }
+      ctx.clearRect(0, 0, W, H);
+
+      drawSceneBackground(W, H);
+
+      // Cập nhật vị trí: tự động đi dạo ngẫu nhiên trong khu vực phe mình & phản hồi khi bị đá văng
+      actors.forEach(a => {
+        if (Math.abs(a.vx) > 0.1) {
+          a.x += a.vx;
+          a.vx *= 0.88;
+          a.isWalking = false;
+        } else {
+          const isSeatedBeggar = a.side === 1 && (a.variantIdx || 0) >= 4;
+          if (!isSeatedBeggar && now >= a.stunnedUntil && now >= a.nextMoveAt) {
+            const nextPos = pickActorSlot(a.side);
+            a.baseX = nextPos.x;
+            a.baseY = nextPos.y;
+            a.nextMoveAt = now + 2600 + Math.random() * 4200;
+          }
+          const dx = a.baseX - a.x;
+          const dy = a.baseY - a.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 1.8) {
+            const step = Math.min(0.65, dist * 0.04);
+            a.x += (dx / dist) * step;
+            a.y += (dy / dist) * step;
+            a.isWalking = true;
+          } else {
+            a.isWalking = false;
+          }
+        }
+        const minX = a.side === 1 ? 26 : W * 0.53;
+        const maxX = a.side === 1 ? W * 0.47 : W - 26;
+        a.x = Math.max(minX, Math.min(maxX, a.x));
+      });
+
+      // Tách nhẹ khoảng cách giữa các nhân vật cùng phe để không đè thẻ tên
+      for (let i = 0; i < actors.length; i++) {
+        for (let j = i + 1; j < actors.length; j++) {
+          const a = actors[i], b = actors[j];
+          if (a.side !== b.side) continue;
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          if (Math.abs(dx) < 60 && Math.abs(dy) < 44) {
+            const pushX = dx >= 0 ? 0.55 : -0.55;
+            const pushY = dy >= 0 ? 0.45 : -0.45;
+            a.x -= pushX; b.x += pushX;
+            a.y -= pushY; b.y += pushY;
+            const clampY = (act) => {
+              const lo = act.side === 1 ? H * 0.48 : H * 0.45;
+              const hi = act.side === 1 ? H * 0.77 : H * 0.62;
+              act.y = Math.max(lo, Math.min(hi, act.y));
+            };
+            clampY(a); clampY(b);
+            a.baseX = a.x; b.baseX = b.x;
+            a.baseY = a.y; b.baseY = b.y;
+          }
+        }
+      }
+
+      // Tìm Top 1 mỗi phe để vẽ hào quang
+      let topBeggarId = null;
+      let topBeggarScore = -1;
+      let topTycoonId = null;
+      let topTycoonScore = -1;
+      actors.forEach(a => {
+        if (a.side === 1 && a.score > topBeggarScore) { topBeggarScore = a.score; topBeggarId = a.userId; }
+        if (a.side === 2 && a.score > topTycoonScore) { topTycoonScore = a.score; topTycoonId = a.userId; }
+      });
+
+      // Sắp xếp theo trục Y để tạo chiều sâu 2.5D
+      const sortedActors = [...actors].sort((a, b) => a.y - b.y);
+      sortedActors.forEach(a => {
+        const isMvp = a.score > 0 && (a.side === 1 ? a.userId === topBeggarId : a.userId === topTycoonId);
+        drawCharacterArt(a, t, isMvp, H);
+      });
+
+      // Thời tiết gió lạnh, tuyết và lá rơi chỉ ở bên Ăn Mày
+      drawBeggarWeather(W, H, t);
+
+      // Tường khiên năng lượng ở giữa sân: Đại Gia (Khiên Chặn Dép) & Ăn Mày (Rào Tre Chặn Đá)
+      if (now < tycoonShieldUntil) {
+        ctx.save();
+        const pulse = 0.55 + Math.sin(t * 0.01) * 0.25;
+        ctx.strokeStyle = `rgba(56, 189, 248, ${pulse})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.51, H * 0.36);
+        ctx.lineTo(W * 0.51, H * 0.82);
+        ctx.stroke();
+        ctx.font = "18px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🛡️", W * 0.51, H * 0.42);
+        ctx.restore();
+      }
+      if (now < beggarShieldUntil) {
+        ctx.save();
+        const pulse = 0.55 + Math.cos(t * 0.01) * 0.25;
+        ctx.strokeStyle = `rgba(74, 222, 128, ${pulse})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.49, H * 0.36);
+        ctx.lineTo(W * 0.49, H * 0.82);
+        ctx.stroke();
+        ctx.font = "18px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🎍", W * 0.49, H * 0.46);
+        ctx.restore();
+      }
+
+      // Vẽ Vật thể bay: Dép ném Đại Gia / Cú đá & Siêu xe đá Ăn Mày
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const pr = projectiles[i];
+        pr.progress += pr.speed;
+        if (pr.progress < 0) continue;
+
+        if (pr.progress >= 1) {
+          if (pr.isHelpfulCash) {
+            audio.playCoin();
+            if (pr.targetActor) {
+              pr.targetActor.score += 2;
+              scoreBeggar += 2;
+              spawnParticles(pr.targetX, pr.targetY, "coin", 5, true);
+              spawnFloatingText(pr.targetX, pr.targetY - 62, "💵 +2đ Lộc!", "#FDE047");
+              updateHUD();
+            }
+          } else if (pr.ownerSide === 1 && now < tycoonShieldUntil) {
+            audio.playShieldBlock();
+            const isMega = pr.kind === "mega_slipper";
+            spawnParticles(isMega ? W * 0.52 : pr.targetX, pr.targetY - 20, "star", isMega ? 14 : 6);
+            spawnFloatingText(isMega ? W * 0.52 : pr.targetX, pr.targetY - 70, isMega ? "🛡️ ĐỠ SIÊU DÉP!" : "🛡️ Đỡ dép!", "#38BDF8");
+          } else if (pr.ownerSide === 2 && now < beggarShieldUntil) {
+            audio.playShieldBlock();
+            spawnParticles(pr.targetX, pr.targetY - 20, "star", 6);
+            spawnFloatingText(pr.targetX, pr.targetY - 70, "🎍 Đỡ cú đá!", "#4ADE80");
+          } else if (pr.kind === "mega_slipper") {
+            audio.playImpactPop(true);
+            actors.forEach(a => {
+              if (a.side === 2) {
+                a.stunnedUntil = now + 3500;
+                a.vx = 9;
+                spawnParticles(a.x, a.y - 20, "coin", 6);
+              }
+            });
+            spawnParticles(pr.targetX, pr.targetY, "coin", 18);
+            spawnFloatingText(pr.targetX, pr.targetY - 82, "🩴💥 SIÊU DÉP QUÉT SẠCH!", "#7DD3FC");
+          } else {
+            audio.playImpactPop(pr.ownerSide === 1);
+            if (pr.targetActor) {
+              pr.targetActor.stunnedUntil = now + 2600;
+              pr.targetActor.vx = pr.ownerSide === 1 ? 4.5 : -7.5;
+              spawnParticles(pr.targetX, pr.targetY, pr.ownerSide === 1 ? "coin" : "star", 10);
+              spawnFloatingText(
+                pr.targetX,
+                pr.targetY - 70,
+                pr.ownerSide === 1 ? "🩴 BỐP! Rớt tiền!" : "🦶 Á! Bay màu!",
+                pr.ownerSide === 1 ? "#7DD3FC" : "#FCA5A5"
+              );
+            }
+          }
+          projectiles.splice(i, 1);
+          continue;
+        }
+
+        const p = pr.progress;
+        const curX = pr.startX + (pr.targetX - pr.startX) * p;
+        const arcY = pr.kind === "mega_kick_car" ? 0 : Math.sin(p * Math.PI) * (pr.kind === "mega_slipper" ? -115 : -70);
+        const curY = pr.startY + (pr.targetY - pr.startY) * p + arcY;
+
+        // Siêu Xe càn quét dọc sân trái: hất văng từng Ăn Mày khi lướt qua (trừ khi đang có Rào Tre)
+        if (pr.kind === "mega_kick_car" && pr.hitIds) {
+          actors.forEach(a => {
+            if (a.side === 1 && !pr.hitIds.has(a.userId) && Math.abs(a.y - curY) < 58) {
+              pr.hitIds.add(a.userId);
+              if (now < beggarShieldUntil) {
+                audio.playShieldBlock();
+                spawnParticles(a.x, a.y - 24, "star", 6);
+                spawnFloatingText(a.x, a.y - 72, "🎍 Rào tre đỡ!", "#4ADE80");
+              } else {
+                a.vx = a.x < curX ? -11 : 10;
+                a.stunnedUntil = now + 3500;
+                audio.playImpactPop(false);
+                spawnParticles(a.x, a.y - 24, "star", 10);
+                spawnFloatingText(a.x, a.y - 72, "💥 ỦI BAY!", "#FCA5A5");
+              }
+            }
+          });
+          if (Math.random() < 0.45) spawnParticles(curX + (Math.random() - 0.5) * 40, curY - 58, "star", 2);
+        }
+
+        ctx.save();
+        ctx.translate(curX, curY);
+        if (pr.kind === "gift_cash") {
+          ctx.rotate(Math.sin(p * 10) * 0.35);
+          ctx.font = "22px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("💵", 0, 0);
+        } else if (pr.kind === "mega_slipper") {
+          ctx.rotate(p * 10);
+          if (megaSlipperCutout) {
+            const slipH = 148;
+            const slipW = (megaSlipperCutout.width / megaSlipperCutout.height) * slipH;
+            ctx.drawImage(megaSlipperCutout, -slipW / 2, -slipH / 2, slipW, slipH);
+          } else {
+            ctx.font = "110px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("🩴", 0, 0);
+          }
+        } else if (pr.kind === "slipper") {
+          ctx.rotate(p * 12);
+          ctx.font = "24px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("🩴", 0, 0);
+        } else if (pr.kind === "mega_kick_car") {
+          // Luồng đèn pha LED trắng-vàng chiếu sáng phía trước siêu xe
+          const beam = ctx.createLinearGradient(0, 82, 0, 185);
+          beam.addColorStop(0, "rgba(224, 242, 254, 0.58)");
+          beam.addColorStop(1, "rgba(224, 242, 254, 0)");
+          ctx.fillStyle = beam;
+          ctx.beginPath();
+          ctx.moveTo(-46, 82);
+          ctx.lineTo(-88, 185);
+          ctx.lineTo(88, 185);
+          ctx.lineTo(46, 82);
+          ctx.closePath();
+          ctx.fill();
+
+          if (supercarCutout) {
+            const carH = 200;
+            const carW = (supercarCutout.width / supercarCutout.height) * carH;
+            ctx.drawImage(supercarCutout, -carW / 2, -carH / 2, carW, carH);
+          }
+        } else {
+          // Cú đá Giày Tây Đính Vàng + vệt xung kích vàng cam
+          const trail = ctx.createLinearGradient(0, 0, 46, 0);
+          trail.addColorStop(0, "rgba(250, 204, 21, 0.72)");
+          trail.addColorStop(1, "rgba(249, 115, 22, 0)");
+          ctx.fillStyle = trail;
+          ctx.beginPath();
+          ctx.moveTo(0, -14);
+          ctx.lineTo(46, -5);
+          ctx.lineTo(46, 5);
+          ctx.lineTo(0, 14);
+          ctx.closePath();
+          ctx.fill();
+
+          if (kickShoeCutout) {
+            const shoeH = 54;
+            const shoeW = (kickShoeCutout.width / kickShoeCutout.height) * shoeH;
+            ctx.rotate(-0.14 + Math.sin(p * 8) * 0.08);
+            ctx.drawImage(kickShoeCutout, -shoeW / 2, -shoeH / 2, shoeW, shoeH);
+          } else {
+            ctx.font = "30px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("👞", 0, 0);
+          }
+        }
+        ctx.restore();
+      }
+
+      // Vẽ Hạt hiệu ứng (Xu, Tiền đô, Sao, Cơn mưa tim)
+      if (now < heartRainUntil && Math.random() < 0.35) {
+        fxParticles.push({
+          x: Math.random() * W,
+          y: -10,
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: 2 + Math.random() * 2,
+          type: "heart",
+          life: 90,
+          maxLife: 90,
+          rot: 0
+        });
+      }
+
+      for (let i = fxParticles.length - 1; i >= 0; i--) {
+        const fx = fxParticles[i];
+        fx.x += fx.vx;
+        fx.y += fx.vy;
+        if (fx.type !== "heart") fx.vy += 0.08;
+        fx.life--;
+        if (fx.life <= 0) { fxParticles.splice(i, 1); continue; }
+
+        ctx.globalAlpha = Math.min(1, fx.life / 25);
+        const spr = PARTICLE_SPRITES[fx.type] || PARTICLE_SPRITES.star;
+        ctx.drawImage(spr, fx.x - 12, fx.y - 12);
+      }
+      ctx.globalAlpha = 1;
+
+      // Chữ bay sát thương / +điểm / đóng băng
+      ctx.font = "900 12px 'Baloo 2', sans-serif";
+      ctx.textAlign = "center";
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#1E1612";
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y -= 0.75;
+        ft.life--;
+        if (ft.life <= 0) { floatingTexts.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.min(1, ft.life / 18);
+        ctx.strokeText(ft.text, ft.x, ft.y);
+        ctx.fillStyle = ft.color;
+        ctx.fillText(ft.text, ft.x, ft.y);
+      }
+      ctx.globalAlpha = 1;
+
+      // Bong bóng thoại trên đầu nhân vật
+      for (let i = speechBubbles.length - 1; i >= 0; i--) {
+        const b = speechBubbles[i];
+        b.life--;
+        if (b.life <= 0) { speechBubbles.splice(i, 1); continue; }
+        const bx = Math.max(70, Math.min(W - 70, b.actor.x));
+        const by = b.actor.y - 108;
+
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, b.life / 25);
+        ctx.font = "800 10px 'Baloo 2', sans-serif";
+        const bw = Math.min(156, ctx.measureText(b.text).width + 16);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = "#2B1F1A";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx - bw / 2, by - 12, bw, 22, 10);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#2B1F1A";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(b.text, bx, by - 1, bw - 10);
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    /********************************************************************
+     * VÒNG ĐỜI HIỆP ĐẤU & WEB WORKER 60FPS
+     ********************************************************************/
+    function startRound(increment = true) {
+      if (increment) currentRoundIdx++;
+      else currentRoundIdx = 1;
+      remainingSec = ROUND_SEC;
+      gamePhase = "ACTIVE";
+      scoreBeggar = 0;
+      scoreTycoon = 0;
+      freezeBeggarUntil = 0;
+      freezeTycoonUntil = 0;
+      tycoonShieldUntil = 0;
+      mvpBeggarId = null;
+      mvpTycoonId = null;
+      playersMap.clear();
+      actors.length = 0;
+      projectiles.length = 0;
+      fxParticles.length = 0;
+      floatingTexts.length = 0;
+      speechBubbles.length = 0;
+
+      document.getElementById("roundBadge").textContent = `🥣💎 ĂN MÀY vs ĐẠI GIA · HIỆP ${currentRoundIdx}`;
+      document.getElementById("timerDisplay").textContent = "03:00";
+      document.getElementById("timerDisplay").classList.remove("sudden-death");
+      document.getElementById("phoneFrame").classList.remove("sudden-death-frame");
+      document.getElementById("suddenDeathBanner").classList.remove("active");
+      document.getElementById("tycoonShieldBanner").classList.remove("active");
+      document.getElementById("beggarShieldBanner").classList.remove("active");
+      tycoonShieldUntil = 0;
+      beggarShieldUntil = 0;
+      document.getElementById("verdictOverlay").classList.remove("active");
+
+      // Thả sẵn 2 nhân vật mở màn cho sân khấu sinh động ngay từ giây đầu
+      handleComment({ uniqueId: "bot_HungCaibang", nickname: "Hùng Cái Bang", comment: "ăn mày", isBot: true });
+      handleComment({ uniqueId: "bot_ChuTichBinh", nickname: "Chủ Tịch Bình", comment: "đại gia", isBot: true });
+      updateHUD();
+      audio.enqueueTTS(`Hiệp ${currentRoundIdx} bắt đầu! Gõ ăn mày hoặc đại gia để lên sân khấu ngay nào!`, false);
+    }
+
+    // Bình luận viên AI đọc dẫn dắt liên tục theo diễn biến trực tiếp trên sân
+    let commentaryStep = 0;
+    setInterval(() => {
+      if (!audio.enabled || audio.isSpeaking || audio.ttsQueue.length > 0 || gamePhase === "VERDICT") return;
+      const now = Date.now();
+      if (now - audio.lastTtsEndAt < 3800) return;
+
+      const sorted = Array.from(playersMap.values()).sort((a, b) => b.score - a.score);
+      const topB = sorted.find(p => p.side === 1 && p.score > 0);
+      const topT = sorted.find(p => p.side === 2 && p.score > 0);
+      const lines = [];
+
+      if (Math.abs(scoreBeggar - scoreTycoon) <= 25) {
+        lines.push(`Tỷ số đang cực kỳ cân bằng! Ăn mày ${scoreBeggar} điểm, đại gia ${scoreTycoon} điểm, anh em thả tim tăng tốc ngay!`);
+      } else if (scoreBeggar > scoreTycoon) {
+        lines.push(`Phe ăn mày đang tạm dẫn ${scoreBeggar} điểm! Các đại gia đâu rồi, lên tiếng ngay nào!`);
+      } else {
+        lines.push(`Phe đại gia đang áp đảo với ${scoreTycoon} điểm! Anh em cái bang mau thả tim và chia sẻ lật ngược thế trận!`);
+      }
+
+      if (topB && topT) {
+        lines.push(`Bang chủ ${topB.nickname} đang dẫn đầu bên ăn mày, đối đầu trực tiếp với chủ tịch ${topT.nickname} bên đại gia!`);
+      }
+      if (now < tycoonShieldUntil) {
+        lines.push(`Phe đại gia đang bật khiên chặn dép cực chắc, mọi chiếc dép ném sang đều bị đỡ lại!`);
+      } else if (now < beggarShieldUntil) {
+        lines.push(`Phe ăn mày đã dựng rào tre bảo vệ, chặn đứng các cú đá từ đại gia!`);
+      } else {
+        lines.push(`Gõ ăn mày hoặc đại gia trong phần bình luận để tham gia ngay, thả tim và chia sẻ giúp phe mình bứt phá!`);
+      }
+
+      const line = lines[commentaryStep % lines.length];
+      commentaryStep++;
+      audio.enqueueTTS(line, false);
+    }, 4500);
+
+    setInterval(() => {
+      const now = Date.now();
+      if (now >= heartRainUntil) {
+        document.getElementById("heartRainBanner").classList.remove("active");
+      }
+      const shieldEl = document.getElementById("tycoonShieldBanner");
+      if (now < tycoonShieldUntil) {
+        shieldEl.classList.add("active");
+        shieldEl.textContent = `🛡️ KHIÊN CHẶN DÉP (${Math.ceil((tycoonShieldUntil - now) / 1000)}s)`;
+      } else {
+        shieldEl.classList.remove("active");
+      }
+      const beggarShieldEl = document.getElementById("beggarShieldBanner");
+      if (now < beggarShieldUntil) {
+        beggarShieldEl.classList.add("active");
+        beggarShieldEl.textContent = `🎍 RÀO TRE CHẶN ĐÁ (${Math.ceil((beggarShieldUntil - now) / 1000)}s)`;
+      } else {
+        beggarShieldEl.classList.remove("active");
+      }
+      if (gamePhase === "VERDICT") return;
+      if (remainingSec > 0) {
+        remainingSec--;
+        const m = String(Math.floor(remainingSec / 60)).padStart(2, "0");
+        const s = String(remainingSec % 60).padStart(2, "0");
+        document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+        if (remainingSec <= 30 && gamePhase !== "SUDDEN_DEATH") {
+          gamePhase = "SUDDEN_DEATH";
+          document.getElementById("timerDisplay").classList.add("sudden-death");
+          document.getElementById("phoneFrame").classList.add("sudden-death-frame");
+          document.getElementById("suddenDeathBanner").classList.add("active");
+          audio.enqueueTTS("30 giây cuối tăng tốc về đích! Nhân đôi sức mạnh tương tác!", true);
+        }
+      } else {
+        gamePhase = "VERDICT";
+        const winSide = scoreBeggar >= scoreTycoon ? 1 : 2;
+        const winText = winSide === 1 ? "🥣 PHE ĂN MÀY CHIẾN THẮNG!" : "💎 PHE ĐẠI GIA CHIẾN THẮNG!";
+        document.getElementById("verdictTitle").textContent = winText;
+        document.getElementById("verdictBox").innerHTML = `🥣 Ăn Mày: <b>${scoreBeggar}</b> &nbsp;|&nbsp; 💎 Đại Gia: <b>${scoreTycoon}</b>`;
+        document.getElementById("verdictOverlay").classList.add("active");
+        audio.playFanfare();
+        audio.enqueueTTS(`Tổng kết vòng! ${winText}`, true);
+        setTimeout(() => startRound(), 8000);
+      }
+    }, 1000);
+
+    let lastTick = 0;
+    function rafLoop() {
+      lastTick = performance.now();
+      renderFrame();
+      requestAnimationFrame(rafLoop);
+    }
+    requestAnimationFrame(rafLoop);
+
+    try {
+      const wb = new Blob(["setInterval(() => postMessage('t'), 16);"], { type: "application/javascript" });
+      const worker = new Worker(URL.createObjectURL(wb));
+      worker.onmessage = () => {
+        if (document.hidden && performance.now() - lastTick >= 15) renderFrame();
+      };
+    } catch (_) {}
+
+    /********************************************************************
+     * KẾT NỐI SOCKET.IO DÙNG CHUNG SERVER CORE
+     ********************************************************************/
+    let socket = null;
+    if (typeof io === "undefined") {
+      const s = document.createElement("script");
+      s.src = "/socket.io/socket.io.js";
+      s.onload = () => {
+        socket = io();
+        socket.on("tiktok_status", (st) => {
+          const dot = document.getElementById("statusDot");
+          const txt = document.getElementById("statusText");
+          if (st.connected) { dot.className = "dot ok"; txt.textContent = st.message || "Đã kết nối Live!"; }
+          else if (st.connecting) { dot.className = "dot wait"; txt.textContent = st.message || "Đang kết nối..."; }
+          else { dot.className = "dot"; txt.textContent = st.message || "Chưa kết nối Live"; }
+        });
+        socket.on("tiktok_chat", (d) => handleComment(d));
+        socket.on("tiktok_like", (d) => handleLike(d));
+        socket.on("tiktok_share", (d) => handleShare(d));
+        socket.on("tiktok_gift", (d) => handleGift({ ...d, diamondCount: d.totalDiamonds || d.diamondCount }));
+      };
+      document.head.appendChild(s);
+    }
+
+    /********************************************************************
+     * SMART AUTO-BOT (TẠM NGHỈ >= 8S KHI CÓ TƯƠNG TÁC THẬT) & CONTROL PANEL
+     ********************************************************************/
+    let autoBotOn = true;
+    const BOT_NAMES = ["Tí Sứt", "Cô Ba", "Cậu Vàng", "Bờm Nón Lá", "Chú Tư", "Sếp Mập", "Bé Mỡ", "Anh Bảy"];
+
+    setInterval(() => {
+      if (!autoBotOn || gamePhase === "VERDICT" || (Date.now() - lastRealInteractionAt < 8000)) return;
+      const name = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+      const sideWord = Math.random() < 0.5 ? "ăn mày" : "đại gia";
+      handleComment({ uniqueId: `bot_${name}`, nickname: name, comment: sideWord, isBot: true });
+    }, 2400);
+
+    document.getElementById("btnConnectLive").addEventListener("click", () => {
+      const u = document.getElementById("tiktokUserInput").value.trim();
+      if (socket && socket.connected && u) socket.emit("connect_tiktok", { username: u });
+    });
+
+    document.getElementById("btnTestBeggar").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Tí Ăn Mày";
+      handleComment({ uniqueId: `test_${name}`, nickname: name, comment: "ăn mày" });
+    });
+
+    document.getElementById("btnTestTycoon").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Sếp Đại Gia";
+      handleComment({ uniqueId: `test_${name}`, nickname: name, comment: "đại gia" });
+    });
+
+    function pickRandomTestActor(side) {
+      const pool = actors.filter(a => a.side === side);
+      if (pool.length > 0) {
+        const picked = pool[Math.floor(Math.random() * pool.length)];
+        return { uniqueId: picked.userId, nickname: picked.nickname };
+      }
+      const fallbackName = document.getElementById("testPlayerName").value.trim() || "Thánh Cà Khịa";
+      return { uniqueId: `test_${fallbackName}`, nickname: fallbackName };
+    }
+
+    document.getElementById("btnTestLike").addEventListener("click", () => {
+      const side = Number(document.getElementById("testSideSelect").value);
+      const actor = pickRandomTestActor(side);
+      handleLike({ uniqueId: actor.uniqueId, nickname: actor.nickname, likeCount: 15, sideOverride: side });
+    });
+
+    document.getElementById("btnTestShare").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Thánh Cà Khịa";
+      handleShare({ uniqueId: `test_${name}`, nickname: name });
+    });
+
+    document.getElementById("btnTestRose").addEventListener("click", () => {
+      const side = Number(document.getElementById("testSideSelect").value);
+      const actor = pickRandomTestActor(side);
+      handleGift({ uniqueId: actor.uniqueId, nickname: actor.nickname, sideOverride: side, diamondCount: 1 });
+    });
+
+    document.getElementById("btnTestDonut").addEventListener("click", () => {
+      const side = Number(document.getElementById("testSideSelect").value);
+      const actor = pickRandomTestActor(side);
+      handleGift({ uniqueId: actor.uniqueId, nickname: actor.nickname, sideOverride: side, diamondCount: 30 });
+    });
+
+    document.getElementById("btnTestBigGift").addEventListener("click", () => {
+      const side = Number(document.getElementById("testSideSelect").value);
+      const actor = pickRandomTestActor(side);
+      handleGift({ uniqueId: actor.uniqueId, nickname: actor.nickname, sideOverride: side, diamondCount: 150 });
+    });
+
+    document.getElementById("btnToggleBot").addEventListener("click", (e) => {
+      autoBotOn = !autoBotOn;
+      e.target.textContent = autoBotOn ? "🤖 Auto-Bot: BẬT" : "🤖 Auto-Bot: TẮT";
+      e.target.classList.toggle("off", !autoBotOn);
+    });
+
+    // Cứ mỗi 4.5s chọn ngẫu nhiên 1 nhân vật bật câu thoại cà khịa cho sân khấu rôm rả
+    setInterval(() => {
+      if (gamePhase === "VERDICT" || actors.length === 0) return;
+      const a = actors[Math.floor(Math.random() * actors.length)];
+      const pool = a.side === 1 ? BEGGAR_QUIPS : TYCOON_QUIPS;
+      addBubble(a, pool[Math.floor(Math.random() * pool.length)]);
+    }, 4500);
+
+    document.getElementById("btnNextRound").addEventListener("click", () => startRound(true));
+    document.getElementById("btnResetRound").addEventListener("click", () => startRound(false));
+    document.getElementById("btnToggleAudio").addEventListener("click", (e) => {
+      audio.enabled = !audio.enabled;
+      e.target.textContent = audio.enabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
+    });
+
+    const panelEl = document.getElementById("controlPanel");
+    function togglePanel() {
+      panelEl.style.display = panelEl.style.display === "none" ? "flex" : "none";
+      setTimeout(resizeCanvas, 50);
+    }
+    document.getElementById("btnHidePanel").addEventListener("click", togglePanel);
+    window.addEventListener("keydown", (e) => {
+      if (document.activeElement && ["INPUT", "SELECT"].includes(document.activeElement.tagName)) return;
+      if (e.key.toLowerCase() === "h") togglePanel();
+    });
+
+    startRound(true);
+  </script>
+</body>
+</html>

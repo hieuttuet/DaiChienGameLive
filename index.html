@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikTok Live Interactive Game Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Orbitron:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 25% 20%, #170d36 0%, #050611 75%);
+      color: #fff;
+      font-family: 'Chakra Petch', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 28px;
+    }
+    .header {
+      text-align: center;
+    }
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      background: linear-gradient(90deg, #00f3ff, #ffffff, #ff1e56);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 780px;
+    }
+    .card {
+      background: rgba(12, 16, 38, 0.9);
+      border: 1.5px solid rgba(0, 243, 255, 0.4);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      text-decoration: none;
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.7);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 32px rgba(0, 243, 255, 0.35);
+    }
+    .card.court {
+      border-color: rgba(255, 30, 86, 0.55);
+    }
+    .card.court:hover {
+      box-shadow: 0 0 32px rgba(255, 30, 86, 0.4);
+    }
+    .card.chibi {
+      border-color: rgba(255, 209, 102, 0.7);
+    }
+    .card.chibi:hover {
+      box-shadow: 0 0 32px rgba(255, 209, 102, 0.45);
+    }
+    .card.makeover {
+      border-color: rgba(6, 214, 232, 0.72);
+    }
+    .card.makeover:hover {
+      box-shadow: 0 0 32px rgba(255, 77, 141, 0.45);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(0, 243, 255, 0.15);
+      color: #00f3ff;
+      width: fit-content;
+    }
+    .card.court .badge {
+      background: rgba(255, 30, 86, 0.18);
+      color: #ff4d79;
+    }
+    .card.chibi .badge {
+      background: rgba(255, 209, 102, 0.2);
+      color: #ffd166;
+    }
+    .card.makeover .badge {
+      background: rgba(6, 214, 232, 0.2);
+      color: #67e8f9;
+    }
+    .card h2 {
+      font-size: 22px;
+      margin-top: 6px;
+    }
+    .card p {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .launch-btn {
+      text-align: center;
+      padding: 11px;
+      border-radius: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #0077ff, #00f3ff);
+      color: #020617;
+    }
+    .card.court .launch-btn {
+      background: linear-gradient(90deg, #ff1e56, #ff9900);
+      color: #fff;
+    }
+    .card.chibi .launch-btn {
+      background: linear-gradient(90deg, #38bdf8, #ff6b9d);
+      color: #fff;
+    }
+    .card.makeover .launch-btn {
+      background: linear-gradient(90deg, #06d6e8, #ff4d8d);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎮 TIKTOK LIVE INTERACTIVE HUB</h1>
+    <p>Kiến trúc dùng chung Core kết nối TikTok Live (`core/tiktok-service.js`) cho nhiều dự án con</p>
+  </div>
+
+  <div class="cards" style="max-width: 1080px;">
+    <a class="card makeover" href="/games/duongdualotxac/">
+      <div>
+        <span class="badge">MỚI • 12-LAYER PAPER DOLL • 20 KỊCH BẢN</span>
+        <h2>👗🤡 Đường Đua Lột Xác</h2>
+        <p>Mỹ Nhân Hay Thảm Họa? 12 Cánh Cổng Định Mệnh, gõ 1 Làm Đẹp vs gõ 2 Phá Đám, khóa xích cổng 4s, Cổng 12 X2 Ferrari vs Lợn Hồng &amp; Sân Khấu Phán Quyết!</p>
+      </div>
+      <div class="launch-btn">Mở Đường Đua Lột Xác →</div>
+    </a>
+
+    <a class="card court" href="/games/toaan/">
+      <div>
+        <span class="badge">DỰ ÁN CHÍNH • MATTER.JS</span>
+        <h2>⚖️ Tòa Án Hóng Biến Chibi</h2>
+        <p>Đấu trường Cán Cân Công Lý 2 phe (Xanh vs Hồng). Thả Avatar rơi tự do, chống spam 5s, quay xe đổi phe, Cơn Mưa Thả Tim X2 &amp; Tuyên Án MVP.</p>
+      </div>
+      <div class="launch-btn">Mở Tòa Án Hóng Biến →</div>
+    </a>
+
+    <a class="card chibi" href="/games/anmayvsdaigia/">
+      <div>
+        <span class="badge">CHIBI PASTEL • 35 VÒNG</span>
+        <h2>🥣💎 Ăn Mày vs. Đại Gia</h2>
+        <p>Đấu trường Cân Tài Sản: Bát Vàng vs Xe Tiền! Nón lá rách đối đầu kính râm vương miện, chia sẻ vệt cầu vồng, thả tim X2 &amp; Bang Chủ vs Chủ Tịch MVP.</p>
+      </div>
+      <div class="launch-btn">Mở Ăn Mày vs. Đại Gia →</div>
+    </a>
+  </div>
+</body>
+</html>

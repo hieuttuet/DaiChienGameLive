@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tòa Án Hóng Biến Chibi - TikTok Live Interactive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <style>
+    :root {
+      --bg-cream: #FFF9F0;
+      --bg-sky: #E0F7FA;
+      --ink: #3D2C2E;
+      --blue-team: #38BDF8;
+      --blue-dark: #0284C7;
+      --pink-team: #FF6B9D;
+      --pink-dark: #DB2777;
+      --sunny: #FFD166;
+      --mint: #06D6A0;
+      --peach: #FF9F68;
+      --font-main: 'Baloo 2', 'Nunito', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #A8EDEA 0%, #FED6E3 50%, #FFF6E5 100%);
+      color: var(--ink);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 28px;
+      padding: 14px;
+      overflow-x: hidden;
+    }
+
+    /* ================= KHUNG DỌC 9:16 CHIBI PASTEL ================= */
+    .phone-frame {
+      position: relative;
+      height: min(95vh, 920px);
+      aspect-ratio: 9 / 16;
+      background: linear-gradient(180deg, #E0F7FA 0%, #FFF9F0 55%, #FFE8D6 100%);
+      border-radius: 28px;
+      border: 3.5px solid var(--ink);
+      box-shadow: 0 10px 0 var(--ink), 0 18px 36px rgba(61, 44, 46, 0.22);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .phone-frame.shaking {
+      animation: shakeAnim 0.08s infinite;
+    }
+
+    .phone-frame.sudden-death-frame {
+      border-color: #FF1E56;
+      animation: redBorderFlash 0.55s infinite;
+    }
+
+    @keyframes redBorderFlash {
+      0%, 100% {
+        border-color: #FF1E56;
+        box-shadow: 0 10px 0 #9F1239, 0 0 28px rgba(255, 30, 86, 0.85);
+      }
+      50% {
+        border-color: #FFD166;
+        box-shadow: 0 10px 0 #3D2C2E, 0 0 16px rgba(255, 209, 102, 0.7);
+      }
+    }
+
+    @keyframes shakeAnim {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-4px, 3px) rotate(-0.6deg); }
+      50% { transform: translate(4px, -3px) rotate(0.6deg); }
+      75% { transform: translate(-3px, -2px) rotate(-0.3deg); }
+      100% { transform: translate(3px, 2px) rotate(0deg); }
+    }
+
+    /* ================= VÙNG 1: BẢNG CHỦ ĐỀ & ĐỒNG HỒ (20%) ================= */
+    .zone-1 {
+      height: 20%;
+      padding: 8px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(180deg, #FFFDF7 0%, #FFF3E0 100%);
+      border-bottom: 3px solid var(--ink);
+      position: relative;
+      z-index: 4;
+    }
+
+    .top-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .court-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--sunny);
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 2px 0 var(--ink);
+      color: var(--ink);
+    }
+
+    .timer-pill {
+      font-size: 16px;
+      font-weight: 800;
+      padding: 1px 11px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      color: var(--ink);
+      letter-spacing: 0.8px;
+    }
+
+    .timer-pill.sudden-death {
+      background: var(--pink-team);
+      color: #FFFFFF;
+      animation: urgentBounce 0.45s infinite;
+    }
+
+    @keyframes urgentBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Bảng Tiêu Đề (The Hook) */
+    .hook-box {
+      background: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 4px 0 var(--ink);
+      border-radius: 16px;
+      padding: 5px 10px;
+      text-align: center;
+      animation: heartbeat 2.4s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.02); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.015); }
+    }
+
+    .hook-question {
+      font-size: 13.5px;
+      font-weight: 800;
+      line-height: 1.22;
+      color: var(--ink);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Thanh Tỷ Số Trực Quan (Tug-of-War Candy Bar) */
+    .tug-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tug-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-weight: 800;
+    }
+
+    .lbl-blue { color: var(--blue-dark); }
+    .lbl-pink { color: var(--pink-dark); }
+
+    .tug-bar {
+      position: relative;
+      height: 15px;
+      border-radius: 999px;
+      background: var(--pink-team);
+      overflow: hidden;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .tug-fill-left {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(180deg, #7DD3FC 0%, #38BDF8 100%);
+      border-right: 2.5px solid var(--ink);
+      transition: width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .tug-star {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 13px;
+      filter: drop-shadow(0 1px 0 var(--ink));
+      transition: left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    /* ================= VÙNG 2: ĐẤU TRƯỜNG CÁN CÂN CHIBI (50%) ================= */
+    .zone-2 {
+      height: 50%;
+      position: relative;
+      width: 100%;
+      background: linear-gradient(180deg, #D8F3FA 0%, #FFF9F0 75%, #FFEAD5 100%);
+      overflow: hidden;
+    }
+
+    #physicsCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sudden-death-banner {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--pink-team);
+      color: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 999px;
+      display: none;
+      white-space: nowrap;
+      z-index: 8;
+      animation: urgentBounce 0.55s infinite;
+    }
+
+    .sudden-death-banner.active {
+      display: block;
+    }
+
+    .toast-stack {
+      position: absolute;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      z-index: 9;
+    }
+
+    .court-toast {
+      background: #FFFFFF;
+      color: var(--ink);
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      border-radius: 999px;
+      padding: 3px 12px;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-align: center;
+      animation: toastPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes toastPop {
+      0% { opacity: 0; transform: translateY(-10px) scale(0.75); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Overlay Phán Quyết (VERDICT - 10s) */
+    .verdict-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 249, 240, 0.92);
+      backdrop-filter: blur(4px);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 16px;
+      z-index: 20;
+    }
+
+    .verdict-overlay.active {
+      display: flex;
+    }
+
+    .gavel-slam {
+      font-size: 58px;
+      animation: gavelDrop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 0 rgba(61, 44, 46, 0.25));
+    }
+
+    @keyframes gavelDrop {
+      0% { transform: scale(2.6) rotate(-30deg); opacity: 0; }
+      70% { transform: scale(0.92) rotate(8deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .verdict-title {
+      font-size: 21px;
+      font-weight: 800;
+      margin-top: 4px;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .verdict-mvp-box {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .verdict-mvp-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 3.5px solid var(--ink);
+      box-shadow: 0 4px 0 var(--ink);
+      object-fit: cover;
+      background: var(--sunny);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    /* ================= VÙNG 3: LUẬT CHƠI & LUẬT SƯ TRƯỞNG MVP (15%) ================= */
+    .zone-3 {
+      height: 15%;
+      padding: 5px 8px;
+      background: #FFF9F0;
+      border-top: 3px solid var(--ink);
+      border-bottom: 2px dashed rgba(61, 44, 46, 0.25);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+      z-index: 4;
+    }
+
+    .quick-guide-bar {
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+      color: var(--ink);
+      background: #FFFFFF;
+      border: 2px solid var(--ink);
+      box-shadow: 0 2px 0 var(--ink);
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gift-rule-strip {
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+      color: #5C474A;
+      background: rgba(255, 255, 255, 0.88);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 4px 10px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .gift-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .gift-item b {
+      font-size: 12px;
+      font-weight: 900;
+      color: #B91C1C;
+    }
+
+    .gift-svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Thanh Nhiệt Kế Cơn Giận / Combo Chat dọc hai bên viền Arena */
+    .combo-meter {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 54%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 2.5px solid var(--ink);
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 7;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .combo-meter.left { left: 6px; }
+    .combo-meter.right { right: 6px; }
+
+    .combo-meter-fill {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #FF1E56 0%, #FF9F68 50%, #FFD166 100%);
+      transition: height 0.25s ease-out;
+    }
+
+    .combo-meter.overdrive .combo-meter-fill {
+      background: linear-gradient(180deg, #FF6B9D 0%, #FFD166 50%, #06D6A0 100%);
+      animation: urgentBounce 0.4s infinite;
+    }
+
+    .heart-rain-banner {
+      position: absolute;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #FF6B9D, #FF9F68);
+      color: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 999px;
+      display: none;
+      white-space: nowrap;
+      z-index: 8;
+      animation: urgentBounce 0.55s infinite;
+    }
+
+    .heart-rain-banner.active {
+      display: block;
+    }
+
+    .mvp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mvp-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      border-radius: 14px;
+      padding: 2px 7px;
+      overflow: hidden;
+    }
+
+    .mvp-card.blue {
+      background: linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 100%);
+    }
+    .mvp-card.pink {
+      background: linear-gradient(135deg, #FCE7F3 0%, #FFFFFF 100%);
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+
+    .mvp-avatar-wrap {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .mvp-avatar-mini {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2.5px solid var(--ink);
+      object-fit: cover;
+      background: var(--sunny);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      animation: mvpAura 1.5s ease-in-out infinite;
+    }
+
+    .mvp-role {
+      font-size: 9px;
+      color: var(--pink-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .mvp-card.blue .mvp-role {
+      color: var(--blue-dark);
+    }
+
+    .mvp-name {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    @keyframes mvpAura {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 159, 104, 0.7), 0 0 8px #FFD166; }
+      50% { box-shadow: 0 0 0 4px rgba(255, 107, 157, 0), 0 0 14px #FF6B9D; }
+    }
+
+    .mvp-crown-badge {
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      font-size: 11px;
+      filter: drop-shadow(0 1px 0 var(--ink));
+      pointer-events: none;
+    }
+
+    /* Banner Soán Ngôi Luật Sư Trưởng (2s) */
+    .mvp-takeover-banner {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      width: 88%;
+      background: linear-gradient(135deg, #FFD166 0%, #FF9F68 100%);
+      border: 3.5px solid var(--ink);
+      box-shadow: 0 7px 0 var(--ink), 0 12px 30px rgba(0, 0, 0, 0.25);
+      border-radius: 22px;
+      padding: 12px 14px;
+      text-align: center;
+      z-index: 25;
+      display: none;
+      pointer-events: none;
+    }
+
+    .mvp-takeover-banner.active {
+      display: block;
+      animation: takeoverPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes takeoverPop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .mvp-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mvp-role {
+      font-size: 7.5px;
+      color: var(--pink-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .mvp-card.blue .mvp-role {
+      color: var(--blue-dark);
+    }
+
+    .mvp-name {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ================= VÙNG 4: VÙNG AN TOÀN (15% DƯỚI CÙNG) ================= */
+    .zone-4 {
+      height: 15%;
+      background: linear-gradient(180deg, #FFE8D6 0%, #FFD6E0 100%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+    }
+
+    .safe-zone-hint {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(61, 44, 46, 0.35);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    /* ================= BẢNG ĐIỀU KHIỂN TOY / CANDY UI BÊN NGOÀI ================= */
+    .control-panel {
+      width: 390px;
+      max-height: 95vh;
+      overflow-y: auto;
+      background: #FFFDF7;
+      border: 3.5px solid var(--ink);
+      box-shadow: 0 8px 0 var(--ink);
+      border-radius: 24px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--ink);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tiktok-box {
+      background: #FFF0F6;
+      border: 2.5px solid var(--ink);
+      border-radius: 16px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .row-flex {
+      display: flex;
+      gap: 8px;
+    }
+
+    input, select {
+      background: #FFFFFF;
+      border: 2.5px solid var(--ink);
+      color: var(--ink);
+      font-family: var(--font-main);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-radius: 12px;
+      outline: none;
+      width: 100%;
+    }
+
+    /* Nút bấm Kẹo 3D (Squishy Candy Buttons) */
+    .btn {
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 9px 12px;
+      border-radius: 14px;
+      border: 2.5px solid var(--ink);
+      border-bottom-width: 5px;
+      cursor: pointer;
+      color: var(--ink);
+      transition: transform 0.08s, border-bottom-width 0.08s;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      border-bottom-width: 2.5px;
+    }
+
+    .btn-live { background: var(--pink-team); color: #FFFFFF; white-space: nowrap; }
+    .btn-blue { background: var(--blue-team); color: var(--ink); }
+    .btn-pink { background: var(--pink-team); color: #FFFFFF; }
+    .btn-rose { background: var(--peach); color: var(--ink); }
+    .btn-nuke { background: var(--sunny); color: var(--ink); }
+    .btn-gray { background: #F1F5F9; color: var(--ink); }
+    .btn-bot { background: var(--mint); color: var(--ink); }
+    .btn-bot.off { background: #FFE4E6; color: var(--pink-dark); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .status-line {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--ink);
+      background: #CBD5E1;
+    }
+    .dot.on { background: var(--mint); }
+    .dot.wait { background: var(--sunny); }
+
+    label {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= KHUNG DỌC 9:16 TÒA ÁN CHIBI ================= -->
+  <div class="phone-frame" id="phoneFrame">
+
+    <!-- VÙNG 1: BẢNG CHỦ ĐỀ & ĐỒNG HỒ (20%) -->
+    <section class="zone-1">
+      <div class="top-meta-row">
+        <span class="court-badge" id="courtRoundBadge">⚖️ TÒA ÁN CHIBI · VỤ ÁN 1/12</span>
+        <div class="timer-pill" id="timerDisplay">03:00</div>
+      </div>
+
+      <div class="hook-box">
+        <div class="hook-question" id="questionText">Đang tải vụ án...</div>
+      </div>
+
+      <div class="tug-wrapper">
+        <div class="tug-labels">
+          <span class="lbl-blue" id="leftScoreLabel">🐰 ĐỒNG Ý: 0 (50%)</span>
+          <span class="lbl-pink" id="rightScoreLabel">(50%) PHẢN ĐỐI: 0 🐱</span>
+        </div>
+        <div class="tug-bar">
+          <div class="tug-fill-left" id="tugFillLeft"></div>
+          <div class="tug-star" id="tugBolt">⭐</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VÙNG 2: ĐẤU TRƯỜNG CÁN CÂN CHIBI MATTER.JS (50%) -->
+    <section class="zone-2" id="arenaZone">
+      <canvas id="physicsCanvas"></canvas>
+      <!-- Thanh Nhiệt Kế Combo Chat dọc 2 bên viền -->
+      <div class="combo-meter left" id="comboMeterLeft"><div class="combo-meter-fill" id="comboFillLeft"></div></div>
+      <div class="combo-meter right" id="comboMeterRight"><div class="combo-meter-fill" id="comboFillRight"></div></div>
+
+      <div class="sudden-death-banner" id="suddenDeathBanner">⚡ 30S CUỐI: X2 SỨC MẠNH CỔ VŨ!</div>
+      <div class="heart-rain-banner" id="heartRainBanner">💖 CƠN MƯA THẢ TIM: X2 LỰC ĐẨY (15s)!</div>
+      <div class="toast-stack" id="toastStack"></div>
+
+      <!-- Màn hình Phán Quyết (VERDICT) -->
+      <div class="verdict-overlay" id="verdictOverlay">
+        <div class="gavel-slam">⚖️</div>
+        <div class="verdict-title" id="verdictTitle">PHE XANH THẮNG KIỆN!</div>
+        <div class="verdict-mvp-box" id="verdictMvpBox"></div>
+        <div style="font-size:12px;font-weight:800;color:#3D2C2E;margin-top:10px;">Vụ án tiếp theo sau 10 giây...</div>
+      </div>
+
+      <!-- Thông báo Soán Ngôi Luật Sư Trưởng (2s) -->
+      <div class="mvp-takeover-banner" id="mvpTakeoverBanner">
+        <div style="font-size:12px;font-weight:800;">👑 SOÁN NGÔI LUẬT SƯ TRƯỞNG!</div>
+        <div id="mvpTakeoverText" style="font-size:15px;font-weight:800;margin-top:2px;">...</div>
+      </div>
+    </section>
+
+    <!-- VÙNG 3: LUẬT CHƠI & BỤC VINH QUANG LUẬT SƯ TRƯỞNG MVP (15%) -->
+    <section class="zone-3">
+      <div class="quick-guide-bar">
+        💬 <b style="color:#0284C7">1</b> Đồng Ý · <b style="color:#DB2777">2</b> Phản Đối | ❤️ Tim · 📣 Share: Tăng tốc
+      </div>
+
+      <div class="gift-rule-strip">
+        <span class="gift-item">
+          <svg class="gift-svg" viewBox="0 0 24 24"><path fill="#FF2A54" stroke="#3D2C2E" stroke-width="1.6" d="M12 3c-2.5 0-4.5 2-4.5 4.5 0 2 1.5 3.8 3.5 4.3V19h2v-7.2c2-.5 3.5-2.3 3.5-4.3C16.5 5 14.5 3 12 3z"/><path fill="#06D6A0" stroke="#3D2C2E" stroke-width="1.4" d="M12 15c-2.5 0-4 1.5-4 3 2 .5 3.5 0 4-1.5.5 1.5 2 2 4 1.5 0-1.5-1.5-3-4-3z"/></svg>
+          Cổ vũ
+        </span>
+        <span>|</span>
+        <span class="gift-item">
+          <svg class="gift-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF9F68" stroke="#3D2C2E" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="#FFF9F0" stroke="#3D2C2E" stroke-width="1.5"/><path fill="#FF6B9D" d="M5 10c1-4 5-6 9-5 3 .8 5 3 5 6-2-1-3 1-5 0-2-1-3 1-5 0-2-1-3 0-4-1z"/></svg>
+          Tăng tốc
+        </span>
+        <span>|</span>
+        <span class="gift-item">
+          <svg class="gift-svg" viewBox="0 0 24 24"><path fill="#FFD166" stroke="#3D2C2E" stroke-width="1.6" d="M12 2l3 6 6.5.9-4.7 4.6 1.1 6.5L12 17l-5.9 3 1.1-6.5L2.5 8.9 9 8z"/></svg>
+          Bứt phá
+        </span>
+      </div>
+
+      <div class="mvp-row">
+        <div class="mvp-card blue">
+          <div class="mvp-avatar-wrap">
+            <div class="mvp-avatar-mini" id="mvpLeftAvatar">🐱</div>
+            <span class="mvp-crown-badge">👑</span>
+          </div>
+          <div class="mvp-info">
+            <span class="mvp-role">🔥 Luật Sư Trưởng Xanh</span>
+            <span class="mvp-name" id="mvpLeftName">Chưa có (0đ)</span>
+          </div>
+        </div>
+        <div class="mvp-card pink">
+          <div class="mvp-avatar-wrap">
+            <div class="mvp-avatar-mini" id="mvpRightAvatar">🐱</div>
+            <span class="mvp-crown-badge">👑</span>
+          </div>
+          <div class="mvp-info">
+            <span class="mvp-role">🔥 Luật Sư Trưởng Hồng</span>
+            <span class="mvp-name" id="mvpRightName">Chưa có (0đ)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VÙNG 4: VÙNG AN TOÀN 15% DƯỚI CÙNG (TRỐNG CHO CHAT TIKTOK) -->
+    <section class="zone-4">
+      <span class="safe-zone-hint">Khu vực hiển thị bình luận TikTok Live</span>
+    </section>
+  </div>
+
+  <!-- ================= BẢNG ĐIỀU KHIỂN TEST BÊN NGOÀI ================= -->
+  <aside class="control-panel" id="controlPanel">
+    <div class="panel-title">🎀 Điều Khiển Tòa Án Chibi</div>
+
+    <div class="tiktok-box">
+      <label>🔴 Kết nối TikTok Live (Dùng chung Core)</label>
+      <div class="row-flex">
+        <input type="text" id="tiktokUserInput" placeholder="Nhập ID TikTok (VD: daichien63tinh)" />
+        <button class="btn btn-live" id="btnConnectLive">KẾT NỐI</button>
+      </div>
+      <div class="status-line">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Đang kết nối tới Server...</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label>Chủ đề tranh luận (Vụ án hiện tại)</label>
+      <select id="questionSelect"></select>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Tên người chơi test</label>
+        <input type="text" id="testPlayerName" value="Luật Sư Bơ" />
+      </div>
+      <div>
+        <label>Phe test quà tặng</label>
+        <select id="testSideSelect">
+          <option value="1">🐰 Phe Xanh (Đồng Ý)</option>
+          <option value="2">🐱 Phe Hồng (Phản Đối)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-blue" id="btnTestBlue">🐰 Comment Xanh (1)</button>
+      <button class="btn btn-pink" id="btnTestRed">🐱 Comment Hồng (2)</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-rose" id="btnTestRose">🌹 Hoa Hồng (+20đ)</button>
+      <button class="btn btn-nuke" id="btnTestBigGift">🚀 Búa Tạ (+500đ)</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-gray" id="btnTestLikes">❤️ +15 Tim</button>
+      <button class="btn btn-gray" id="btnTestShare">📣 Chia sẻ (+3đ)</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-bot" id="btnToggleBot">🤖 Auto-Bot: BẬT</button>
+      <button class="btn btn-gray" id="btnNextQuestion">⏭️ Đổi Vụ Án Mới</button>
+    </div>
+
+    <div class="grid-2">
+      <button class="btn btn-gray" id="btnToggleAudio">🔊 Âm thanh: BẬT</button>
+      <button class="btn btn-gray" id="btnHidePanel">🎥 Ẩn Panel (Phím H)</button>
+    </div>
+  </aside>
+
+  <script>
+    /********************************************************************
+     * DANH SÁCH VỤ ÁN TRANH LUẬN HOT (THE HOOK)
+     ********************************************************************/
+    const DEBATE_QUESTIONS = [
+      {
+        q: "Có nên cho người yêu cũ vay tiền khi đã có người yêu mới?",
+        quips1: ["Tình nghĩa còn đó, giúp 1 lần cho xong!", "Vay có giấy tờ thì sợ gì!", "Người cũ cũng là bạn mà!"],
+        quips2: ["Mất cả tiền lẫn người yêu mới đấy!", "Cũ rồi là hết, cho vay chi!", "Tỉnh táo lên bạn ơi!"]
+      },
+      {
+        q: "Lương 15 triệu làm gần nhà HAY 30 triệu đi làm xa?",
+        quips1: ["Gần nhà ăn cơm mẹ nấu, 15tr dư sức!", "Đi xa tiền trọ cũng hết nửa!", "Ở gần nhà sướng cái thân!"],
+        quips2: ["30tr mới mau giàu chứ!", "Tuổi trẻ phải xông pha kiếm tiền!", "Lương gấp đôi tội gì không đi!"]
+      },
+      {
+        q: "Ăn phở bò nhất định phải có hành hay không hành?",
+        quips1: ["Hành mới là linh hồn bát phở!", "Không hành mất hết vị phở!", "Phở phải ngập hành mới đã!"],
+        quips2: ["Ăn phở không hành mới ngon!", "Mùi hành hăng lắm, bỏ ra!", "Team không hành mãi đỉnh!"]
+      },
+      {
+        q: "Vợ chồng mới cưới có nên sống chung với bố mẹ chồng?",
+        quips1: ["Ở chung có ông bà đỡ đần nhiều!", "Sum vầy tình cảm ấm áp!", "Tiết kiệm được bao nhiêu tiền nhà!"],
+        quips2: ["Ra riêng cho tự do thoải mái!", "Sống chung dễ va chạm lắm!", "Xa thơm gần thối, cứ ra riêng!"]
+      },
+      {
+        q: "Bạn thân khác giới: Tồn tại thật hay chỉ là chờ cơ hội?",
+        quips1: ["Bạn thân thật sự trong sáng lắm!", "Chơi với nhau 10 năm có sao đâu!", "Đừng suy bụng ta ra bụng người!"],
+        quips2: ["Toàn chờ cơ hội cả thôi!", "Không có bạn thân khác giới đâu!", "Động lòng lúc nào không hay đấy!"]
+      },
+      {
+        q: "Đi ăn buổi đầu tiên: Đàn ông trả hết hay chia đôi 50/50?",
+        quips1: ["Buổi đầu cứ ga-lăng trả hết đi!", "Thể hiện bản lĩnh phái mạnh!", "Bữa đầu ai lại đi chia đôi!"],
+        quips2: ["Thời buổi bình đẳng, cứ 50/50!", "Chia đôi cho đỡ mang nợ nhau!", "Không hợp thì thôi, share là chuẩn!"]
+      },
+      {
+        q: "Có nên kiểm tra điện thoại của người yêu khi nghi ngờ?",
+        quips1: ["Cây ngay không sợ chết đứng!", "Yêu nhau phải minh bạch 100%!", "Không giấu gì thì cứ cho xem!"],
+        quips2: ["Tôn trọng quyền riêng tư chứ!", "Tin nhau mới yêu được lâu!", "Xem xong lại tự làm mình buồn!"]
+      },
+      {
+        q: "Nghỉ việc văn phòng về quê khởi nghiệp: Nên hay Không?",
+        quips1: ["Về quê nuôi cá trồng rau sướng hơn!", "Khởi nghiệp sớm còn kịp!", "Áp lực phố thị mệt mỏi quá rồi!"],
+        quips2: ["Ở lại có lương đều đặn cho chắc!", "Khởi nghiệp rủi ro cao lắm!", "Chưa đủ vốn về là toang đấy!"]
+      },
+      {
+        q: "Phát hiện bạn thân nói xấu mình sau lưng: Bơ đi hay đối chất?",
+        quips1: ["Bơ đi cho nhẹ đầu, nghỉ chơi luôn!", "Loại đó không đáng để nói chuyện!", "Im lặng là cách trả thù tốt nhất!"],
+        quips2: ["Hỏi thẳng mặt cho ra nhẽ!", "Ba mặt một lời không sợ!", "Phải dằn mặt một lần mới chừa!"]
+      }
+    ];
+
+    /********************************************************************
+     * MODULE 4: ÂM THANH CHIBI VUI NHỘN (WEB AUDIO) & TTS QUEUE
+     ********************************************************************/
+    class ChibiAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.lastCollisionMs = 0;
+        this.collisionCountInSec = 0;
+        this.secWindowStart = 0;
+        this.ttsQueue = [];
+        this.isSpeaking = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+      }
+
+      // Tiếng pop/boing dễ thương khi bóng va chạm (tối đa 20 lần/giây)
+      playCuteBoing() {
+        if (!this.enabled) return;
+        const nowMs = performance.now();
+        if (nowMs - this.secWindowStart > 1000) {
+          this.secWindowStart = nowMs;
+          this.collisionCountInSec = 0;
+        }
+        if (this.collisionCountInSec >= 20 || nowMs - this.lastCollisionMs < 45) return;
+        this.collisionCountInSec++;
+        this.lastCollisionMs = nowMs;
+
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        const f = 460 + Math.random() * 260;
+        osc.frequency.setValueAtTime(f, now);
+        osc.frequency.exponentialRampToValueAtTime(f * 1.35, now + 0.05);
+        gain.gain.setValueAtTime(0.045, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      }
+
+      playTick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      }
+
+      // Nhịp nhạc nền dồn dập cho 30s cuối (Giờ Vàng Lật Kèo)
+      startSuddenDeathBeat() {
+        if (this.beatInterval) return;
+        let step = 0;
+        const notes = [261.6, 329.6, 392.0, 523.2];
+        this.beatInterval = setInterval(() => {
+          if (!this.enabled) return;
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = step % 2 === 0 ? "triangle" : "sine";
+          osc.frequency.setValueAtTime(notes[step % notes.length], now);
+          gain.gain.setValueAtTime(step % 2 === 0 ? 0.06 : 0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.13);
+          step++;
+        }, 240);
+      }
+
+      stopSuddenDeathBeat() {
+        if (this.beatInterval) {
+          clearInterval(this.beatInterval);
+          this.beatInterval = null;
+        }
+      }
+
+      playCuteChime() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.11, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + idx * 0.06 + 0.24);
+        });
+      }
+
+      playGavelSlam() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(65, now + 0.28);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.32);
+        setTimeout(() => this.playCuteChime(), 160);
+      }
+
+      enqueueTTS(text, priority = false) {
+        if (!this.enabled || !("speechSynthesis" in window)) return;
+        if (priority) this.ttsQueue.unshift(text);
+        else if (this.ttsQueue.length < 3) this.ttsQueue.push(text);
+        this._processTTSQueue();
+      }
+
+      _processTTSQueue() {
+        if (this.isSpeaking || this.ttsQueue.length === 0) return;
+        const nextText = this.ttsQueue.shift();
+        this.isSpeaking = true;
+
+        try {
+          const utter = new SpeechSynthesisUtterance(nextText);
+          utter.lang = "vi-VN";
+          utter.rate = 1.08;
+          utter.pitch = 1.12;
+          const voices = window.speechSynthesis.getVoices();
+          const viVoice = voices.find(v => v.lang && v.lang.toLowerCase().includes("vi"));
+          if (viVoice) utter.voice = viVoice;
+          utter.onend = () => { this.isSpeaking = false; this._processTTSQueue(); };
+          utter.onerror = () => { this.isSpeaking = false; this._processTTSQueue(); };
+          window.speechSynthesis.speak(utter);
+        } catch (_) {
+          this.isSpeaking = false;
+        }
+      }
+    }
+
+    const audio = new ChibiAudioEngine();
+
+    /********************************************************************
+     * MODULE 3: VẬT LÝ MATTER.JS & CÁN CÂN CHIBI DỄ THƯƠNG
+     ********************************************************************/
+    const arenaZoneEl = document.getElementById("arenaZone");
+    const canvas = document.getElementById("physicsCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const { Engine, World, Bodies, Body, Constraint, Events } = Matter;
+    const engine = Engine.create();
+    engine.gravity.y = 1.0;
+
+    let scaleBeam = null;
+    let panLeft = null;
+    let panRight = null;
+    let scalePivot = { x: 0, y: 0 };
+    let armHalfLen = 110;
+    let panWidth = 96;
+
+    // Mây trắng bồng bềnh trang trí bầu trời pastel
+    const clouds = [
+      { x: 0.18, y: 0.16, s: 1.0, speed: 0.00018 },
+      { x: 0.72, y: 0.12, s: 0.8, speed: 0.00012 },
+      { x: 0.48, y: 0.28, s: 0.65, speed: 0.00015 }
+    ];
+
+    const avatarCache = new Map();
+    function getAvatarImg(url) {
+      if (!url) return null;
+      if (avatarCache.has(url)) return avatarCache.get(url);
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      const rec = { img, loaded: false };
+      img.onload = () => { rec.loaded = true; };
+      img.onerror = () => { rec.loaded = false; };
+      img.src = url;
+      avatarCache.set(url, rec);
+      return rec;
+    }
+
+    function resizeArena() {
+      const rect = arenaZoneEl.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+
+    function buildJusticeScale() {
+      World.clear(engine.world, false);
+      resizeArena();
+
+      const W = canvas.width;
+      const H = canvas.height;
+      scalePivot = { x: W / 2, y: H * 0.34 };
+      panWidth = Math.max(136, Math.min(200, W / 2 - 26));
+      armHalfLen = 10 + panWidth / 2;
+
+      const wallLeft = Bodies.rectangle(-15, H / 2, 30, H * 2, { isStatic: true });
+      const wallRight = Bodies.rectangle(W + 15, H / 2, 30, H * 2, { isStatic: true });
+      // Vách ngăn vô hình ở giữa đấu trường để bóng 2 phe không bao giờ văng sang đĩa đối thủ
+      const centerWall = Bodies.rectangle(W / 2, H / 2 - 100, 12, H * 2 + 200, {
+        isStatic: true,
+        collisionFilter: { category: 0x0008, mask: 0x0004 }
+      });
+
+      scaleBeam = Bodies.rectangle(scalePivot.x, scalePivot.y, armHalfLen * 2 + 24, 18, {
+        density: 0.015,
+        frictionAir: 0.06,
+        collisionFilter: { category: 0x0002, mask: 0x0000 }
+      });
+
+      const pivotPin = Constraint.create({
+        pointA: { x: scalePivot.x, y: scalePivot.y },
+        bodyB: scaleBeam,
+        pointB: { x: 0, y: 0 },
+        stiffness: 1,
+        length: 0
+      });
+
+      function createScalePan(cx, cy, label) {
+        const wallH = 74;
+        const bottom = Bodies.rectangle(cx, cy, panWidth, 14, { restitution: 0.25 });
+        const wL = Bodies.rectangle(cx - panWidth / 2 + 5, cy - wallH / 2, 10, wallH, { restitution: 0.25 });
+        const wR = Bodies.rectangle(cx + panWidth / 2 - 5, cy - wallH / 2, 10, wallH, { restitution: 0.25 });
+
+        return Body.create({
+          parts: [bottom, wL, wR],
+          inertia: Infinity,
+          friction: 0.45,
+          frictionAir: 0.05,
+          density: 0.008,
+          label,
+          collisionFilter: { group: -1 }
+        });
+      }
+
+      const panOffsetY = Math.max(76, Math.round(H * 0.22));
+      panLeft = createScalePan(scalePivot.x - armHalfLen, scalePivot.y + panOffsetY, "pan_left");
+      panRight = createScalePan(scalePivot.x + armHalfLen, scalePivot.y + panOffsetY, "pan_right");
+
+      const rodLeft = Constraint.create({
+        bodyA: scaleBeam,
+        pointA: { x: -armHalfLen, y: 0 },
+        bodyB: panLeft,
+        pointB: { x: 0, y: -12 },
+        stiffness: 0.95,
+        length: panOffsetY
+      });
+
+      const rodRight = Constraint.create({
+        bodyA: scaleBeam,
+        pointA: { x: armHalfLen, y: 0 },
+        bodyB: panRight,
+        pointB: { x: 0, y: -12 },
+        stiffness: 0.95,
+        length: panOffsetY
+      });
+
+      World.add(engine.world, [
+        wallLeft, wallRight, centerWall,
+        scaleBeam, pivotPin,
+        panLeft, panRight, rodLeft, rodRight
+      ]);
+    }
+
+    Events.on(engine, "collisionStart", (event) => {
+      if (event.pairs.length > 0) {
+        audio.playCuteBoing();
+      }
+    });
+
+    /********************************************************************
+     * MODULE 1 & 2: VÒNG ĐỜI, ANTI-SPAM 5S, QUAY XE & CUTE FX
+     ********************************************************************/
+    const ROUND_SEC = 180;
+    let remainingSec = ROUND_SEC;
+    let gamePhase = "ACTIVE";
+    let currentQuestionIdx = 0;
+
+    let scoreLeft = 0;
+    let scoreRight = 0;
+    let currentMvpLeftId = null;
+    let currentMvpRightId = null;
+    let dizzyTimer = 0;
+    const playersMap = new Map();
+    const orbsList = [];
+    const cuteParticles = []; // Ngôi sao ★, Trái tim ♥, Bong bóng
+    const dustClouds = [];    // Đám mây bụi mù mịt khi Búa Tạ giáng xuống
+    const speechBubbles = []; // Bong bóng thoại cà khịa
+
+    const phoneFrame = document.getElementById("phoneFrame");
+    const timerDisplayEl = document.getElementById("timerDisplay");
+    const courtRoundBadgeEl = document.getElementById("courtRoundBadge");
+    const questionTextEl = document.getElementById("questionText");
+    const suddenDeathBannerEl = document.getElementById("suddenDeathBanner");
+    const verdictOverlayEl = document.getElementById("verdictOverlay");
+    const toastStackEl = document.getElementById("toastStack");
+    const mvpTakeoverBannerEl = document.getElementById("mvpTakeoverBanner");
+    const mvpTakeoverTextEl = document.getElementById("mvpTakeoverText");
+    const heartRainBannerEl = document.getElementById("heartRainBanner");
+    const comboMeterLeftEl = document.getElementById("comboMeterLeft");
+    const comboMeterRightEl = document.getElementById("comboMeterRight");
+    const comboFillLeftEl = document.getElementById("comboFillLeft");
+    const comboFillRightEl = document.getElementById("comboFillRight");
+    let takeoverTimeout = null;
+
+    // Nhiệt kế Combo Chat / Thả Tim (10 giây gần nhất -> Đầy 100% kích hoạt Cơn Mưa Thả Tim 15s)
+    const comboTimestamps = [];
+    let heartRainActiveUntil = 0;
+    let lastRealInteractionAt = 0; // Mốc thời gian người thật tương tác gần nhất (tạm nghỉ Bot 8s)
+
+    function isHeartRainActive() {
+      return Date.now() < heartRainActiveUntil;
+    }
+
+    function updateComboMetersUI() {
+      const now = Date.now();
+      while (comboTimestamps.length > 0 && now - comboTimestamps[0] > 10000) {
+        comboTimestamps.shift();
+      }
+      const activeRain = isHeartRainActive();
+      const pct = activeRain ? 100 : Math.min(100, Math.round((comboTimestamps.length / 10) * 100));
+      comboFillLeftEl.style.height = `${pct}%`;
+      comboFillRightEl.style.height = `${pct}%`;
+
+      comboMeterLeftEl.classList.toggle("overdrive", activeRain);
+      comboMeterRightEl.classList.toggle("overdrive", activeRain);
+      heartRainBannerEl.classList.toggle("active", activeRain);
+    }
+
+    function registerComboActivity() {
+      if (isHeartRainActive()) return;
+      comboTimestamps.push(Date.now());
+      updateComboMetersUI();
+      if (comboTimestamps.length >= 10) {
+        heartRainActiveUntil = Date.now() + 15000; // 15 giây Cơn Mưa Thả Tim - X2 Lực Đẩy
+        comboTimestamps.length = 0;
+        audio.playCuteChime();
+        showToast("💖 <b>CƠN MƯA THẢ TIM!</b> Nhân đôi (X2) lực đẩy trong 15 giây!");
+        audio.enqueueTTS("Bùng nổ! Cơn mưa thả tim nhân đôi lực đẩy trong 15 giây!", false);
+        updateComboMetersUI();
+      }
+    }
+
+    setInterval(updateComboMetersUI, 400);
+
+    let lastTakeoverSpeechAt = 0;
+    function triggerMvpTakeover(nickname, side) {
+      const sideLabel = side === 1 ? "Phe Xanh" : "Phe Hồng";
+      mvpTakeoverTextEl.innerHTML = `<span style="color:${side === 1 ? '#0284C7' : '#DB2777'}">${nickname}</span> vừa chiếm TOP 1 ${sideLabel}!`;
+      mvpTakeoverBannerEl.classList.remove("active");
+      void mvpTakeoverBannerEl.offsetWidth;
+      mvpTakeoverBannerEl.classList.add("active");
+      audio.playCuteChime();
+
+      if (Date.now() - lastTakeoverSpeechAt > 8000) {
+        lastTakeoverSpeechAt = Date.now();
+        audio.enqueueTTS(`Chấn động! ${nickname} vừa soán ngôi Luật sư trưởng ${sideLabel}!`, false);
+      }
+
+      if (takeoverTimeout) clearTimeout(takeoverTimeout);
+      takeoverTimeout = setTimeout(() => mvpTakeoverBannerEl.classList.remove("active"), 2000);
+    }
+
+    function showToast(html) {
+      const div = document.createElement("div");
+      div.className = "court-toast";
+      div.innerHTML = html;
+      toastStackEl.appendChild(div);
+      while (toastStackEl.children.length > 3) toastStackEl.removeChild(toastStackEl.firstChild);
+      setTimeout(() => { if (div.parentElement) div.remove(); }, 3000);
+    }
+
+    function triggerScreenShake(ms = 450) {
+      phoneFrame.classList.add("shaking");
+      setTimeout(() => phoneFrame.classList.remove("shaking"), ms);
+    }
+
+    function spawnCuteParticles(x, y, color, count = 12) {
+      const shapes = ["★", "♥", "✿", "●"];
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = 1.5 + Math.random() * 3.8;
+        cuteParticles.push({
+          x, y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd - 1.2,
+          shape: shapes[Math.floor(Math.random() * shapes.length)],
+          color,
+          size: 10 + Math.random() * 8,
+          alpha: 1
+        });
+      }
+    }
+
+    function updateTugBarUI() {
+      const total = scoreLeft + scoreRight;
+      const pctLeft = total === 0 ? 50 : Math.max(8, Math.min(92, Math.round((scoreLeft / total) * 100)));
+      const pctRight = 100 - pctLeft;
+
+      document.getElementById("leftScoreLabel").textContent = `🐰 ĐỒNG Ý: ${scoreLeft} (${pctLeft}%)`;
+      document.getElementById("rightScoreLabel").textContent = `(${pctRight}%) PHẢN ĐỐI: ${scoreRight} 🐱`;
+      document.getElementById("tugFillLeft").style.width = `${pctLeft}%`;
+      document.getElementById("tugBolt").style.left = `${pctLeft}%`;
+
+      let mvp1 = null;
+      let mvp2 = null;
+      playersMap.forEach(p => {
+        if (p.isBot) return; // Bot không bao giờ tranh ghế Luật Sư Trưởng (MVP)
+        if (p.side === 1 && (!mvp1 || p.score > mvp1.score)) mvp1 = p;
+        if (p.side === 2 && (!mvp2 || p.score > mvp2.score)) mvp2 = p;
+      });
+
+      // Thông báo toàn màn hình 2s khi có người mới soán ngôi Luật Sư Trưởng
+      if (mvp1 && mvp1.userId !== currentMvpLeftId) {
+        if (currentMvpLeftId !== null) triggerMvpTakeover(mvp1.nickname, 1);
+        currentMvpLeftId = mvp1.userId;
+      }
+      if (mvp2 && mvp2.userId !== currentMvpRightId) {
+        if (currentMvpRightId !== null) triggerMvpTakeover(mvp2.nickname, 2);
+        currentMvpRightId = mvp2.userId;
+      }
+
+      updateMvpCard("mvpLeft", mvp1, "🐱");
+      updateMvpCard("mvpRight", mvp2, "🐱");
+    }
+
+    function updateMvpCard(prefix, player, fallbackIcon) {
+      const avEl = document.getElementById(`${prefix}Avatar`);
+      const nameEl = document.getElementById(`${prefix}Name`);
+      if (!player) {
+        avEl.innerHTML = fallbackIcon;
+        nameEl.textContent = "Chưa có (0đ)";
+        return;
+      }
+      nameEl.textContent = `${player.nickname} (${player.score}đ)`;
+      if (player.avatar) {
+        avEl.innerHTML = `<img src="${player.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+      } else {
+        avEl.textContent = player.nickname.slice(0, 2).toUpperCase();
+      }
+    }
+
+    function spawnAvatarOrb({ userId, nickname, profilePictureUrl, side, radius = 18, mass = 1, isGift = false, isHammer = false }) {
+      const pan = side === 1 ? panLeft : panRight;
+      const spread = isHammer ? 0 : (Math.random() * (panWidth * 0.45) - (panWidth * 0.225));
+      const rawDropX = (pan ? pan.position.x : (side === 1 ? canvas.width * 0.25 : canvas.width * 0.75)) + spread;
+      const dropX = side === 1
+        ? Math.min(canvas.width / 2 - radius - 10, Math.max(radius + 22, rawDropX))
+        : Math.max(canvas.width / 2 + radius + 10, Math.min(canvas.width - radius - 22, rawDropX));
+      const dropY = isHammer ? -radius - 30 : -radius - 10;
+
+      const body = Bodies.circle(dropX, dropY, radius, {
+        restitution: isHammer ? 0.2 : (isGift ? 0.25 : 0.28),
+        friction: 0.45,
+        frictionAir: isHammer ? 0.004 : 0.014,
+        collisionFilter: { category: 0x0004, mask: 0x0001 | 0x0004 | 0x0008 }
+      });
+      Body.setMass(body, mass);
+      if (isHammer) {
+        Body.setVelocity(body, { x: 0, y: 8 });
+      }
+
+      const orb = {
+        body,
+        userId,
+        nickname,
+        avatarRecord: getAvatarImg(profilePictureUrl),
+        side,
+        radius,
+        isGift,
+        isHammer,
+        hammerImpacted: false,
+        color: side === 1 ? "#38BDF8" : "#FF6B9D"
+      };
+
+      orbsList.push(orb);
+      World.add(engine.world, body);
+      spawnCuteParticles(dropX, 18, orb.color, isGift ? 16 : 6);
+
+      if (orbsList.length > 90) {
+        const oldIdx = orbsList.findIndex(o => !o.isGift);
+        if (oldIdx !== -1) {
+          const [removed] = orbsList.splice(oldIdx, 1);
+          World.remove(engine.world, removed.body);
+        }
+      }
+      return orb;
+    }
+
+    function handleCommentAction({ uniqueId, nickname, profilePictureUrl, comment, isBot = false }) {
+      if (gamePhase === "VERDICT") return;
+      const cleanText = String(comment || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      let targetSide = null;
+      if (/\b1\b/.test(cleanText) || cleanText.includes("DONG Y")) targetSide = 1;
+      else if (/\b2\b/.test(cleanText) || cleanText.includes("PHAN DOI")) targetSide = 2;
+      if (!targetSide) return;
+
+      const now = Date.now();
+      if (!isBot) {
+        lastRealInteractionAt = now;
+      }
+
+      let player = playersMap.get(uniqueId);
+
+      if (player && player.side !== targetSide) {
+        if (player.commentBody) {
+          World.remove(engine.world, player.commentBody);
+          const idx = orbsList.findIndex(o => o.body === player.commentBody);
+          if (idx !== -1) orbsList.splice(idx, 1);
+          player.commentBody = null;
+        }
+        if (player.side === 1) scoreLeft = Math.max(0, scoreLeft - 1);
+        else scoreRight = Math.max(0, scoreRight - 1);
+
+        player.side = targetSide;
+        player.lastCommentAt = now;
+        const sideLabel = targetSide === 1 ? `<span style="color:#0284C7">🐰 Phe Xanh</span>` : `<span style="color:#DB2777">🐱 Phe Hồng</span>`;
+        showToast(`🚗 <b>${nickname}</b> vừa quay xe sang ${sideLabel}!`);
+      } else if (player) {
+        if (now - player.lastCommentAt < 5000) return;
+        player.lastCommentAt = now;
+      } else {
+        player = {
+          userId: uniqueId,
+          nickname,
+          avatar: profilePictureUrl,
+          side: targetSide,
+          score: 0,
+          lastCommentAt: now,
+          likeBuffer: 0,
+          commentBody: null,
+          isBot
+        };
+        playersMap.set(uniqueId, player);
+      }
+
+      const pushMult = isHeartRainActive() ? 2 : 1;
+      player.score += pushMult;
+      if (targetSide === 1) scoreLeft += pushMult;
+      else scoreRight += pushMult;
+
+      if (!isBot) {
+        registerComboActivity();
+      }
+
+      const orb = spawnAvatarOrb({
+        userId: uniqueId,
+        nickname,
+        profilePictureUrl,
+        side: targetSide,
+        radius: 18,
+        mass: pushMult,
+        isGift: false
+      });
+      player.commentBody = orb.body;
+      updateTugBarUI();
+    }
+
+    function handleLikeAction({ uniqueId, likeCount = 1 }) {
+      if (gamePhase === "VERDICT") return;
+      lastRealInteractionAt = Date.now();
+      registerComboActivity();
+      const player = playersMap.get(uniqueId);
+      if (!player) return;
+
+      player.likeBuffer += likeCount;
+      if (player.likeBuffer >= 15) {
+        const pushMult = isHeartRainActive() ? 2 : 1;
+        const stacks = Math.floor(player.likeBuffer / 15) * pushMult;
+        player.likeBuffer %= 15;
+        player.score += stacks;
+        if (player.side === 1) {
+          scoreLeft += stacks;
+          if (panLeft) Body.applyForce(panLeft, panLeft.position, { x: 0, y: 0.04 * stacks });
+        } else {
+          scoreRight += stacks;
+          if (panRight) Body.applyForce(panRight, panRight.position, { x: 0, y: 0.04 * stacks });
+        }
+        updateTugBarUI();
+      }
+    }
+
+    function handleShareAction({ uniqueId, nickname, profilePictureUrl = "" }) {
+      if (gamePhase === "VERDICT") return;
+      const now = Date.now();
+      lastRealInteractionAt = now;
+      registerComboActivity();
+
+      let player = playersMap.get(uniqueId);
+      if (!player) {
+        const chosenSide = scoreLeft <= scoreRight ? 1 : 2;
+        player = {
+          userId: uniqueId,
+          nickname: nickname || "Khách quý",
+          avatar: profilePictureUrl,
+          side: chosenSide,
+          score: 0,
+          lastCommentAt: now,
+          lastShareAt: 0,
+          likeBuffer: 0,
+          commentBody: null,
+          isBot: false
+        };
+        playersMap.set(uniqueId, player);
+        const orb = spawnAvatarOrb({
+          userId: uniqueId,
+          nickname: player.nickname,
+          profilePictureUrl,
+          side: chosenSide,
+          radius: 18,
+          mass: 1,
+          isGift: false
+        });
+        player.commentBody = orb.body;
+      }
+
+      if (player.lastShareAt && now - player.lastShareAt < 5000) return;
+      player.lastShareAt = now;
+
+      const pushMult = isHeartRainActive() ? 2 : 1;
+      const shareBoost = 3 * pushMult;
+      player.score += shareBoost;
+
+      if (player.side === 1) {
+        scoreLeft += shareBoost;
+        if (panLeft) Body.applyForce(panLeft, panLeft.position, { x: 0, y: 0.08 * pushMult });
+      } else {
+        scoreRight += shareBoost;
+        if (panRight) Body.applyForce(panRight, panRight.position, { x: 0, y: 0.08 * pushMult });
+      }
+
+      const targetPan = player.side === 1 ? panLeft : panRight;
+      if (targetPan) {
+        spawnCuteParticles(targetPan.position.x, targetPan.position.y - 25, player.side === 1 ? "#38BDF8" : "#FF6B9D", 14);
+      }
+      audio.playCuteBoing();
+      const sideLabel = player.side === 1 ? `<span style="color:#0284C7">🐰 Phe Xanh</span>` : `<span style="color:#DB2777">🐱 Phe Hồng</span>`;
+      showToast(`📣 <b>${player.nickname}</b> vừa chia sẻ LIVE! Tăng tốc ${sideLabel}!`);
+      updateTugBarUI();
+    }
+
+    function handleGiftAction({ uniqueId, nickname, profilePictureUrl, sideOverride = null, diamondCount = 1 }) {
+      if (gamePhase === "VERDICT") return;
+      lastRealInteractionAt = Date.now();
+      registerComboActivity();
+      let player = playersMap.get(uniqueId);
+
+      if (!player) {
+        const chosenSide = sideOverride || (scoreLeft <= scoreRight ? 1 : 2);
+        player = {
+          userId: uniqueId,
+          nickname,
+          avatar: profilePictureUrl,
+          side: chosenSide,
+          score: 0,
+          lastCommentAt: 0,
+          likeBuffer: 0,
+          commentBody: null
+        };
+        playersMap.set(uniqueId, player);
+      } else if (sideOverride) {
+        player.side = sideOverride;
+      }
+
+      const isSuddenDeath = gamePhase === "SUDDEN_DEATH";
+      const mult = isSuddenDeath ? 2 : 1;
+      const weight = Math.max(10, diamondCount * 10 * mult);
+      const points = diamondCount * 20 * mult;
+      const radius = Math.min(75, Math.max(24, 22 + Math.sqrt(diamondCount) * 8));
+
+      player.score += points;
+      if (player.side === 1) scoreLeft += points;
+      else scoreRight += points;
+
+      const isBigHammer = diamondCount >= 10;
+      const orb = spawnAvatarOrb({
+        userId: uniqueId,
+        nickname,
+        profilePictureUrl,
+        side: player.side,
+        radius: isBigHammer ? 44 : radius,
+        mass: isBigHammer ? 55 : Math.min(45, weight * 0.15),
+        isGift: true,
+        isHammer: isBigHammer
+      });
+
+      audio.playCuteChime();
+
+      if (diamondCount >= 5) {
+        dizzyTimer = 150; // Cán cân choáng váng quay cuồng trong 2.5s
+        triggerScreenShake(isBigHammer ? 650 : 400);
+        spawnCuteParticles(orb.body.position.x, 80, "#FFD166", 24);
+        const sideText = player.side === 1 ? "Phe Xanh" : "Phe Hồng";
+        audio.enqueueTTS(
+          isBigHammer
+            ? `Búa Tạ Công Lý! Luật sư ${nickname} giáng đòn sấm sét giúp ${sideText} đè bẹp đối thủ!`
+            : `Luật sư ${nickname} vừa tung bằng chứng kẹo ngọt giúp ${sideText} lật ngược thế cờ!`,
+          true
+        );
+      }
+
+      const sideHtml = player.side === 1 ? `<span style="color:#0284C7">🐱 Phe Xanh</span>` : `<span style="color:#DB2777">🐱 Phe Hồng</span>`;
+      showToast(
+        isBigHammer
+          ? `🔨 <b>${nickname}</b> giáng <b>BÚA TẠ +${points}đ</b> cho ${sideHtml}!`
+          : `🎁 Luật sư <b>${nickname}</b> chi viện <b>+${points}đ</b> cho ${sideHtml}!`
+      );
+      updateTugBarUI();
+    }
+
+    let tauntSpokenThisRound = false;
+    function startNewRound(questionIndex = null) {
+      gamePhase = "ACTIVE";
+      remainingSec = ROUND_SEC;
+      scoreLeft = 0;
+      scoreRight = 0;
+      tauntSpokenThisRound = false;
+      currentMvpLeftId = null;
+      currentMvpRightId = null;
+      dizzyTimer = 0;
+      playersMap.clear();
+      orbsList.length = 0;
+      cuteParticles.length = 0;
+      dustClouds.length = 0;
+      speechBubbles.length = 0;
+
+      if (questionIndex !== null) currentQuestionIdx = questionIndex;
+      else currentQuestionIdx = (currentQuestionIdx + 1) % DEBATE_QUESTIONS.length;
+
+      questionTextEl.textContent = DEBATE_QUESTIONS[currentQuestionIdx].q;
+      courtRoundBadgeEl.textContent = `⚖️ TÒA ÁN CHIBI · VỤ ÁN ${currentQuestionIdx + 1}/${DEBATE_QUESTIONS.length}`;
+      document.getElementById("questionSelect").value = String(currentQuestionIdx);
+
+      verdictOverlayEl.classList.remove("active");
+      suddenDeathBannerEl.classList.remove("active");
+      timerDisplayEl.classList.remove("sudden-death");
+      phoneFrame.classList.remove("sudden-death-frame");
+      audio.stopSuddenDeathBeat();
+      timerDisplayEl.textContent = "03:00";
+
+      buildJusticeScale();
+      updateTugBarUI();
+
+      // Đọc câu hỏi mở màn thu hút người mới lướt qua
+      audio.enqueueTTS(`Vụ án mới! ${DEBATE_QUESTIONS[currentQuestionIdx].q} Phe Xanh gõ 1, hay Phe Hồng gõ 2?`, false);
+    }
+
+    function enterVerdictPhase() {
+      gamePhase = "VERDICT";
+      audio.stopSuddenDeathBeat();
+      audio.playGavelSlam();
+      triggerScreenShake(550);
+      suddenDeathBannerEl.classList.remove("active");
+      phoneFrame.classList.remove("sudden-death-frame");
+
+      const winnerSide = scoreLeft > scoreRight ? 1 : (scoreRight > scoreLeft ? 2 : 0);
+      const titleEl = document.getElementById("verdictTitle");
+      const mvpBoxEl = document.getElementById("verdictMvpBox");
+
+      let winMvp = null;
+      playersMap.forEach(p => {
+        if (p.side === winnerSide && (!winMvp || p.score > winMvp.score)) winMvp = p;
+      });
+
+      if (winnerSide === 1) {
+        titleEl.textContent = "🐰 PHE XANH (ĐỒNG Ý) THẮNG KIỆN!";
+        titleEl.style.color = "#0284C7";
+      } else if (winnerSide === 2) {
+        titleEl.textContent = "🐱 PHE HỒNG (PHẢN ĐỐI) THẮNG KIỆN!";
+        titleEl.style.color = "#DB2777";
+      } else {
+        titleEl.textContent = "⚖️ TÒA XỬ HÒA VUI VẺ!";
+        titleEl.style.color = "#3D2C2E";
+      }
+
+      if (winMvp) {
+        const avHtml = winMvp.avatar
+          ? `<img src="${winMvp.avatar}" class="verdict-mvp-avatar" />`
+          : `<div class="verdict-mvp-avatar">${winMvp.nickname.slice(0, 2).toUpperCase()}</div>`;
+        mvpBoxEl.innerHTML = `
+          ${avHtml}
+          <div style="font-size:14px;font-weight:800;color:#3D2C2E;background:#FFD166;padding:3px 12px;border-radius:999px;border:2px solid #3D2C2E;">
+            👑 LUẬT SƯ TRƯỞNG: ${winMvp.nickname} (${winMvp.score}đ)
+          </div>
+        `;
+        audio.enqueueTTS(`Tòa tuyên án! ${winnerSide === 1 ? "Phe Xanh" : "Phe Hồng"} thắng kiện! Vinh danh Luật sư trưởng ${winMvp.nickname}!`, true);
+      } else {
+        mvpBoxEl.innerHTML = "";
+      }
+
+      spawnCuteParticles(canvas.width / 2, canvas.height / 2, "#FFD166", 35);
+      verdictOverlayEl.classList.add("active");
+      setTimeout(() => startNewRound(), 10000);
+    }
+
+    setInterval(() => {
+      if (gamePhase === "VERDICT") return;
+      if (remainingSec > 0) {
+        remainingSec--;
+        const m = Math.floor(remainingSec / 60);
+        const s = remainingSec % 60;
+        timerDisplayEl.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+
+        // Nhắc khéo 1 lần giữa hiệp khi 1 phe đang bị đè bẹp (< 35%)
+        const total = scoreLeft + scoreRight;
+        if (!tauntSpokenThisRound && remainingSec < 135 && remainingSec > 45 && total >= 8) {
+          const pctL = (scoreLeft / total) * 100;
+          if (pctL < 35) {
+            tauntSpokenThisRound = true;
+            audio.enqueueTTS("Phe Xanh đang yếu thế rồi! Anh em cùng gõ 1 và thả tim cổ vũ cho Phe Xanh đi nào!", false);
+          } else if (pctL > 65) {
+            tauntSpokenThisRound = true;
+            audio.enqueueTTS("Phe Hồng đang yếu thế rồi! Anh em cùng gõ 2 và thả tim cổ vũ cho Phe Hồng đi nào!", false);
+          }
+        }
+
+        if (remainingSec <= 30) {
+          if (gamePhase !== "SUDDEN_DEATH") {
+            gamePhase = "SUDDEN_DEATH";
+            suddenDeathBannerEl.classList.add("active");
+            timerDisplayEl.classList.add("sudden-death");
+            phoneFrame.classList.add("sudden-death-frame");
+            audio.startSuddenDeathBeat();
+            audio.enqueueTTS("30 giây cuối tăng tốc về đích! Cùng bình luận 1 hoặc 2 và thả tim hết mình nào!", true);
+          }
+          audio.playTick();
+        }
+      } else {
+        enterVerdictPhase();
+      }
+    }, 1000);
+
+    /********************************************************************
+     * VẼ ĐỒ HỌA CHIBI HOẠT HÌNH TRÊN CANVAS
+     ********************************************************************/
+    function drawChibiEars(x, y, r, side) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.lineWidth = 2.4;
+      ctx.strokeStyle = "#3D2C2E";
+
+      // Đôi tai Mèo Chibi màu Xanh Trời (Phe 1) hoặc Hồng Dâu (Phe 2) bọc ngoài Avatar thật
+      [-1, 1].forEach(dir => {
+        ctx.fillStyle = side === 1 ? "#38BDF8" : "#FF6B9D";
+        ctx.beginPath();
+        ctx.moveTo(dir * r * 0.24, -r * 0.82);
+        ctx.lineTo(dir * r * 0.70, -r * 1.28);
+        ctx.lineTo(dir * r * 0.86, -r * 0.52);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Lòng tai màu pastel nhạt
+        ctx.fillStyle = side === 1 ? "#BAE6FD" : "#FBCFE8";
+        ctx.beginPath();
+        ctx.moveTo(dir * r * 0.36, -r * 0.82);
+        ctx.lineTo(dir * r * 0.65, -r * 1.12);
+        ctx.lineTo(dir * r * 0.74, -r * 0.64);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawChibiFace(r, side, isGift, mood = "neutral") {
+      const eyeOffsetX = r * 0.32;
+      const eyeY = -r * 0.05;
+      const eyeR = Math.max(2.2, r * 0.16);
+
+      if (mood === "winning") {
+        // Kính râm cực ngầu 😎 cho Phe đang thắng
+        ctx.fillStyle = "#1E293B";
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 1.6;
+        [-1, 1].forEach(dir => {
+          ctx.beginPath();
+          ctx.roundRect(dir * eyeOffsetX - r * 0.22, eyeY - r * 0.14, r * 0.44, r * 0.28, 3);
+          ctx.fill();
+          ctx.stroke();
+          // Vệt sáng trên kính râm
+          ctx.fillStyle = "rgba(255,255,255,0.45)";
+          ctx.fillRect(dir * eyeOffsetX - r * 0.14, eyeY - r * 0.10, r * 0.1, r * 0.2);
+          ctx.fillStyle = "#1E293B";
+        });
+        // Gọng kính
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.1, eyeY - r * 0.05);
+        ctx.lineTo(r * 0.1, eyeY - r * 0.05);
+        ctx.stroke();
+
+        // Cười đắc thắng
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = Math.max(1.5, r * 0.09);
+        ctx.beginPath();
+        ctx.arc(0, r * 0.2, r * 0.22, 0.08 * Math.PI, 0.92 * Math.PI);
+        ctx.stroke();
+        return;
+      }
+
+      if (mood === "losing") {
+        // Mếu máo hoảng loạn (T_T) cho Phe đang thua
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = Math.max(1.8, r * 0.1);
+        ctx.lineCap = "round";
+        [-1, 1].forEach(dir => {
+          // Mắt nhắm tịt > <
+          ctx.beginPath();
+          ctx.moveTo(dir * eyeOffsetX - dir * r * 0.14, eyeY - r * 0.09);
+          ctx.lineTo(dir * eyeOffsetX + dir * r * 0.06, eyeY);
+          ctx.lineTo(dir * eyeOffsetX - dir * r * 0.14, eyeY + r * 0.09);
+          ctx.stroke();
+
+          // Dòng nước mắt xanh
+          ctx.fillStyle = "#38BDF8";
+          ctx.beginPath();
+          ctx.ellipse(dir * eyeOffsetX, eyeY + r * 0.22, r * 0.09, r * 0.15, 0, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        // Miệng mếu run rẩy
+        ctx.beginPath();
+        ctx.arc(0, r * 0.42, r * 0.18, 1.15 * Math.PI, 1.85 * Math.PI);
+        ctx.stroke();
+        return;
+      }
+
+      // Mặc định: Mắt to long lanh + má hồng
+      ctx.fillStyle = "#3D2C2E";
+      [-1, 1].forEach(dir => {
+        ctx.beginPath();
+        ctx.arc(dir * eyeOffsetX, eyeY, eyeR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(dir * eyeOffsetX - eyeR * 0.3, eyeY - eyeR * 0.3, eyeR * 0.42, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#3D2C2E";
+      });
+
+      ctx.fillStyle = "rgba(255, 107, 157, 0.55)";
+      [-1, 1].forEach(dir => {
+        ctx.beginPath();
+        ctx.ellipse(dir * r * 0.52, r * 0.18, r * 0.18, r * 0.11, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.strokeStyle = "#3D2C2E";
+      ctx.lineWidth = Math.max(1.5, r * 0.09);
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      if (isGift) {
+        ctx.arc(0, r * 0.18, r * 0.22, 0.1 * Math.PI, 0.9 * Math.PI);
+      } else {
+        ctx.arc(-r * 0.1, r * 0.18, r * 0.1, 0, Math.PI);
+        ctx.arc(r * 0.1, r * 0.18, r * 0.1, 0, Math.PI);
+      }
+      ctx.stroke();
+    }
+
+    function drawScaleFace(x, y, totalScore, pctLeft) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      if (dizzyTimer > 0) {
+        // Choáng váng quay cuồng (@_@) khi có quà lớn rơi xuống
+        const rot = performance.now() * 0.015;
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 2;
+        [-7, 7].forEach(ex => {
+          ctx.beginPath();
+          ctx.arc(ex, -2, 4, rot, rot + Math.PI * 1.4);
+          ctx.stroke();
+        });
+        ctx.beginPath();
+        ctx.arc(0, 6, 3.5, 0, Math.PI * 2);
+        ctx.stroke();
+        // Ngôi sao quay quanh đầu trụ
+        ctx.fillStyle = "#FFD166";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText("★", Math.cos(rot) * 16, -18 + Math.sin(rot) * 4);
+        ctx.fillText("★", Math.cos(rot + Math.PI) * 16, -18 + Math.sin(rot + Math.PI) * 4);
+      } else if (totalScore > 0 && Math.abs(pctLeft - 50) <= 8) {
+        // Toát mồ hôi hột khi 2 bên giằng co sắp lật kèo!
+        ctx.fillStyle = "#3D2C2E";
+        [-6, 6].forEach(ex => {
+          ctx.beginPath(); ctx.arc(ex, -2, 2.8, 0, Math.PI * 2); ctx.fill();
+        });
+        // Giọt mồ hôi xanh bên thái dương
+        ctx.fillStyle = "#38BDF8";
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(12, -10);
+        ctx.quadraticCurveTo(16, -4, 12, -1);
+        ctx.quadraticCurveTo(8, -4, 12, -10);
+        ctx.fill();
+        ctx.stroke();
+        // Miệng gợn sóng căng thẳng
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(-5, 6);
+        ctx.quadraticCurveTo(-2, 3, 0, 6);
+        ctx.quadraticCurveTo(2, 9, 5, 6);
+        ctx.stroke();
+      } else {
+        drawChibiFace(18, 1, false, "neutral");
+      }
+      ctx.restore();
+    }
+
+    function drawBigCommandBadge(x, y, label, bgColor) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = bgColor;
+      ctx.strokeStyle = "#3D2C2E";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(-42, -15, 84, 30, 15);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bóng cứng comic dưới badge
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "900 15px 'Baloo 2', sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#3D2C2E";
+      ctx.strokeText(label, 0, 1);
+      ctx.fillText(label, 0, 1);
+      ctx.restore();
+    }
+
+    function drawPhysicsFrame() {
+      Engine.update(engine, 1000 / 60);
+      if (dizzyTimer > 0) dizzyTimer--;
+
+      const totalScore = scoreLeft + scoreRight;
+      const pctLeft = totalScore === 0 ? 50 : (scoreLeft / totalScore) * 100;
+
+      // Đồng bộ độ nghiêng vật lý của thanh ngang theo đúng tỷ số trọng lượng 2 bên
+      if (scaleBeam) {
+        const ratioDiff = totalScore === 0 ? 0 : (scoreRight - scoreLeft) / totalScore;
+        const targetAngle = Math.max(-0.36, Math.min(0.36, ratioDiff * 0.55));
+        const angleErr = targetAngle - scaleBeam.angle;
+        Body.setAngularVelocity(scaleBeam, scaleBeam.angularVelocity * 0.88 + angleErr * 0.045);
+
+        const maxAngle = 0.42;
+        if (scaleBeam.angle > maxAngle) {
+          Body.setAngle(scaleBeam, maxAngle);
+          Body.setAngularVelocity(scaleBeam, 0);
+        } else if (scaleBeam.angle < -maxAngle) {
+          Body.setAngle(scaleBeam, -maxAngle);
+          Body.setAngularVelocity(scaleBeam, 0);
+        }
+      }
+
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // 1. Vẽ mây trắng bồng bềnh Pastel
+      clouds.forEach(c => {
+        c.x += c.speed;
+        if (c.x > 1.2) c.x = -0.2;
+        const cx = c.x * W;
+        const cy = c.y * H;
+        const cs = 22 * c.s;
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, cs, 0, Math.PI * 2);
+        ctx.arc(cx - cs * 0.8, cy + cs * 0.2, cs * 0.72, 0, Math.PI * 2);
+        ctx.arc(cx + cs * 0.85, cy + cs * 0.2, cs * 0.75, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // 2. Vẽ trụ tam giác Chibi màu cam đào + Biểu cảm Cán Cân (Toát mồ hôi / Choáng váng / Vui vẻ)
+      ctx.save();
+      ctx.fillStyle = "#FF9F68";
+      ctx.strokeStyle = "#3D2C2E";
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.moveTo(scalePivot.x, scalePivot.y);
+      ctx.lineTo(scalePivot.x - 36, H - 4);
+      ctx.lineTo(scalePivot.x + 36, H - 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      drawScaleFace(scalePivot.x, H - 30, totalScore, pctLeft);
+
+      // 3. Dây treo & Đòn bẩy Vàng Nắng
+      if (scaleBeam && panLeft && panRight) {
+        const cos = Math.cos(scaleBeam.angle);
+        const sin = Math.sin(scaleBeam.angle);
+        const lx = scaleBeam.position.x - armHalfLen * cos;
+        const ly = scaleBeam.position.y - armHalfLen * sin;
+        const rx = scaleBeam.position.x + armHalfLen * cos;
+        const ry = scaleBeam.position.y + armHalfLen * sin;
+
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly); ctx.lineTo(panLeft.position.x - panWidth / 2 + 6, panLeft.position.y - 48);
+        ctx.moveTo(lx, ly); ctx.lineTo(panLeft.position.x + panWidth / 2 - 6, panLeft.position.y - 48);
+        ctx.moveTo(rx, ry); ctx.lineTo(panRight.position.x - panWidth / 2 + 6, panRight.position.y - 48);
+        ctx.moveTo(rx, ry); ctx.lineTo(panRight.position.x + panWidth / 2 - 6, panRight.position.y - 48);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(scaleBeam.position.x, scaleBeam.position.y);
+        ctx.rotate(scaleBeam.angle);
+        ctx.fillStyle = "#FFD166";
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.roundRect(-armHalfLen - 12, -9, (armHalfLen + 12) * 2, 18, 9);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#FF6B9D";
+        ctx.beginPath();
+        ctx.arc(0, 0, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        drawChibiPan(panLeft, "#38BDF8", "#BAE6FD");
+        drawChibiPan(panRight, "#FF6B9D", "#FBCFE8");
+      }
+      ctx.restore();
+
+      // 4. Vẽ Quả Cầu Đầu Mèo + BÚA TẠ VÀNG KHỔNG LỒ + Biểu cảm Phe Thắng (😎) vs Phe Thua (😭)
+      const winningSide = scoreLeft > scoreRight ? 1 : (scoreRight > scoreLeft ? 2 : 0);
+
+      for (let i = orbsList.length - 1; i >= 0; i--) {
+        const o = orbsList[i];
+        const pos = o.body.position;
+        if (pos.y > H + 45) {
+          World.remove(engine.world, o.body);
+          orbsList.splice(i, 1);
+          continue;
+        }
+
+        // Kiểm tra va chạm giáng xuống đĩa cân của BÚA TẠ VÀNG KHỔNG LỒ
+        if (o.isHammer && !o.hammerImpacted && pos.y >= scalePivot.y - 10) {
+          o.hammerImpacted = true;
+          triggerScreenShake(750);
+          audio.playGavelSlam();
+
+          // Bụi bay mù mịt xung quanh điểm va chạm
+          for (let d = 0; d < 22; d++) {
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 1.5 + Math.random() * 5.2;
+            dustClouds.push({
+              x: pos.x + (Math.random() - 0.5) * 40,
+              y: pos.y + 15,
+              vx: Math.cos(ang) * spd,
+              vy: -Math.abs(Math.sin(ang)) * spd * 0.8 - 0.6,
+              r: 12 + Math.random() * 18,
+              alpha: 0.92,
+              color: d % 2 === 0 ? "#FFFFFF" : "#FFE8D6"
+            });
+          }
+          spawnCuteParticles(pos.x, pos.y, "#FFD166", 28);
+
+          // Hất tung các viên bi nhỏ của đối thủ văng lên không trung!
+          orbsList.forEach(enemy => {
+            if (enemy.side !== o.side && !enemy.isHammer) {
+              Body.setVelocity(enemy.body, {
+                x: (Math.random() - 0.5) * 11,
+                y: -9 - Math.random() * 6.5
+              });
+            }
+          });
+        }
+
+        if (o.isHammer) {
+          // Vẽ chiếc BÚA TẠ VÀNG CHIBI KHỔNG LỒ
+          ctx.save();
+          ctx.translate(pos.x, pos.y);
+          ctx.rotate(Math.sin(performance.now() * 0.008) * 0.08);
+          const hr = o.radius;
+
+          // Cán búa gỗ ấm
+          ctx.fillStyle = "#FF9F68";
+          ctx.strokeStyle = "#3D2C2E";
+          ctx.lineWidth = 3.2;
+          ctx.beginPath();
+          ctx.roundRect(-8, -hr * 1.15, 16, hr * 0.95, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          // Đầu Búa Tạ Vàng khổng lồ
+          ctx.fillStyle = "#FFD166";
+          ctx.beginPath();
+          ctx.roundRect(-hr * 1.05, -hr * 0.45, hr * 2.1, hr * 0.9, 14);
+          ctx.fill();
+          ctx.stroke();
+
+          // Đai trang trí giữa đầu búa
+          ctx.fillStyle = o.side === 1 ? "#38BDF8" : "#FF6B9D";
+          ctx.beginPath();
+          ctx.roundRect(-hr * 0.35, -hr * 0.48, hr * 0.7, hr * 0.96, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          // Avatar người tặng quà ở giữa đầu búa
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, 0, hr * 0.32, 0, Math.PI * 2);
+          ctx.clip();
+          if (o.avatarRecord && o.avatarRecord.loaded) {
+            ctx.drawImage(o.avatarRecord.img, -hr * 0.32, -hr * 0.32, hr * 0.64, hr * 0.64);
+          } else {
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(-hr * 0.32, -hr * 0.32, hr * 0.64, hr * 0.64);
+            ctx.fillStyle = "#3D2C2E";
+            ctx.font = "900 12px 'Baloo 2', sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("🔨", 0, 1);
+          }
+          ctx.restore();
+
+          ctx.font = "18px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("👑", 0, -hr * 1.22);
+          ctx.restore();
+          continue;
+        }
+
+        const mood = winningSide === 0 ? "neutral" : (o.side === winningSide ? "winning" : "losing");
+
+        // Đôi tai mèo màu Xanh / Hồng bên ngoài
+        drawChibiEars(pos.x, pos.y, o.radius, o.side);
+
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        if (mood === "losing" && !o.isGift) {
+          ctx.scale(1.06, 0.92); // Hiệu ứng hơi bẹp dúm hoảng loạn khi đang thua
+        }
+
+        ctx.beginPath();
+        ctx.arc(0, 0, o.radius, 0, Math.PI * 2);
+        ctx.fillStyle = o.isGift ? "#FFD166" : (o.side === 1 ? "#7DD3FC" : "#FF9EBB");
+        ctx.fill();
+        ctx.lineWidth = o.isGift ? 3.5 : 2.5;
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.stroke();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, o.radius - 2, 0, Math.PI * 2);
+        ctx.clip();
+
+        if (o.avatarRecord && o.avatarRecord.loaded) {
+          // Ảnh đại diện thật của người chơi khoét tròn ở giữa đầu Mèo
+          ctx.drawImage(o.avatarRecord.img, -o.radius, -o.radius, o.radius * 2, o.radius * 2);
+        } else {
+          drawChibiFace(o.radius, o.side, o.isGift, mood);
+        }
+        ctx.restore();
+
+        // Kính râm nhỏ / Giọt mồ hôi đính kèm ngay cả khi đang dùng Avatar thật
+        if (o.avatarRecord && o.avatarRecord.loaded) {
+          if (mood === "winning") {
+            ctx.font = `${Math.max(10, Math.floor(o.radius * 0.45))}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.fillText("😎", o.radius * 0.55, o.radius * 0.55);
+          } else if (mood === "losing") {
+            ctx.font = `${Math.max(10, Math.floor(o.radius * 0.45))}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.fillText("💧", o.radius * 0.6, -o.radius * 0.2);
+          }
+        }
+
+        if (o.isGift) {
+          ctx.font = `${Math.max(14, Math.floor(o.radius * 0.45))}px sans-serif`;
+          ctx.textAlign = "center";
+          ctx.fillText("👑", 0, -o.radius - 4);
+        }
+        ctx.restore();
+      }
+
+      // 4.5. Gắn nhãn tên nổi + hào quang cho Luật Sư Trưởng (MVP 2 phe) ngay trên bóng
+      [currentMvpLeftId, currentMvpRightId].forEach((mvpId) => {
+        if (!mvpId) return;
+        let mvpOrb = null;
+        for (let i = orbsList.length - 1; i >= 0; i--) {
+          if (orbsList[i].userId === mvpId && !orbsList[i].isHammer) {
+            mvpOrb = orbsList[i];
+            break;
+          }
+        }
+        if (!mvpOrb) return;
+        const mPos = mvpOrb.body.position;
+
+        ctx.save();
+        // Hào quang vàng nhấp nháy nhẹ quanh bóng dẫn đầu
+        ctx.beginPath();
+        ctx.arc(mPos.x, mPos.y, mvpOrb.radius + 4.5, 0, Math.PI * 2);
+        ctx.strokeStyle = "#FFD166";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Nhãn tên nổi phía trên bóng
+        const shortName = mvpOrb.nickname.length > 11 ? mvpOrb.nickname.slice(0, 10) + "…" : mvpOrb.nickname;
+        const badgeText = `👑 ${shortName}`;
+        ctx.font = "900 10.5px 'Baloo 2', sans-serif";
+        const bw = Math.min(130, ctx.measureText(badgeText).width + 14);
+        const bx = Math.max(bw / 2 + 6, Math.min(W - bw / 2 - 6, mPos.x));
+        const by = Math.max(16, mPos.y - mvpOrb.radius - 16);
+
+        ctx.fillStyle = "#FFF9E6";
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx - bw / 2, by - 10, bw, 20, 999);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = mvpOrb.side === 1 ? "#0284C7" : "#DB2777";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(badgeText, bx, by + 0.5, bw - 8);
+        ctx.restore();
+      });
+
+      // 5. Bong Bóng Thoại Cà Khịa bay lên từ các viên bi
+      for (let i = speechBubbles.length - 1; i >= 0; i--) {
+        const b = speechBubbles[i];
+        b.y -= 0.35;
+        b.life--;
+        if (b.life < 30) b.alpha = Math.max(0, b.life / 30);
+
+        ctx.save();
+        ctx.globalAlpha = b.alpha;
+        ctx.font = "800 10.5px 'Baloo 2', sans-serif";
+        const tw = Math.min(180, ctx.measureText(b.text).width + 16);
+        const bx = Math.max(tw / 2 + 8, Math.min(W - tw / 2 - 8, b.x));
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = "#3D2C2E";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx - tw / 2, b.y - 13, tw, 24, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = b.side === 1 ? "#0284C7" : "#DB2777";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(b.text, bx, b.y - 1, tw - 10);
+        ctx.restore();
+
+        if (b.life <= 0) speechBubbles.splice(i, 1);
+      }
+
+      // 6. Hiệu ứng Cơn Mưa Thả Tim + Hạt Cute FX (Ngôi sao ★, Trái tim ♥, Hoa ✿) & Bụi mù mịt
+      if (isHeartRainActive() && Math.random() < 0.35) {
+        cuteParticles.push({
+          x: Math.random() * W,
+          y: -10,
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: 1.8 + Math.random() * 2.2,
+          shape: "♥",
+          color: Math.random() < 0.5 ? "#FF6B9D" : "#FF1E56",
+          size: 13 + Math.random() * 8,
+          alpha: 0.95
+        });
+      }
+
+      for (let i = dustClouds.length - 1; i >= 0; i--) {
+        const d = dustClouds[i];
+        d.x += d.vx;
+        d.y += d.vy;
+        d.r += 0.35;
+        d.alpha -= 0.025;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, d.alpha);
+        ctx.fillStyle = d.color;
+        ctx.strokeStyle = "rgba(61, 44, 46, 0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        if (d.alpha <= 0) dustClouds.splice(i, 1);
+      }
+
+      for (let i = cuteParticles.length - 1; i >= 0; i--) {
+        const p = cuteParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.08;
+        p.alpha -= 0.022;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.font = `bold ${p.size}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(p.shape, p.x, p.y);
+        ctx.restore();
+        if (p.alpha <= 0) cuteParticles.splice(i, 1);
+      }
+
+      // 7. Đặt nút GÕ 1 / GÕ 2 nổi trên cùng ở hai bên dưới đĩa cân để không bao giờ bị che khuất
+      drawBigCommandBadge(W * 0.21, H - 22, "GÕ 1", "#38BDF8");
+      drawBigCommandBadge(W * 0.79, H - 22, "GÕ 2", "#FF6B9D");
+    }
+
+    function drawChibiPan(pan, strokeColor, fillColor) {
+      const px = pan.position.x;
+      const py = pan.position.y + 8;
+      ctx.save();
+      ctx.fillStyle = fillColor;
+      ctx.strokeStyle = "#3D2C2E";
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+
+      ctx.beginPath();
+      ctx.moveTo(px - panWidth / 2, py - 56);
+      ctx.lineTo(px - panWidth / 2 + 6, py + 8);
+      ctx.lineTo(px + panWidth / 2 - 6, py + 8);
+      ctx.lineTo(px + panWidth / 2, py - 56);
+      ctx.stroke();
+
+      ctx.fillStyle = strokeColor;
+      ctx.beginPath();
+      ctx.roundRect(px - panWidth / 2, py - 4, panWidth, 14, 7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    let lastTickMs = 0;
+    function rafLoop() {
+      lastTickMs = performance.now();
+      drawPhysicsFrame();
+      requestAnimationFrame(rafLoop);
+    }
+
+    try {
+      const wb = new Blob(["setInterval(() => postMessage('t'), 16);"], { type: "application/javascript" });
+      const worker = new Worker(URL.createObjectURL(wb));
+      worker.onmessage = () => {
+        if (document.hidden && performance.now() - lastTickMs >= 15) {
+          lastTickMs = performance.now();
+          drawPhysicsFrame();
+        }
+      };
+    } catch (_) {}
+
+    /********************************************************************
+     * KẾT NỐI SOCKET.IO DÙNG CHUNG TỪ `core/tiktok-service.js`
+     ********************************************************************/
+    let socket = null;
+    function initSocket() {
+      const s = document.createElement("script");
+      s.src = "https://cdn.socket.io/4.7.5/socket.io.min.js";
+      s.onload = () => {
+        const url = window.location.protocol.startsWith("http") ? window.location.origin : "http://localhost:2222";
+        socket = io(url);
+
+        socket.on("tiktok_status", (st) => {
+          const dot = document.getElementById("statusDot");
+          const txt = document.getElementById("statusText");
+          if (st.connected) {
+            dot.className = "dot on";
+            txt.textContent = `🟢 ĐANG LIVE: @${st.username}`;
+          } else if (st.connecting) {
+            dot.className = "dot wait";
+            txt.textContent = st.message || "Đang kết nối...";
+          } else {
+            dot.className = "dot";
+            txt.textContent = st.message || "Chưa kết nối Live";
+          }
+        });
+
+        socket.on("tiktok_chat", (d) => handleCommentAction(d));
+        socket.on("tiktok_like", (d) => handleLikeAction(d));
+        socket.on("tiktok_share", (d) => handleShareAction(d));
+        socket.on("tiktok_gift", (d) => handleGiftAction({ ...d, diamondCount: d.totalDiamonds || d.diamondCount }));
+      };
+      document.head.appendChild(s);
+    }
+
+    /********************************************************************
+     * AUTO-BOT & BẢNG ĐIỀU KHIỂN TEST
+     ********************************************************************/
+    const qSelectEl = document.getElementById("questionSelect");
+    DEBATE_QUESTIONS.forEach((item, idx) => {
+      const opt = document.createElement("option");
+      opt.value = String(idx);
+      opt.textContent = `${idx + 1}. ${item.q}`;
+      qSelectEl.appendChild(opt);
+    });
+    qSelectEl.addEventListener("change", () => startNewRound(Number(qSelectEl.value)));
+
+    // Cứ mỗi 5.5 giây, một viên bi ngẫu nhiên bật ra Bong Bóng Thoại Cà Khịa theo chủ đề
+    setInterval(() => {
+      if (gamePhase === "VERDICT" || orbsList.length === 0) return;
+      const randomOrb = orbsList[Math.floor(Math.random() * orbsList.length)];
+      const qObj = DEBATE_QUESTIONS[currentQuestionIdx];
+      const pool = randomOrb.side === 1 ? qObj.quips1 : qObj.quips2;
+      const text = pool[Math.floor(Math.random() * pool.length)];
+      speechBubbles.push({
+        x: randomOrb.body.position.x,
+        y: randomOrb.body.position.y - randomOrb.radius - 12,
+        text,
+        side: randomOrb.side,
+        alpha: 1,
+        life: 190
+      });
+      if (speechBubbles.length > 3) speechBubbles.shift();
+    }, 5500);
+
+    let autoBotOn = true;
+    const BOT_PLAYERS = ["Bơ_Chibi", "Mèo_Mun", "Thỏ_Trắng", "Kem_Dâu", "Sữa_Chua", "Bánh_Gạo", "Xoài_Non"];
+    setInterval(() => {
+      // Auto-Bot Thông Minh: Tạm nghỉ 8 giây ngay khi có người thật tương tác
+      if (!autoBotOn || gamePhase === "VERDICT" || (Date.now() - lastRealInteractionAt < 8000)) return;
+      const name = BOT_PLAYERS[Math.floor(Math.random() * BOT_PLAYERS.length)];
+      const side = Math.random() < 0.5 ? "1" : "2";
+      handleCommentAction({
+        uniqueId: `bot_${name}`,
+        nickname: name,
+        profilePictureUrl: "",
+        comment: side,
+        isBot: true
+      });
+    }, 1800);
+
+    document.getElementById("btnConnectLive").addEventListener("click", () => {
+      const u = document.getElementById("tiktokUserInput").value.trim();
+      if (socket && socket.connected && u) socket.emit("connect_tiktok", { username: u });
+    });
+
+    document.getElementById("btnTestBlue").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Thỏ Xanh";
+      handleCommentAction({ uniqueId: `test_${name}`, nickname: name, profilePictureUrl: "", comment: "1" });
+    });
+
+    document.getElementById("btnTestRed").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Mèo Hồng";
+      handleCommentAction({ uniqueId: `test_${name}`, nickname: name, profilePictureUrl: "", comment: "2" });
+    });
+
+    document.getElementById("btnTestRose").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Đại Gia";
+      const side = Number(document.getElementById("testSideSelect").value);
+      handleGiftAction({ uniqueId: `test_${name}`, nickname: name, profilePictureUrl: "", sideOverride: side, diamondCount: 1 });
+    });
+
+    document.getElementById("btnTestBigGift").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Đại Gia";
+      const side = Number(document.getElementById("testSideSelect").value);
+      handleGiftAction({ uniqueId: `test_${name}`, nickname: name, profilePictureUrl: "", sideOverride: side, diamondCount: 25 });
+    });
+
+    document.getElementById("btnTestLikes").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Luật Sư Bơ";
+      handleLikeAction({ uniqueId: `test_${name}`, likeCount: 15 });
+    });
+
+    document.getElementById("btnTestShare").addEventListener("click", () => {
+      const name = document.getElementById("testPlayerName").value.trim() || "Luật Sư Bơ";
+      handleShareAction({ uniqueId: `test_${name}`, nickname: name });
+    });
+
+    const botBtn = document.getElementById("btnToggleBot");
+    botBtn.addEventListener("click", () => {
+      autoBotOn = !autoBotOn;
+      botBtn.textContent = autoBotOn ? "🤖 Auto-Bot: BẬT" : "🤖 Auto-Bot: TẮT";
+      botBtn.classList.toggle("off", !autoBotOn);
+    });
+
+    document.getElementById("btnNextQuestion").addEventListener("click", () => startNewRound());
+    document.getElementById("btnToggleAudio").addEventListener("click", (e) => {
+      audio.enabled = !audio.enabled;
+      e.target.textContent = audio.enabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
+    });
+
+    const panelEl = document.getElementById("controlPanel");
+    function togglePanel() {
+      panelEl.style.display = panelEl.style.display === "none" ? "flex" : "none";
+      setTimeout(buildJusticeScale, 60);
+    }
+    document.getElementById("btnHidePanel").addEventListener("click", togglePanel);
+    window.addEventListener("keydown", (e) => {
+      if (document.activeElement && ["INPUT", "SELECT"].includes(document.activeElement.tagName)) return;
+      if (e.key.toLowerCase() === "h") togglePanel();
+    });
+
+    window.addEventListener("resize", buildJusticeScale);
+    startNewRound(0);
+    initSocket();
+    requestAnimationFrame(rafLoop);
+  </script>
+</body>
+</html>

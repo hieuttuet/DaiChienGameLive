@@ -1,0 +1,5008 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Đường Đua Lột Xác — Mỹ Nhân Hay Thảm Họa? | TikTok Live</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    :root {
+      --ink: #3D2C2E;
+      --cyan: #06D6E8;
+      --cyan-deep: #0097B2;
+      --cyan-soft: #D9FAFF;
+      --pink: #FF4D8D;
+      --pink-deep: #D81B60;
+      --pink-soft: #FFE0EC;
+      --gold: #FFD166;
+      --gold-deep: #E09F1F;
+      --cream: #FFF9F2;
+      --panel-bg: #171426;
+      --panel-card: #221D36;
+      --panel-border: rgba(255, 255, 255, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 25% 15%, #2B1F47 0%, #120E21 70%);
+      font-family: 'Nunito', sans-serif;
+      color: #fff;
+      user-select: none;
+    }
+
+    #app-shell {
+      width: 100vw;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 10px;
+      position: relative;
+    }
+
+    /* ================= 9:16 LIVE STAGE FRAME ================= */
+    #stage-frame {
+      position: relative;
+      height: min(98dvh, calc(100vw * 16 / 9));
+      aspect-ratio: 9 / 16;
+      max-height: 98dvh;
+      max-width: min(100vw, calc(98dvh * 9 / 16));
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #B5ECFF 0%, #FFE8F4 55%, #C8B8FF 100%);
+      border: 4px solid var(--ink);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.18);
+      flex-shrink: 0;
+    }
+
+    body.panel-hidden #stage-frame {
+      height: min(98dvh, calc(100vw * 16 / 9));
+    }
+
+    #game-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ================= TOP 20% HUD ================= */
+    #hud-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20.5%;
+      padding: 2.2% 2.8% 1%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 4px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .top-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      /* Chừa góc trên phải thoáng nhẹ cho webcam streamer */
+    }
+
+    .scenario-card {
+      flex: 1;
+      max-width: 72%;
+      background: rgba(255, 249, 242, 0.92);
+      border: 2.5px solid var(--ink);
+      border-radius: 14px;
+      padding: 5px 9px 6px;
+      box-shadow: 0 4px 0 var(--ink);
+      color: var(--ink);
+    }
+
+    .scenario-title-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .scenario-pill {
+      display: inline-block;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(9px, 1.35vh, 11px);
+      font-weight: 800;
+      line-height: 1.25;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #FF70A6, #FFB703);
+      color: #fff;
+      border: 1.5px solid var(--ink);
+      text-shadow: 0 1px 0 var(--ink);
+      white-space: nowrap;
+    }
+
+    #hud-scenario-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(12px, 1.9vh, 16px);
+      font-weight: 800;
+      line-height: 1.32;
+      color: #2A1B2E;
+      padding-bottom: 1px;
+    }
+
+    #hud-scenario-hook {
+      display: none !important;
+    }
+
+    .top-right-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+      min-width: 24%;
+    }
+
+    .gate-badge {
+      background: linear-gradient(180deg, #FFE066 0%, #FFB703 100%);
+      color: var(--ink);
+      border: 2.5px solid var(--ink);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(10.5px, 1.55vh, 13.5px);
+      font-weight: 800;
+      line-height: 1.3;
+      box-shadow: 0 3px 0 var(--ink);
+      white-space: nowrap;
+    }
+
+    .gate-badge.climax {
+      background: linear-gradient(180deg, #FF4D8D 0%, #FF9F1C 100%);
+      color: #fff;
+      text-shadow: 0 1.5px 0 var(--ink);
+      animation: pulsePop 0.55s ease-in-out infinite alternate;
+    }
+
+    .timer-pill {
+      background: rgba(61, 44, 46, 0.92);
+      color: #FFF9F2;
+      border: 2px solid #FFD166;
+      border-radius: 999px;
+      padding: 1px 9px;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(11px, 1.65vh, 14px);
+      font-weight: 800;
+      line-height: 1.3;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+      white-space: nowrap;
+    }
+
+    .timer-pill.urgent {
+      background: #E63946;
+      border-color: #FFF;
+      animation: pulsePop 0.35s ease-in-out infinite alternate;
+    }
+
+    /* Tug of war bar */
+    .tug-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tug-bar-outer {
+      position: relative;
+      height: clamp(20px, 2.8vh, 25px);
+      border-radius: 999px;
+      background: #3D2C2E;
+      border: 2.5px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      overflow: hidden;
+      display: flex;
+    }
+
+    #tug-fill-left {
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, #00B4D8 0%, #48CAE4 60%, #90E0EF 100%);
+      transition: width 0.14s ease-out;
+      position: relative;
+    }
+
+    #tug-fill-right {
+      flex: 1;
+      height: 100%;
+      background: linear-gradient(90deg, #FF758F 0%, #FF4D8D 50%, #D81B60 100%);
+    }
+
+    .tug-labels {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 9px;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(10px, 1.45vh, 12.5px);
+      font-weight: 800;
+      line-height: 1.2;
+      color: #fff;
+      text-shadow: 0 1.5px 0 var(--ink), 0 0 4px rgba(0,0,0,0.65);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    #tug-center-pin {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFD166;
+      border: 2px solid var(--ink);
+      box-shadow: 0 0 8px rgba(255, 209, 102, 0.9);
+      transition: left 0.14s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      z-index: 1;
+    }
+
+    .sub-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .combo-meter {
+      flex: 1;
+      height: clamp(13px, 1.85vh, 16px);
+      background: rgba(61, 44, 46, 0.85);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #combo-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF9F1C, #FF4D8D, #FFD166);
+      transition: width 0.15s ease-out;
+    }
+
+    #combo-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(8.5px, 1.18vh, 10px);
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 1px 0 var(--ink);
+      line-height: 1.2;
+    }
+
+    .combo-meter.fever {
+      border-color: #FFD166;
+      box-shadow: 0 0 10px rgba(255, 209, 102, 0.85);
+    }
+
+    #prev-mvp-ribbon {
+      background: rgba(255, 249, 242, 0.88);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 0 8px;
+      height: clamp(13px, 1.85vh, 16px);
+      display: none;
+      align-items: center;
+      font-size: clamp(8.5px, 1.15vh, 10px);
+      font-weight: 800;
+      line-height: 1.2;
+      max-width: 52%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #prev-mvp-ribbon.visible {
+      display: inline-flex;
+    }
+
+    /* ================= TOAST & BANNER OVERLAYS (IN MIDDLE 50%) ================= */
+    #toast-layer {
+      position: absolute;
+      top: 40.2%;
+      left: 3%;
+      right: 3%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      z-index: 16;
+    }
+
+    .live-toast {
+      background: rgba(255, 249, 242, 0.96);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(9.5px, 1.3vh, 11.5px);
+      font-weight: 800;
+      line-height: 1.3;
+      box-shadow: 0 3px 0 var(--ink);
+      max-width: 94%;
+      text-align: center;
+      animation: toastSlideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .live-toast.betray {
+      background: linear-gradient(90deg, #FFE066, #FF9F1C);
+      color: var(--ink);
+    }
+
+    .live-toast.dethrone {
+      background: linear-gradient(90deg, #FFD166, #FFF3B0);
+    }
+
+    .live-toast.share {
+      background: linear-gradient(90deg, #80FFDB, #72EFDD);
+    }
+
+    .live-toast.gift {
+      background: linear-gradient(90deg, #FF758F, #FFD166);
+      color: #fff;
+      text-shadow: 0 1.5px 0 var(--ink);
+    }
+
+    #intro-overlay {
+      position: absolute;
+      top: 26%;
+      left: 6%;
+      right: 6%;
+      background: rgba(255, 249, 242, 0.96);
+      border: 3.5px solid var(--ink);
+      border-radius: 22px;
+      padding: 14px 16px 16px;
+      text-align: center;
+      color: var(--ink);
+      box-shadow: 0 8px 0 var(--ink), 0 18px 36px rgba(0,0,0,0.35);
+      z-index: 20;
+      display: none;
+      pointer-events: none;
+    }
+
+    #intro-overlay.visible {
+      display: block;
+      animation: popIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .intro-kicker {
+      display: inline-block;
+      background: linear-gradient(90deg, #06D6E8, #FF4D8D);
+      color: #fff;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(11px, 1.6vh, 13px);
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 999px;
+      border: 2px solid var(--ink);
+      text-shadow: 0 1px 0 var(--ink);
+      margin-bottom: 6px;
+    }
+
+    #intro-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(18px, 2.8vh, 24px);
+      font-weight: 800;
+      line-height: 1.28;
+      color: #2A1B2E;
+      margin-bottom: 6px;
+    }
+
+    #intro-hook {
+      font-size: clamp(12px, 1.75vh, 14.5px);
+      font-weight: 700;
+      line-height: 1.4;
+      color: #5C4452;
+      margin-bottom: 10px;
+    }
+
+    .intro-cta {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(11.5px, 1.65vh, 14px);
+      font-weight: 800;
+      color: #0077B6;
+      background: #E0F9FF;
+      border: 2px dashed var(--ink);
+      border-radius: 12px;
+      padding: 4px 10px;
+      line-height: 1.35;
+    }
+
+    /* ================= LOWER-MIDDLE 15% HUD (ABOVE SAFE ZONE 15%) ================= */
+    #hud-lower {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(15% + 4px);
+      height: auto;
+      max-height: 10.5%;
+      padding: 0 3% 0.5%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 4px;
+      z-index: 12;
+      pointer-events: none;
+    }
+
+    .cmd-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      pointer-events: auto;
+    }
+
+    .cmd-btn {
+      border: 2.5px solid var(--ink);
+      border-radius: 14px;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(11px, 1.65vh, 14.5px);
+      font-weight: 800;
+      line-height: 1.25;
+      color: #fff;
+      text-shadow: 0 1.5px 0 var(--ink);
+      box-shadow: 0 4px 0 var(--ink);
+      cursor: pointer;
+      transition: transform 0.08s;
+    }
+
+    .cmd-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .cmd-btn.left {
+      background: linear-gradient(180deg, #32E8F8 0%, #00A8C6 100%);
+    }
+
+    .cmd-btn.right {
+      background: linear-gradient(180deg, #FF70A6 0%, #E02469 100%);
+    }
+
+    .gift-safe-strip {
+      display: none !important;
+    }
+
+    .mvp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mvp-card {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1.5px solid var(--ink);
+      box-shadow: 0 2px 0 var(--ink);
+      min-width: 0;
+      height: 24px;
+    }
+
+    .mvp-role {
+      display: none !important;
+    }
+
+    .mvp-card.beauty {
+      background: rgba(217, 250, 255, 0.94);
+    }
+
+    .mvp-card.troll {
+      background: rgba(255, 224, 236, 0.94);
+    }
+
+    .mvp-av {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      background: #FFD166;
+      color: var(--ink);
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .mvp-info {
+      min-width: 0;
+      flex: 1;
+      color: var(--ink);
+    }
+
+    .mvp-role {
+      font-size: clamp(8px, 1.08vh, 9.5px);
+      font-weight: 800;
+      line-height: 1.32;
+      padding-bottom: 2px;
+      color: #6B4E5C;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mvp-name {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(10px, 1.42vh, 12.5px);
+      font-weight: 800;
+      line-height: 1.32;
+      padding-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ================= BOTTOM 15% SAFE ZONE ================= */
+    #safe-zone-guide {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 15%;
+      pointer-events: none;
+      z-index: 5;
+      /* Hoàn toàn trống trên màn hình live */
+    }
+
+    /* ================= STREAMER CONTROL PANEL ================= */
+    #control-panel {
+      width: 326px;
+      max-height: 96dvh;
+      overflow-y: auto;
+      background: var(--panel-bg);
+      border: 1.5px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    #control-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    #control-panel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 999px;
+    }
+
+    body.panel-hidden #control-panel {
+      display: none;
+    }
+
+    .cp-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 8px;
+    }
+
+    .cp-head h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 16px;
+      color: #FFD166;
+    }
+
+    .cp-box {
+      background: var(--panel-card);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .cp-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cp-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .cp-row > * {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cp-grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .cp-grid-2 > * {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cp-input, .cp-select {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #120F21;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .cp-input:focus, .cp-select:focus {
+      border-color: var(--cyan);
+    }
+
+    .cp-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 7px 6px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Nunito', sans-serif;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #fff;
+      background: #3B335C;
+      cursor: pointer;
+      transition: filter 0.12s, transform 0.08s;
+      white-space: nowrap;
+    }
+
+    .cp-btn:hover { filter: brightness(1.12); }
+    .cp-btn:active { transform: scale(0.97); }
+    .cp-btn.cyan { background: linear-gradient(90deg, #0096C7, #00D2E8); color: #09131F; }
+    .cp-btn.pink { background: linear-gradient(90deg, #D81B60, #FF4D8D); }
+    .cp-btn.gold { background: linear-gradient(90deg, #E09F1F, #FFD166); color: #2A1B14; }
+    .cp-btn.green { background: linear-gradient(90deg, #059669, #10B981); }
+    .cp-btn.red { background: linear-gradient(90deg, #B91C1C, #EF4444); }
+    .cp-btn.purple { background: linear-gradient(90deg, #6D28D9, #A855F7); }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #EF4444;
+      margin-right: 5px;
+    }
+    .status-dot.ok { background: #10B981; box-shadow: 0 0 8px #10B981; }
+    .status-dot.wait { background: #F59E0B; }
+
+    #tt-status-text {
+      font-size: 11.5px;
+      color: #CBD5E1;
+      line-height: 1.35;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 2px 0;
+    }
+
+    .toggle-switch {
+      appearance: none;
+      width: 38px;
+      height: 20px;
+      border-radius: 999px;
+      background: #475569;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left 0.2s;
+    }
+    .toggle-switch:checked {
+      background: #10B981;
+    }
+    .toggle-switch:checked::after {
+      left: 20px;
+    }
+
+    /* Floating drawer toggle button */
+    #panel-toggle-fab {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 45;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.35);
+      background: rgba(23, 20, 38, 0.72);
+      color: #FFD166;
+      font-size: 16px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+
+    body.panel-hidden #panel-toggle-fab {
+      display: flex;
+    }
+
+    /* Responsive narrow mobile / portrait viewports (e.g., 390x844) */
+    @media (max-width: 780px) {
+      #app-shell {
+        padding: 0;
+        gap: 0;
+      }
+
+      #stage-frame {
+        width: min(100vw, calc(100dvh * 9 / 16));
+        height: min(100dvh, calc(100vw * 16 / 9));
+        max-width: 100vw;
+        max-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+
+      #control-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(320px, 88vw);
+        max-height: 100dvh;
+        overflow-x: hidden;
+        border-radius: 16px 0 0 16px;
+        transform: translateX(104%);
+        transition: transform 0.24s ease;
+        display: flex !important;
+      }
+
+      #control-panel.drawer-open {
+        transform: translateX(0);
+      }
+
+      #panel-toggle-fab {
+        display: flex;
+        top: 44%;
+        bottom: auto;
+        right: 6px;
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+        opacity: 0.55;
+        z-index: 45;
+      }
+    }
+
+    @keyframes pulsePop {
+      from { transform: scale(1); }
+      to { transform: scale(1.07); }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.86) translateY(-10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.92); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <button id="panel-toggle-fab" title="Mở / Ẩn Bảng Điều Khiển (Phím H)">⚙</button>
+
+  <div id="app-shell">
+    <!-- ================= 9:16 TIKTOK LIVE STAGE ================= -->
+    <div id="stage-frame">
+      <canvas id="game-canvas"></canvas>
+
+      <!-- TOP 20% HUD -->
+      <div id="hud-top">
+        <div class="top-row-main">
+          <div class="scenario-card">
+            <div class="scenario-title-row">
+              <span class="scenario-pill" id="hud-round-pill">HIỆP 1/20</span>
+              <div id="hud-scenario-title">Đám Cưới Người Yêu Cũ</div>
+            </div>
+            <div id="hud-scenario-hook">NYC gửi thiệp mời cưới kèm dòng chữ 'Không đi là hèn' — Mặc gì tới dự cho ngầu?</div>
+          </div>
+
+          <div class="top-right-meta">
+            <div class="gate-badge" id="hud-gate-badge">CỔNG 1 / 12</div>
+            <div class="timer-pill" id="hud-timer">⏱ 10.0s</div>
+          </div>
+        </div>
+
+        <div class="tug-wrap">
+          <div class="tug-bar-outer">
+            <div id="tug-fill-left"></div>
+            <div id="tug-fill-right"></div>
+            <div id="tug-center-pin">⚡</div>
+            <div class="tug-labels">
+              <span id="tug-left-text">💙 GIẢI CỨU 50%</span>
+              <span id="tug-right-text">50% PHÁ ĐÁM 🤡</span>
+            </div>
+          </div>
+
+          <div class="sub-strip">
+            <div class="combo-meter" id="combo-meter">
+              <div id="combo-fill"></div>
+              <div id="combo-label">🔥 Cơn Mưa Thả Tim: 0%</div>
+            </div>
+            <div id="prev-mvp-ribbon" title="Kỷ lục gia hiệp trước">🏆 Hiệp trước: —</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYNAMIC TOASTS -->
+      <div id="toast-layer"></div>
+
+      <!-- INTRO CARD -->
+      <div id="intro-overlay">
+        <div class="intro-kicker" id="intro-kicker">✨ KỊCH BẢN MỚI • 12 CỔNG ĐỊNH MỆNH ✨</div>
+        <div id="intro-title">Đám Cưới Người Yêu Cũ</div>
+        <div id="intro-hook">NYC gửi thiệp mời cưới kèm dòng chữ 'Không đi là hèn' — Mặc gì tới dự cho ngầu?</div>
+        <div class="intro-cta">💬 Gõ 1 để LÀM ĐẸP • Gõ 2 để PHÁ ĐÁM • ❤️ Thả tim &amp; 🔗 Chia sẻ tiếp sức!</div>
+      </div>
+
+      <!-- LOWER-MIDDLE 15% HUD (ABOVE 15% SAFE ZONE) -->
+      <div id="hud-lower">
+        <div class="cmd-row">
+          <button class="cmd-btn left" id="btn-quick-1" type="button">✨ GÕ 1 • LÀM ĐẸP</button>
+          <button class="cmd-btn right" id="btn-quick-2" type="button">🤡 GÕ 2 • PHÁ ĐÁM</button>
+        </div>
+
+        <div class="gift-safe-strip">
+          💬 Gõ 1/2 • ❤️ Tim • 🔗 Share | 🌹 Trợ lực · 🍩 Khóa · ⭐ Lột xác
+        </div>
+
+        <div class="mvp-row">
+          <div class="mvp-card beauty">
+            <div class="mvp-av" id="mvp-beauty-av">👑</div>
+            <div class="mvp-info">
+              <div class="mvp-role">👑 Nhà Tạo Mẫu Top 1</div>
+              <div class="mvp-name" id="mvp-beauty-name">Đang chờ...</div>
+            </div>
+          </div>
+          <div class="mvp-card troll">
+            <div class="mvp-av" id="mvp-troll-av">🤡</div>
+            <div class="mvp-info">
+              <div class="mvp-role">🤡 Thánh Troll Top 1</div>
+              <div class="mvp-name" id="mvp-troll-name">Đang chờ...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM 15% SAFE ZONE (100% TRỐNG CHO KHUNG CHAT TIKTOK LIVE) -->
+      <div id="safe-zone-guide"></div>
+    </div>
+
+    <!-- ================= STREAMER CONTROL PANEL ================= -->
+    <aside id="control-panel">
+      <div class="cp-head">
+        <h2>🎛️ Điều Khiển Đường Đua</h2>
+        <button class="cp-btn" id="btn-hide-panel" type="button">Ẩn (H)</button>
+      </div>
+
+      <!-- 1. TikTok Live Connection -->
+      <div class="cp-box">
+        <div class="cp-title">
+          <span>📡 Kết Nối TikTok Live</span>
+          <span><span class="status-dot" id="tt-status-dot"></span><span id="tt-conn-badge">Offline</span></span>
+        </div>
+        <div class="cp-row">
+          <input class="cp-input" id="tt-username" type="text" placeholder="@tiktok_username" />
+        </div>
+        <div class="cp-grid-2">
+          <button class="cp-btn green" id="btn-tt-connect" type="button">Kết Nối</button>
+          <button class="cp-btn red" id="btn-tt-disconnect" type="button">Ngắt Kết Nối</button>
+        </div>
+        <div id="tt-status-text">Chưa kết nối kênh TikTok Live</div>
+      </div>
+
+      <!-- 2. Scenario & Flow Control -->
+      <div class="cp-box">
+        <div class="cp-title"><span>🎬 20 Kịch Bản &amp; Nhịp Trận</span></div>
+        <select class="cp-select" id="select-scenario"></select>
+        <div class="cp-grid-2">
+          <button class="cp-btn cyan" id="btn-next-gate" type="button">⏭ Cổng Tiếp Theo</button>
+          <button class="cp-btn gold" id="btn-goto-gate12" type="button">🔥 Tới Cổng 12 (X2)</button>
+          <button class="cp-btn purple" id="btn-goto-verdict" type="button">🏆 Tới Phán Quyết</button>
+          <button class="cp-btn" id="btn-reset-round" type="button">🔄 Reset Hiệp</button>
+        </div>
+      </div>
+
+      <!-- 3. Test Simulator -->
+      <div class="cp-box">
+        <div class="cp-title"><span>🧪 Giả Lập Tương Tác Nhanh</span></div>
+        <div class="cp-row">
+          <input class="cp-input" id="test-user" type="text" value="Minh Anh" placeholder="Tên người chơi test" />
+          <select class="cp-select" id="test-side">
+            <option value="1">Phe 1 (Đẹp)</option>
+            <option value="2">Phe 2 (Troll)</option>
+          </select>
+        </div>
+        <div class="cp-grid-2">
+          <button class="cp-btn cyan" id="btn-sim-c1" type="button">💬 Comment 1</button>
+          <button class="cp-btn pink" id="btn-sim-c2" type="button">💬 Comment 2</button>
+          <button class="cp-btn" id="btn-sim-like" type="button">❤️ Thả +10 Tim</button>
+          <button class="cp-btn green" id="btn-sim-share" type="button">🔗 Chia sẻ LIVE</button>
+          <button class="cp-btn gold" id="btn-sim-gift1" type="button">🌹 Quà Nhỏ</button>
+          <button class="cp-btn gold" id="btn-sim-gift2" type="button">🍩 Quà Trung (4s)</button>
+          <button class="cp-btn purple" id="btn-sim-gift3" type="button">⭐ Quà Lớn (Lột Xác)</button>
+          <button class="cp-btn red" id="btn-sim-betray" type="button">🔄 Test Quay Xe</button>
+        </div>
+      </div>
+
+      <!-- 4. Automation -->
+      <div class="cp-box">
+        <div class="cp-title"><span>🤖 Tự Động Hóa (Live Không Mic)</span></div>
+        <label class="toggle-row">
+          <span>Smart Auto-Bot (nghỉ ≥8s khi có khách)</span>
+          <input type="checkbox" class="toggle-switch" id="toggle-bot" checked />
+        </label>
+        <label class="toggle-row">
+          <span>MC Ảo đọc bình luận (TTS Việt)</span>
+          <input type="checkbox" class="toggle-switch" id="toggle-tts" checked />
+        </label>
+        <label class="toggle-row">
+          <span>Hiệu ứng Âm Thanh (SFX)</span>
+          <input type="checkbox" class="toggle-switch" id="toggle-sfx" checked />
+        </label>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /* =====================================================================
+       * 1. CONSTANTS, 20 SCENARIOS & 12-LAYER ZERO-OFFSET METADATA
+       * ===================================================================== */
+      const SCENARIOS = [
+        { id: 1, venue: "wedding", title: "Đám Cưới Người Yêu Cũ", hook: "NYC gửi thiệp mời cưới kèm dòng chữ 'Không đi là hèn' — Mặc gì tới dự cho ngầu?" },
+        { id: 2, venue: "mansion", title: "Ra Mắt Gia Đình Hào Môn", hook: "Lần đầu về ra mắt nhà bạn trai tài phiệt — Ghi điểm tuyệt đối hay bị đuổi thẳng cổ?" },
+        { id: 3, venue: "gala", title: "Họp Lớp Sau 10 Năm", hook: "Cả lớp toàn giám đốc với chủ tịch — Lên đồ sang chảnh hay giả nghèo thử lòng?" },
+        { id: 4, venue: "office", title: "Phỏng Vấn Thư Ký Chủ Tịch", hook: "Buổi phỏng vấn quyết định lương 5.000 đô — Thần thái tổng tài hay thảm họa công sở?" },
+        { id: 5, venue: "redcarpet", title: "Thảm Đỏ Đêm Chung Kết", hook: "Bước lên thảm đỏ trực tiếp toàn quốc — Nữ hoàng truyền thông hay tâm điểm meme?" },
+        { id: 6, venue: "mansion", title: "Đi Đòi Nợ Bạn Thân 3 Năm", hook: "Hẹn bạn thân ở quán sang chảnh đòi món nợ cũ — Khí chất chủ nợ hay trông đáng thương hơn?" },
+        { id: 7, venue: "gala", title: "Bắt Quả Tang Crush Đi Ăn Vụng", hook: "Crush bảo ngủ sớm nhưng check-in nhà hàng 5 sao — Xông vào rực rỡ hay tấu hài?" },
+        { id: 8, venue: "office", title: "Họp Phụ Huynh Cho Em Trai", hook: "Thay mẹ đi họp phụ huynh cấp 3 — Chị đại thanh lịch hay bà cô khó tính?" },
+        { id: 9, venue: "gala", title: "Tiệc Tất Niên Công Ty", hook: "Sếp treo giải 'Best Dressed' 50 triệu — Ẵm trọn giải thưởng hay thành trò cười cả phòng?" },
+        { id: 10, venue: "mansion", title: "Đi Xem Mắt Thiếu Gia Quận 1", hook: "Mẹ mai mối con trai chủ chuỗi bất động sản — Nàng dâu triệu đô hay chạy mất dép?" },
+        { id: 11, venue: "redcarpet", title: "Livestream Mega Sale 1000 Đơn", hook: "Bật cam lên sóng phiên chốt đơn lịch sử — Chiến thần nhan sắc hay cây hài triệu view?" },
+        { id: 12, venue: "wedding", title: "Về Quê Ăn Tết Sau 5 Năm", hook: "Họ hàng hỏi 'bao giờ lấy chồng, lương bao nhiêu?' — Lên đồ át vía hay giả ngơ?" },
+        { id: 13, venue: "office", title: "Đi Ký Hợp Đồng Tỷ Đô", hook: "Đối tác quốc tế chờ sẵn ở phòng VIP — Nữ tổng tài quyền lực hay tấu hài toàn cầu?" },
+        { id: 14, venue: "gala", title: "Sinh Nhật Hội Bạn Du Thuyền", hook: "Dresscode 'Sang Chảnh Tối Thượng' trên du thuyền — Chiếm trọn spotlight hay lố bịch?" },
+        { id: 15, venue: "redcarpet", title: "Lên Truyền Hình Thi Hoa Hậu", hook: "Vòng ứng xử trực tiếp toàn quốc — Đội vương miện lấp lánh hay thành meme quốc dân?" },
+        { id: 16, venue: "office", title: "Đi Rút Tiền Ngân Hàng 10 Tỷ", hook: "Bước vào sảnh VIP ngân hàng — Khí chất đại gia ẩn danh hay bị bảo vệ hỏi thăm?" },
+        { id: 17, venue: "wedding", title: "Hẹn Hò Đầu Với Cực Phẩm 1m85", hook: "Quẹt trúng trai đẹp 6 múi hẹn ăn tối — Mỹ nhân vạn người mê hay làm anh ấy đứng hình?" },
+        { id: 18, venue: "redcarpet", title: "Dự Lễ Trao Giải Nghệ Sĩ", hook: "Ống kính phóng viên chĩa thẳng vào cổng — Nữ thần thảm đỏ hay thảm họa thời trang?" },
+        { id: 19, venue: "gala", title: "Gặp Lại Tình Đầu Phố Đi Bộ", hook: "Đang dạo phố thì chạm mặt tình đầu năm 18 tuổi — Cho người ta tiếc hùi hụi hay chạy trốn?" },
+        { id: 20, venue: "mansion", title: "Thử Việc Tập Đoàn Thời Trang", hook: "Tổng biên tập khó tính chấm điểm outfit ngay cửa — Đậu thẳng vòng gửi xe hay về nhà ngủ?" }
+      ];
+
+      // Zero-Offset 12-Layer Metadata (giữ đúng zIndex trong SPEC)
+      const LAYER_META = {
+        base_body:    { gate: 0,  zIndex: 0,  name: "Cơ thể gốc" },
+        makeup:       { gate: 1,  zIndex: 8,  name: "Trang điểm" },
+        hair_back:    { gate: 2,  zIndex: 3,  name: "Kiểu tóc" },
+        earrings:     { gate: 3,  zIndex: 9,  name: "Khuyên tai" },
+        eyewear:      { gate: 4,  zIndex: 10, name: "Kính mắt" },
+        socks:        { gate: 5,  zIndex: 4,  name: "Tất chân" },
+        footwear:     { gate: 6,  zIndex: 5,  name: "Giày dép" },
+        outfit:       { gate: 7,  zIndex: 6,  name: "Trang phục" },
+        necklace:     { gate: 8,  zIndex: 7,  name: "Vòng cổ" },
+        headpiece:    { gate: 9,  zIndex: 11, name: "Phụ kiện đầu" },
+        bg_aura:      { gate: 10, zIndex: 1,  name: "Hào quang" },
+        handheld_pet: { gate: 11, zIndex: 12, name: "Đạo cụ & Pet" },
+        vehicle:      { gate: 12, zIndex: 2,  name: "Phương tiện" }
+      };
+
+      const GATES = [
+        {
+          gate: 1, layerId: "makeup", zIndex: 8,
+          leftName: "Layout Nữ Thần", rightName: "Mặt Nhọ Nồi",
+          ttsLeft: "Quá đỉnh! Layout nữ thần long lanh, thần thái ngút trời luôn!",
+          ttsRight: "Ối giời ơi! Mặt nhọ nồi má hồng loang lổ, răng sún tấu hài rồi!"
+        },
+        {
+          gate: 2, layerId: "hair_back", zIndex: 3,
+          leftName: "Tóc Mây Bồng Bềnh", rightName: "Tóc Tổ Quạ",
+          ttsLeft: "Tóc mây bồng bềnh óng ả, gió thổi phát là cả sảnh đổ gục!",
+          ttsRight: "Ối giời ơi, quả đầu tổ quạ dính rơm này ra đường chim nó làm tổ mất!"
+        },
+        {
+          gate: 3, layerId: "earrings", zIndex: 9,
+          leftName: "Khuyên Ngọc Bích", rightName: "Kẹp Phơi Đồ",
+          ttsLeft: "Đôi khuyên ngọc bích sáng rực, quý phái hết nước chấm!",
+          ttsRight: "Đôi khuyên tai kẹp phơi đồ độc lạ Bình Dương khiến cả sảnh ngoái nhìn!"
+        },
+        {
+          gate: 4, layerId: "eyewear", zIndex: 10,
+          leftName: "Kính Hiệu Gucci", rightName: "Kính Bơi Mắt Lác",
+          ttsLeft: "Lên kính hiệu viền vàng, khí chất chị đại không đùa được đâu!",
+          ttsRight: "Đeo kính bơi hồng neon mắt lác thế này thì người yêu cũ cũng không nhận ra!"
+        },
+        {
+          gate: 5, layerId: "socks", zIndex: 4,
+          leftName: "Tất Lụa Hoa Văn", rightName: "Tất Rách Cọc Cạch",
+          ttsLeft: "Tất lụa ren trắng tinh tế từng chi tiết, chuẩn gu hoàng gia!",
+          ttsRight: "Soi kỹ tới tận đôi tất rách cọc cạch, phe Phá Đám không tha một ly!"
+        },
+        {
+          gate: 6, layerId: "footwear", zIndex: 5,
+          leftName: "Cao Gót Pha Lê", rightName: "Dép Tổ Ong",
+          ttsLeft: "Cao gót pha lê lấp lánh ánh kim, bước đi nghe sang cả dãy phố!",
+          ttsRight: "Đôi dép tổ ong ngàn năm văn hiến dính bùn đất chính thức lên chân!"
+        },
+        {
+          gate: 7, layerId: "outfit", zIndex: 6,
+          leftName: "Váy Dạ Hội Vàng", rightName: "Bao Tải Chắp Vá",
+          ttsLeft: "Váy dạ hội phượng bào dát vàng lộng lẫy, đúng chuẩn nữ chính!",
+          ttsRight: "Bộ cánh bao tải thời trang chắp vá, phong cách đổ rác cực cháy!"
+        },
+        {
+          gate: 8, layerId: "necklace", zIndex: 7,
+          leftName: "Chuỗi Kim Cương", rightName: "Vòng Cổ Tỏi",
+          ttsLeft: "Chuỗi kim cương chói lóa cả khung hình, đại gia là đây chứ đâu!",
+          ttsRight: "Đeo vòng cổ tỏi trừ tà thế này thì ma chê quỷ hờn luôn rồi!"
+        },
+        {
+          gate: 9, layerId: "headpiece", zIndex: 11,
+          leftName: "Vương Miện Hoàng Gia", rightName: "Nồi Cơm Điện",
+          ttsLeft: "Vương miện nữ hoàng đính ngọc trai phát sáng, khí chất vô đối!",
+          ttsRight: "Nồi cơm điện úp ngược chống đạn kèm khăn mặt chính thức đội lên đầu!"
+        },
+        {
+          gate: 10, layerId: "bg_aura", zIndex: 1,
+          leftName: "Cánh Tiên Hào Quang", rightName: "Mây Đen Sấm Sét",
+          ttsLeft: "Cánh tiên hào quang bung lụa rực rỡ như thiên thần hạ phàm!",
+          ttsRight: "Mang theo cả bầu trời mây đen sấm sét và đàn ruồi bước vào buổi tiệc!"
+        },
+        {
+          gate: 11, layerId: "handheld_pet", zIndex: 12,
+          leftName: "Túi Hiệu & Mèo Quý", rightName: "Muôi Canh & Vịt Kêu",
+          ttsLeft: "Túi hiệu dát vàng kèm mèo quý tộc đội mũ, sang chảnh tuyệt đối!",
+          ttsRight: "Tay cầm muôi múc canh dắt vịt kêu cạp cạp, chuẩn bị đi ăn cỗ trả thù!"
+        },
+        {
+          gate: 12, layerId: "vehicle", zIndex: 2,
+          leftName: "Siêu Xe Ferrari Đỏ", rightName: "Cưỡi Lợn Hồng",
+          ttsLeft: "Bùng nổ! Siêu xe Ferrari đỏ rực xuất hành, đẳng cấp tối thượng!",
+          ttsRight: "Cưỡi lợn hồng tấu hài tới thẳng cổng tiệc, huyền thoại chính thức ra đời!"
+        }
+      ];
+
+      const BOT_NAMES = [
+        "Bé Mây", "Hoàng Tử Gió", "Trà Sữa Ít Đá", "Tuấn Kiệt", "Mèo Ú", "Linh Chi",
+        "Bảo Ngọc", "Anh Ba Sài Gòn", "Hồng Nhung", "Minh Quân", "Bánh Tráng Trộn",
+        "Khánh Vy", "Đức Phúc", "Thỏ Trắng", "Hải Đăng", "Gia Hân", "Quốc Bảo", "Cô Bé Mưa"
+      ];
+
+      const MC_IDLE_LINES = [
+        "Cả nhà ơi gõ 1 để giải cứu nhan sắc, hoặc gõ 2 để phá đám tấu hài ngay nào!",
+        "Đừng quên thả tim liên tục để kích hoạt Cơn Mưa Thả Tim nhân đôi sức mạnh nhé!",
+        "Ai chia sẻ phiên live ngay lúc này sẽ nhận ngay buff tiếp sức siêu mạnh cho phe mình!",
+        "Cuộc đua đang quá kịch tính! Phe Giải Cứu và Phe Phá Đám bám đuổi sát nút từng điểm!",
+        "Nhanh tay gõ 1 hoặc 2 trước khi đồng hồ đếm ngược 3 giây cuối nhé mọi người ơi!"
+      ];
+
+      const STATE_INTRO = "STATE_INTRO";
+      const STATE_GATE_RUN = "STATE_GATE_RUN";
+      const STATE_CLIMAX_GATE_12 = "STATE_CLIMAX_GATE_12";
+      const STATE_VERDICT = "STATE_VERDICT";
+
+      const MAX_PARTICLES = 100;
+      const MAX_PROJECTILES = 30;
+      const MAX_FLOATING_TEXTS = 12;
+
+      /* =====================================================================
+       * 2. AUDIO ENGINE (Web Audio API with 60ms rate-limit)
+       * ===================================================================== */
+      class SoundEngine {
+        constructor() {
+          this.ctx = null;
+          this.enabled = true;
+          this.lastPlayed = new Map();
+        }
+        ensureCtx() {
+          if (!this.enabled) return null;
+          if (!this.ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return null;
+            this.ctx = new AC();
+          }
+          if (this.ctx.state === "suspended") {
+            this.ctx.resume().catch(() => {});
+          }
+          return this.ctx;
+        }
+        canPlay(key, minGap = 60) {
+          const now = performance.now();
+          const prev = this.lastPlayed.get(key) || 0;
+          if (now - prev < minGap) return false;
+          this.lastPlayed.set(key, now);
+          return true;
+        }
+        tone(freq, dur, type = "sine", vol = 0.12, endFreq = null, delay = 0) {
+          const ctx = this.ensureCtx();
+          if (!ctx) return;
+          const t0 = ctx.currentTime + delay;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, t0);
+          if (endFreq !== null) {
+            osc.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), t0 + dur);
+          }
+          gain.gain.setValueAtTime(0.0001, t0);
+          gain.gain.linearRampToValueAtTime(vol, t0 + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t0);
+          osc.stop(t0 + dur + 0.02);
+        }
+        pop(side) {
+          if (!this.canPlay("pop", 60)) return;
+          this.tone(side === 1 ? 580 : 390, 0.11, "triangle", 0.11, side === 1 ? 860 : 280);
+        }
+        bounce() {
+          if (!this.canPlay("bounce", 65)) return;
+          this.tone(240, 0.12, "square", 0.08, 120);
+        }
+        tick(urgent = false) {
+          if (!this.canPlay("tick", 200)) return;
+          this.tone(urgent ? 980 : 660, 0.08, "square", urgent ? 0.12 : 0.07);
+        }
+        whistle() {
+          if (!this.canPlay("whistle", 200)) return;
+          this.tone(920, 0.16, "sine", 0.14, 1380, 0);
+          this.tone(1180, 0.25, "sine", 0.14, 1520, 0.18);
+        }
+        screech() {
+          if (!this.canPlay("screech", 200)) return;
+          this.tone(1100, 0.28, "sawtooth", 0.09, 420);
+          this.tone(860, 0.24, "square", 0.06, 310, 0.06);
+        }
+        lock() {
+          if (!this.canPlay("lock", 120)) return;
+          this.tone(520, 0.08, "square", 0.12, 260, 0);
+          this.tone(780, 0.18, "triangle", 0.14, 1040, 0.09);
+        }
+        thunder() {
+          if (!this.canPlay("thunder", 180)) return;
+          this.tone(180, 0.45, "sawtooth", 0.16, 48, 0);
+          this.tone(620, 0.22, "square", 0.1, 140, 0.04);
+          this.tone(880, 0.3, "triangle", 0.12, 1320, 0.16);
+        }
+        gateWin(side) {
+          if (!this.canPlay("gateWin", 150)) return;
+          if (side === 1) {
+            this.tone(523, 0.12, "triangle", 0.13, null, 0);
+            this.tone(659, 0.12, "triangle", 0.13, null, 0.08);
+            this.tone(784, 0.18, "triangle", 0.15, null, 0.16);
+            this.tone(1046, 0.28, "sine", 0.15, null, 0.24);
+          } else {
+            this.tone(420, 0.12, "sawtooth", 0.1, 340, 0);
+            this.tone(330, 0.14, "sawtooth", 0.1, 250, 0.11);
+            this.tone(240, 0.28, "sawtooth", 0.11, 175, 0.22);
+          }
+        }
+        verdict(type) {
+          if (!this.canPlay("verdict", 300)) return;
+          if (type === "beauty") {
+            [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone(f, 0.22, "triangle", 0.14, null, i * 0.09));
+          } else if (type === "troll") {
+            this.tone(392, 0.18, "sawtooth", 0.12, 370, 0);
+            this.tone(370, 0.18, "sawtooth", 0.12, 349, 0.19);
+            this.tone(349, 0.18, "sawtooth", 0.12, 330, 0.38);
+            this.tone(311, 0.45, "sawtooth", 0.13, 220, 0.56);
+          } else {
+            this.tone(440, 0.15, "triangle", 0.12, 660, 0);
+            this.tone(660, 0.15, "triangle", 0.12, 420, 0.16);
+            this.tone(520, 0.26, "sine", 0.13, 880, 0.32);
+          }
+        }
+        share() {
+          if (!this.canPlay("share", 100)) return;
+          this.tone(660, 0.1, "sine", 0.12, 990, 0);
+          this.tone(990, 0.18, "sine", 0.13, 1320, 0.09);
+        }
+      }
+
+      /* =====================================================================
+       * 3. VIRTUAL MC (VIETNAMESE TTS WITH CHROME WATCHDOG)
+       * ===================================================================== */
+      class VirtualMC {
+        constructor() {
+          this.enabled = true;
+          this.queue = [];
+          this.speaking = false;
+          this.speakStartedAt = 0;
+          this.viVoice = null;
+          this._loadVoices();
+          if ("speechSynthesis" in window) {
+            window.speechSynthesis.onvoiceschanged = () => this._loadVoices();
+          }
+          // Watchdog chống kẹt speechSynthesis trên Chrome
+          setInterval(() => {
+            if (!("speechSynthesis" in window)) return;
+            if (this.speaking && performance.now() - this.speakStartedAt > 7500) {
+              try { window.speechSynthesis.cancel(); } catch (_) {}
+              this.speaking = false;
+              this._drain();
+            }
+          }, 1500);
+        }
+        _loadVoices() {
+          if (!("speechSynthesis" in window)) return;
+          const voices = window.speechSynthesis.getVoices() || [];
+          this.viVoice = voices.find((v) => /vi[-_]?VN/i.test(v.lang))
+            || voices.find((v) => /vietnam/i.test(v.name))
+            || null;
+        }
+        say(text, priority = false) {
+          if (!this.enabled || !text || !("speechSynthesis" in window)) return;
+          if (priority) {
+            try { window.speechSynthesis.cancel(); } catch (_) {}
+            this.queue = [text];
+            this.speaking = false;
+          } else {
+            if (this.queue.length >= 2) this.queue.shift();
+            this.queue.push(text);
+          }
+          this._drain();
+        }
+        _drain() {
+          if (!this.enabled || this.speaking || this.queue.length === 0) return;
+          const text = this.queue.shift();
+          try {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = "vi-VN";
+            if (this.viVoice) u.voice = this.viVoice;
+            u.rate = 1.12;
+            u.pitch = 1.08;
+            u.volume = 0.95;
+            u.onstart = () => {
+              this.speaking = true;
+              this.speakStartedAt = performance.now();
+            };
+            u.onend = () => {
+              this.speaking = false;
+              this._drain();
+            };
+            u.onerror = () => {
+              this.speaking = false;
+              this._drain();
+            };
+            this.speaking = true;
+            this.speakStartedAt = performance.now();
+            this._currentUtterance = u;
+            if (window.speechSynthesis.paused) {
+              window.speechSynthesis.resume();
+            }
+            window.speechSynthesis.speak(u);
+          } catch (_) {
+            this.speaking = false;
+          }
+        }
+      }
+
+      /* =====================================================================
+       * 4. AVATAR CACHE (SAFE FALLBACK)
+       * ===================================================================== */
+      const avatarCache = new Map();
+      function getAvatarImage(url) {
+        if (!url) return null;
+        const cached = avatarCache.get(url);
+        if (cached) return cached.loaded ? cached.img : null;
+        const entry = { img: new Image(), loaded: false };
+        entry.img.crossOrigin = "anonymous";
+        entry.img.onload = () => { entry.loaded = true; };
+        entry.img.onerror = () => { entry.loaded = false; };
+        entry.img.src = url;
+        avatarCache.set(url, entry);
+        return null;
+      }
+
+      function nameInitial(name) {
+        const s = String(name || "?").trim();
+        return s ? s[0].toUpperCase() : "?";
+      }
+
+      function hashColor(str) {
+        const palette = ["#00D2E8", "#FF5C93", "#FFB703", "#8338EC", "#06D6A0", "#FB5607", "#3A86FF"];
+        let h = 0;
+        for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+        return palette[h % palette.length];
+      }
+
+      /* =====================================================================
+       * 5. 12-LAYER ZERO-OFFSET VECTOR PAPER DOLL ENGINE (600 x 900)
+       * ===================================================================== */
+      const INK = "#3D2C2E";
+
+      function drawRoundedRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }
+
+      
+      /* =====================================================================
+       * 4.5 2D MANHUA ILLUSTRATED ASSETS & SPRITE CUTOUT ENGINE
+       * ===================================================================== */
+      const ASSETS = {
+        bgGarden: new Image(),
+        charBase: new Image(),
+        outfitFairy: new Image(),
+        outfitTroll: new Image(),
+        hairFairy: new Image(),
+        hairTroll: new Image(),
+        paletteBeauty: new Image(),
+        propLadle: new Image(),
+        propLantern: new Image(),
+        shoesSlipper: new Image(),
+        vehicleCarriage: new Image(),
+        vehicleFerrari: new Image(),
+        vehiclePig: new Image()
+      };
+
+      const CUTOUTS = {
+        charBase: null,
+        outfitFairy: null,
+        outfitTroll: null,
+        hairFairy: null,
+        hairTroll: null,
+        paletteBeauty: null,
+        propLadle: null,
+        propLantern: null,
+        shoesSlipper: null,
+        vehicleCarriage: null,
+        vehicleFerrari: null,
+        vehiclePig: null
+      };
+
+      function makeCutoutSprite(img, targetH = 900, flipX = false) {
+        if (!img || !img.complete || img.naturalWidth === 0) return null;
+        const w = Math.max(1, Math.round((img.naturalWidth * targetH) / img.naturalHeight));
+        const h = targetH;
+        const off = document.createElement("canvas");
+        off.width = w;
+        off.height = h;
+        const octx = off.getContext("2d");
+        if (flipX) {
+          octx.translate(w, 0);
+          octx.scale(-1, 1);
+        }
+        octx.drawImage(img, 0, 0, w, h);
+
+        try {
+          const imgData = octx.getImageData(0, 0, w, h);
+          const data = imgData.data;
+          const visited = new Uint8Array(w * h);
+          const queue = new Int32Array(w * h);
+          let head = 0, tail = 0;
+
+          // Pure white or near-white background removal
+          const isBg = (idx) => {
+            const p = idx * 4;
+            const r = data[p], g = data[p + 1], b = data[p + 2];
+            const maxC = Math.max(r, g, b);
+            const minC = Math.min(r, g, b);
+            return minC > 192 && (maxC - minC) < 32;
+          };
+
+          for (let x = 0; x < w; x++) {
+            const top = x;
+            const bot = (h - 1) * w + x;
+            if (!visited[top] && isBg(top)) { visited[top] = 1; queue[tail++] = top; }
+            if (!visited[bot] && isBg(bot)) { visited[bot] = 1; queue[tail++] = bot; }
+          }
+          for (let y = 0; y < h; y++) {
+            const left = y * w;
+            const right = y * w + (w - 1);
+            if (!visited[left] && isBg(left)) { visited[left] = 1; queue[tail++] = left; }
+            if (!visited[right] && isBg(right)) { visited[right] = 1; queue[tail++] = right; }
+          }
+
+          while (head < tail) {
+            const cur = queue[head++];
+            data[cur * 4 + 3] = 0;
+            const cx = cur % w;
+            const cy = (cur - cx) / w;
+            if (cx > 0) { const n = cur - 1; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+            if (cx < w - 1) { const n = cur + 1; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+            if (cy > 0) { const n = cur - w; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+            if (cy < h - 1) { const n = cur + w; if (!visited[n] && isBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+          }
+
+          octx.putImageData(imgData, 0, 0);
+        } catch (e) {
+          console.warn("Cutout fallback", e);
+        }
+        return off;
+      }
+
+      function initManhuaAssets() {
+        ASSETS.bgGarden.src = "./assets/bg-garden.jpg";
+
+        const configs = [
+          { key: "charBase", src: "./assets/char-base.jpg", h: 900 },
+          { key: "outfitFairy", src: "./assets/outfit-fairy.jpg", h: 860 },
+          { key: "outfitTroll", src: "./assets/outfit-troll.jpg", h: 860 },
+          { key: "hairFairy", src: "./assets/hair-fairy.jpg", h: 420 },
+          { key: "hairTroll", src: "./assets/hair-troll.jpg", h: 360 },
+          { key: "paletteBeauty", src: "./assets/palette-beauty.jpg", h: 260 },
+          { key: "propLadle", src: "./assets/prop-ladle.jpg", h: 280 },
+          { key: "propLantern", src: "./assets/prop-lantern.jpg", h: 320 },
+          { key: "shoesSlipper", src: "./assets/shoes-slipper.jpg", h: 220 },
+          { key: "vehicleCarriage", src: "./assets/vehicle-carriage.jpg", h: 560 },
+          { key: "vehicleFerrari", src: "./assets/vehicle-ferrari.jpg", h: 400 },
+          { key: "vehiclePig", src: "./assets/vehicle-pig.jpg", h: 440 }
+        ];
+
+        configs.forEach(({ key, src, h }) => {
+          const img = ASSETS[key];
+          img.onload = () => {
+            CUTOUTS[key] = makeCutoutSprite(img, h);
+          };
+          img.src = src;
+        });
+      }
+      initManhuaAssets();
+
+      // 60 FPS Falling Flower Petals (Sakura / Garden Petals)
+      const PETALS_COUNT = 36;
+      const petals = [];
+      function initPetals(W, H) {
+        petals.length = 0;
+        const colors = [
+          "rgba(255, 182, 193, 0.78)",
+          "rgba(255, 209, 220, 0.82)",
+          "rgba(255, 240, 245, 0.88)",
+          "rgba(255, 228, 196, 0.72)",
+          "rgba(255, 192, 203, 0.75)"
+        ];
+        for (let i = 0; i < PETALS_COUNT; i++) {
+          petals.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: 4 + Math.random() * 6.5,
+            aspect: 0.45 + Math.random() * 0.4,
+            speedY: 0.9 + Math.random() * 1.5,
+            speedX: -0.4 + Math.random() * 0.8,
+            swayFreq: 1.5 + Math.random() * 1.5,
+            swayAmp: 18 + Math.random() * 25,
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.05,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+      }
+
+      function updateAndDrawPetals(ctx, W, H, t) {
+        if (petals.length === 0) initPetals(W, H);
+        ctx.save();
+        for (let i = 0; i < petals.length; i++) {
+          const p = petals[i];
+          p.y += p.speedY;
+          p.x += p.speedX + Math.sin(t * p.swayFreq + i) * 0.6;
+          p.rot += p.rotSpeed;
+
+          if (p.y > H + 20) {
+            p.y = -20;
+            p.x = Math.random() * W;
+          }
+          if (p.x < -20) p.x = W + 20;
+          if (p.x > W + 20) p.x = -20;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.r, p.r * p.aspect, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+        let rot = (Math.PI / 2) * 3;
+        const step = Math.PI / spikes;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerR);
+        for (let i = 0; i < spikes; i++) {
+          ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+          rot += step;
+          ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+          rot += step;
+        }
+        ctx.closePath();
+      }
+
+      // Layer 10 (z:1) — bg_aura (vẽ phía sau nhân vật)
+      function drawLayerBgAura(ctx, side, t) {
+        ctx.save();
+        if (side === 1) {
+          // Cánh Tiên Hào Quang (cánh bướm phát sáng rực rỡ)
+          const flap = Math.sin(t * 7) * 0.07;
+          const halo = ctx.createRadialGradient(300, 390, 40, 300, 390, 260);
+          halo.addColorStop(0, "rgba(255, 245, 170, 0.72)");
+          halo.addColorStop(0.55, "rgba(130, 235, 255, 0.32)");
+          halo.addColorStop(1, "rgba(255, 255, 255, 0)");
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(300, 390, 260, 0, Math.PI * 2);
+          ctx.fill();
+
+          for (const dir of [-1, 1]) {
+            ctx.save();
+            ctx.translate(300, 400);
+            ctx.scale(dir, 1);
+            ctx.rotate(flap);
+            // Upper fairy wing
+            const wg = ctx.createLinearGradient(0, -160, 240, 40);
+            wg.addColorStop(0, "#FFF6B8");
+            wg.addColorStop(0.45, "#8EF6FF");
+            wg.addColorStop(1, "#FF9DE2");
+            ctx.fillStyle = wg;
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(10, -20);
+            ctx.bezierCurveTo(100, -190, 260, -170, 235, -35);
+            ctx.bezierCurveTo(220, 40, 120, 45, 15, 25);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Lower wing
+            ctx.beginPath();
+            ctx.moveTo(12, 20);
+            ctx.bezierCurveTo(120, 25, 200, 115, 155, 175);
+            ctx.bezierCurveTo(110, 205, 45, 130, 8, 55);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Wing sparkles
+            ctx.fillStyle = "rgba(255,255,255,0.8)";
+            ctx.beginPath();
+            ctx.arc(140, -68, 18, 0, Math.PI * 2);
+            ctx.arc(185, -35, 10, 0, Math.PI * 2);
+            ctx.arc(112, 105, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+          // Orbiting stars
+          for (let i = 0; i < 6; i++) {
+            const ang = t * 1.6 + (i * Math.PI * 2) / 6;
+            const sx = 300 + Math.cos(ang) * 215;
+            const sy = 360 + Math.sin(ang) * 180;
+            ctx.fillStyle = i % 2 === 0 ? "#FFE066" : "#FFFFFF";
+            drawStar(ctx, sx, sy, 4, 15, 6);
+            ctx.fill();
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+          }
+        } else if (side === 2) {
+          // Mây Đen Sấm Sét + Đàn Ruồi Bay
+          ctx.fillStyle = "rgba(70, 58, 92, 0.3)";
+          ctx.beginPath();
+          ctx.arc(300, 340, 240, 0, Math.PI * 2);
+          ctx.fill();
+
+          const clouds = [
+            { x: 165, y: 120, r: 72 }, { x: 245, y: 90, r: 85 },
+            { x: 350, y: 92, r: 82 }, { x: 432, y: 124, r: 68 },
+            { x: 300, y: 125, r: 78 }
+          ];
+          ctx.fillStyle = "#524E69";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          clouds.forEach((c) => {
+            ctx.moveTo(c.x + c.r, c.y);
+            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          });
+          ctx.fill();
+          ctx.stroke();
+
+          // Thunderbolts
+          const flash = Math.sin(t * 14) > 0.1;
+          ctx.fillStyle = flash ? "#FFE066" : "#FFC300";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 5;
+          for (const bx of [175, 420]) {
+            ctx.beginPath();
+            ctx.moveTo(bx, 165);
+            ctx.lineTo(bx - 30, 250);
+            ctx.lineTo(bx + 2, 250);
+            ctx.lineTo(bx - 22, 345);
+            ctx.lineTo(bx + 36, 232);
+            ctx.lineTo(bx + 4, 232);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+
+          // Buzzing flies
+          for (let i = 0; i < 6; i++) {
+            const a = t * 4.2 + i * 1.1;
+            const fx = 300 + Math.cos(a * 1.2) * (150 + (i % 3) * 30);
+            const fy = 260 + Math.sin(a * 1.7) * 145;
+            ctx.fillStyle = "#2A2438";
+            ctx.beginPath();
+            ctx.ellipse(fx, fy, 8, 5, a, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(255,255,255,0.78)";
+            ctx.beginPath();
+            ctx.ellipse(fx - 4, fy - 6, 6, 3, -0.5, 0, Math.PI * 2);
+            ctx.ellipse(fx + 4, fy - 6, 6, 3, 0.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      // Layer 12 (z:2) — vehicle (phần thân xe/lợn vẽ sau chân & phần đầu/mặt nạ vẽ trước chân)
+      function drawLayerVehicleBack(ctx, side, t) {
+        ctx.save();
+        if (side === 1) {
+          // Siêu xe Ferrari Đỏ lộng lẫy phía sau làm nền đế sang chảnh
+          const bob = Math.sin(t * 14) * 3;
+          ctx.translate(0, bob);
+          // Car shadow
+          ctx.fillStyle = "rgba(35, 20, 45, 0.35)";
+          ctx.beginPath();
+          ctx.ellipse(300, 822, 258, 30, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Rear spoiler & chassis
+          const redGrad = ctx.createLinearGradient(60, 620, 540, 800);
+          redGrad.addColorStop(0, "#FF3B5C");
+          redGrad.addColorStop(0.5, "#E01134");
+          redGrad.addColorStop(1, "#9E0622");
+          ctx.fillStyle = redGrad;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.moveTo(58, 730);
+          ctx.quadraticCurveTo(85, 650, 175, 635);
+          ctx.lineTo(425, 635);
+          ctx.quadraticCurveTo(525, 650, 548, 725);
+          ctx.lineTo(548, 785);
+          ctx.quadraticCurveTo(548, 808, 520, 808);
+          ctx.lineTo(80, 808);
+          ctx.quadraticCurveTo(52, 808, 52, 780);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Windshield glossy
+          ctx.fillStyle = "#B8F2FF";
+          ctx.beginPath();
+          ctx.moveTo(155, 640);
+          ctx.lineTo(205, 585);
+          ctx.lineTo(395, 585);
+          ctx.lineTo(445, 640);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Gold racing stripe & emblem
+          ctx.fillStyle = "#FFD166";
+          ctx.fillRect(286, 642, 28, 155);
+          ctx.strokeRect(286, 642, 28, 155);
+
+          // Headlights
+          for (const lx of [106, 494]) {
+            ctx.fillStyle = "#FFF5B8";
+            ctx.beginPath();
+            ctx.ellipse(lx, 722, 32, 16, lx < 300 ? -0.22 : 0.22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+
+          // Wheels
+          for (const wx of [135, 465]) {
+            ctx.fillStyle = "#2A2438";
+            ctx.beginPath();
+            ctx.arc(wx, 792, 46, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#FFD166";
+            ctx.beginPath();
+            ctx.arc(wx, 792, 24, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+        } else if (side === 2) {
+          // Lợn Hồng Tấu Hài (Thân lợn mập ú + đuôi xoắn phía sau)
+          const bounce = Math.abs(Math.sin(t * 10)) * -10;
+          ctx.translate(0, bounce);
+          ctx.fillStyle = "rgba(35, 20, 45, 0.3)";
+          ctx.beginPath();
+          ctx.ellipse(300, 830, 215, 26, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Curly tail
+          ctx.strokeStyle = "#FF85B3";
+          ctx.lineWidth = 10;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(492, 680);
+          ctx.bezierCurveTo(548, 660, 558, 610, 520, 618);
+          ctx.bezierCurveTo(495, 625, 515, 658, 542, 646);
+          ctx.stroke();
+
+          // Pig chubby body
+          const pigG = ctx.createRadialGradient(280, 650, 40, 300, 700, 220);
+          pigG.addColorStop(0, "#FFC2D9");
+          pigG.addColorStop(1, "#FF85B3");
+          ctx.fillStyle = pigG;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.ellipse(315, 705, 190, 108, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Pig spots & tiny legs
+          ctx.fillStyle = "#FF639B";
+          for (const [lx, ly] of [[185, 782], [250, 795], [375, 795], [442, 782]]) {
+            drawRoundedRect(ctx, lx - 22, ly - 15, 44, 52, 16);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#3D2C2E";
+            ctx.fillRect(lx - 18, ly + 22, 36, 14);
+            ctx.fillStyle = "#FF639B";
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawLayerVehicleFront(ctx, side, t) {
+        if (side !== 2) return;
+        // Pig head + big snout in front-left so it's unmistakably riding a hilarious pink pig!
+        ctx.save();
+        const bounce = Math.abs(Math.sin(t * 10)) * -10;
+        ctx.translate(0, bounce);
+
+        // Pig ears
+        ctx.fillStyle = "#FF85B3";
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.ellipse(105, 610, 26, 38, -0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(195, 608, 26, 38, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Pig head
+        ctx.fillStyle = "#FFB3CE";
+        ctx.beginPath();
+        ctx.arc(148, 682, 78, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Derpy eyes
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(118, 662, 18, 0, Math.PI * 2);
+        ctx.arc(174, 662, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = INK;
+        ctx.beginPath();
+        ctx.arc(113, 660, 7, 0, Math.PI * 2);
+        ctx.arc(180, 665, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Big snout
+        ctx.fillStyle = "#FF6E9F";
+        ctx.beginPath();
+        ctx.ellipse(145, 706, 38, 26, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = INK;
+        ctx.beginPath();
+        ctx.ellipse(132, 706, 7, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(158, 706, 7, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Funny tongue sticking out
+        ctx.fillStyle = "#FF4D6D";
+        ctx.beginPath();
+        ctx.arc(145, 738, 13, 0, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Layer 2 (z:3) — hair_back
+      function drawLayerHairBack(ctx, side, t) {
+        ctx.save();
+        const sway = Math.sin(t * 5) * 6;
+        if (side === 1) {
+          // Tóc Mây Bồng Bềnh dài óng ả
+          const hg = ctx.createLinearGradient(200, 120, 400, 560);
+          hg.addColorStop(0, "#4B2B5C");
+          hg.addColorStop(0.5, "#6F3E82");
+          hg.addColorStop(1, "#A866B8");
+          ctx.fillStyle = hg;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.moveTo(190, 210);
+          ctx.bezierCurveTo(145, 310, 145 + sway, 460, 175 + sway, 555);
+          ctx.quadraticCurveTo(235, 595, 300, 575);
+          ctx.quadraticCurveTo(365, 595, 425 + sway, 555);
+          ctx.bezierCurveTo(455 + sway, 460, 455, 310, 410, 210);
+          ctx.bezierCurveTo(410, 110, 190, 110, 190, 210);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        } else if (side === 2) {
+          // Tóc Tổ Quạ xù dựng đứng dính cọng rơm
+          ctx.fillStyle = "#3E3232";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          const cx = 300, cy = 225;
+          for (let i = 0; i < 18; i++) {
+            const ang = (i / 18) * Math.PI * 2;
+            const r = i % 2 === 0 ? 158 : 112;
+            const px = cx + Math.cos(ang) * r;
+            const py = cy + Math.sin(ang) * (r * 0.92);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Straw pieces sticking out
+          ctx.strokeStyle = "#F4C430";
+          ctx.lineWidth = 7;
+          ctx.lineCap = "round";
+          const straws = [
+            [170, 155, 118, 120], [428, 150, 484, 118],
+            [210, 108, 190, 62], [385, 105, 420, 65],
+            [155, 250, 108, 265], [442, 240, 488, 255]
+          ];
+          straws.forEach(([x1, y1, x2, y2]) => {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          });
+        } else {
+          // No hair back when not equipped
+        }
+        ctx.restore();
+      }
+
+      function drawLayerHairFront(ctx, side) {
+        ctx.save();
+        if (side === 1) {
+          // Glossy side-swept goddess bangs
+          ctx.fillStyle = "#5B326B";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.moveTo(202, 222);
+          ctx.quadraticCurveTo(212, 134, 300, 132);
+          ctx.quadraticCurveTo(388, 134, 398, 222);
+          ctx.quadraticCurveTo(356, 178, 318, 206);
+          ctx.quadraticCurveTo(295, 174, 255, 206);
+          ctx.quadraticCurveTo(222, 185, 202, 222);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Shine arc
+          ctx.strokeStyle = "rgba(255, 230, 255, 0.72)";
+          ctx.lineWidth = 7;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.arc(300, 205, 68, Math.PI * 1.18, Math.PI * 1.55);
+          ctx.stroke();
+        } else if (side === 2) {
+          // Messy spiky bangs + leaf/twig
+          ctx.fillStyle = "#3E3232";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(204, 212);
+          ctx.lineTo(234, 152);
+          ctx.lineTo(258, 216);
+          ctx.lineTo(292, 148);
+          ctx.lineTo(324, 218);
+          ctx.lineTo(356, 154);
+          ctx.lineTo(396, 212);
+          ctx.quadraticCurveTo(360, 132, 300, 130);
+          ctx.quadraticCurveTo(240, 132, 204, 212);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Tiny bird nest twig on top
+          ctx.fillStyle = "#6BBF59";
+          ctx.beginPath();
+          ctx.ellipse(362, 148, 16, 8, -0.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          // No hair front when not equipped
+        }
+        ctx.restore();
+      }
+
+      // Layer 0 (z:0) — base_body (Cơ thể gốc mộc mạc, tỷ lệ Chibi dễ thương)
+      function drawLayerBaseBody(ctx, reactType, hasMakeup, t) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 6.5;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        const skin = "#FFE1CE";
+        const skinShadow = "#F5C6AE";
+
+        // Legs
+        ctx.fillStyle = skin;
+        for (const lx of [268, 332]) {
+          drawRoundedRect(ctx, lx - 22, 535, 44, 232, 22);
+          ctx.fill();
+          ctx.stroke();
+          // Foot
+          ctx.beginPath();
+          ctx.ellipse(lx + (lx < 300 ? -6 : 6), 772, 28, 16, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Arms (subtle animation on react)
+        const armLift = reactType === "happy" ? -26 : (reactType === "shock" ? -42 : Math.sin(t * 9) * 6);
+        // Left arm
+        ctx.save();
+        ctx.translate(238, 385);
+        ctx.rotate((0.28 + armLift * 0.012));
+        drawRoundedRect(ctx, -18, 0, 36, 146, 18);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+        // Right arm
+        ctx.save();
+        ctx.translate(362, 385);
+        ctx.rotate((-0.28 - armLift * 0.012));
+        drawRoundedRect(ctx, -18, 0, 36, 146, 18);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // Torso
+        ctx.fillStyle = skin;
+        ctx.beginPath();
+        ctx.moveTo(244, 365);
+        ctx.quadraticCurveTo(300, 355, 356, 365);
+        ctx.lineTo(342, 468);
+        ctx.quadraticCurveTo(366, 515, 354, 558);
+        ctx.lineTo(246, 558);
+        ctx.quadraticCurveTo(234, 515, 258, 468);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Default basic neutral tank-top & shorts (mộc mạc)
+        ctx.fillStyle = "#F4ECE6";
+        ctx.beginPath();
+        ctx.moveTo(252, 376);
+        ctx.lineTo(348, 376);
+        ctx.lineTo(342, 474);
+        ctx.lineTo(258, 474);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#E5D9D0";
+        drawRoundedRect(ctx, 246, 474, 108, 84, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        // Neck
+        ctx.fillStyle = skinShadow;
+        drawRoundedRect(ctx, 280, 318, 40, 56, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        // Ears
+        ctx.fillStyle = skin;
+        ctx.beginPath();
+        ctx.arc(204, 246, 19, 0, Math.PI * 2);
+        ctx.arc(396, 246, 19, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = skin;
+        ctx.beginPath();
+        ctx.ellipse(300, 236, 98, 94, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Base facial expression (nếu chưa có lớp makeup sẽ vẽ mặt mộc dễ thương)
+        if (!hasMakeup) {
+          // Simple cute eyes
+          for (const ex of [258, 342]) {
+            if (reactType === "shock") {
+              ctx.fillStyle = "#fff";
+              ctx.beginPath();
+              ctx.arc(ex, 244, 16, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.stroke();
+              ctx.fillStyle = INK;
+              ctx.beginPath();
+              ctx.arc(ex, 244, 5, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.fillStyle = INK;
+              ctx.beginPath();
+              ctx.ellipse(ex, 244, 12, 15, 0, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.fillStyle = "#fff";
+              ctx.beginPath();
+              ctx.arc(ex - 4, 239, 4.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          // Soft blush
+          ctx.fillStyle = "rgba(255, 140, 160, 0.35)";
+          ctx.beginPath();
+          ctx.ellipse(234, 266, 16, 9, 0, 0, Math.PI * 2);
+          ctx.ellipse(366, 266, 16, 9, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Mouth
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          if (reactType === "shock") {
+            ctx.fillStyle = "#E85D75";
+            ctx.ellipse(300, 290, 14, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          } else if (reactType === "happy") {
+            ctx.fillStyle = "#FF6B8B";
+            ctx.arc(300, 282, 16, 0, Math.PI);
+            ctx.fill();
+            ctx.stroke();
+          } else {
+            ctx.arc(300, 280, 14, 0.15 * Math.PI, 0.85 * Math.PI);
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+
+      // Layer 5 (z:4) — socks
+      function drawLayerSocks(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5;
+        if (side === 1) {
+          // Tất Lụa Ren Trắng tinh tế
+          for (const lx of [268, 332]) {
+            ctx.fillStyle = "#FFFDF9";
+            drawRoundedRect(ctx, lx - 23, 646, 46, 122, 14);
+            ctx.fill();
+            ctx.stroke();
+            // Lace trim top
+            ctx.fillStyle = "#FFE5F1";
+            for (let i = -16; i <= 16; i += 10) {
+              ctx.beginPath();
+              ctx.arc(lx + i, 648, 7, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.stroke();
+            }
+            // Ribbon bow
+            ctx.fillStyle = "#FF70A6";
+            ctx.beginPath();
+            ctx.arc(lx, 662, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+        } else if (side === 2) {
+          // Tất Rách Cọc Cạch (1 xanh lá sọc, 1 vàng thủng ngón)
+          // Left sock: neon green mismatched
+          ctx.fillStyle = "#70E000";
+          drawRoundedRect(ctx, 245, 628, 46, 140, 12);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#FF4D8D";
+          ctx.fillRect(247, 650, 42, 12);
+          ctx.fillRect(247, 682, 42, 12);
+          // Right sock: shorter yellow with torn hole
+          ctx.fillStyle = "#FFD166";
+          drawRoundedRect(ctx, 309, 670, 46, 98, 12);
+          ctx.fill();
+          ctx.stroke();
+          // Big rip hole showing skin
+          ctx.fillStyle = "#FFE1CE";
+          ctx.beginPath();
+          ctx.ellipse(336, 718, 13, 10, 0.3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Layer 6 (z:5) — footwear
+      function drawLayerFootwear(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5.5;
+        if (side === 1) {
+          // Cao Gót Pha Lê lấp lánh
+          for (const dir of [-1, 1]) {
+            const fx = dir < 0 ? 264 : 336;
+            const g = ctx.createLinearGradient(fx - 30, 740, fx + 30, 800);
+            g.addColorStop(0, "#E0FBFC");
+            g.addColorStop(0.5, "#72EFDD");
+            g.addColorStop(1, "#48CAE4");
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(fx - 26, 754);
+            ctx.quadraticCurveTo(fx, 766, fx + 26, 754);
+            ctx.lineTo(fx + 30, 790);
+            ctx.quadraticCurveTo(fx, 802, fx - 30, 790);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Crystal gem
+            ctx.fillStyle = "#FFF5B8";
+            drawStar(ctx, fx, 774, 4, 11, 5);
+            ctx.fill();
+            ctx.stroke();
+          }
+        } else if (side === 2) {
+          // Dép Tổ Ong Huyền Thoại dính bùn đất
+          for (const fx of [262, 338]) {
+            ctx.fillStyle = "#F4E2B6";
+            ctx.beginPath();
+            ctx.ellipse(fx, 778, 36, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            // Honeycomb holes
+            ctx.fillStyle = "#7D6846";
+            for (const [ox, oy] of [[-14, -4], [0, -6], [14, -4], [-8, 5], [8, 5]]) {
+              ctx.beginPath();
+              ctx.arc(fx + ox, 778 + oy, 4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            // Mud splatter
+            ctx.fillStyle = "#6F4E37";
+            ctx.beginPath();
+            ctx.arc(fx + 18, 785, 9, 0, Math.PI * 2);
+            ctx.arc(fx - 20, 770, 6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      // Layer 7 (z:6) — outfit
+      function drawLayerOutfit(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 6;
+        if (side === 1) {
+          // Váy Dạ Hội Phượng Bào dát vàng lộng lẫy
+          const dg = ctx.createLinearGradient(200, 365, 400, 725);
+          dg.addColorStop(0, "#FF4D8D");
+          dg.addColorStop(0.45, "#FF70A6");
+          dg.addColorStop(1, "#FFD166");
+          ctx.fillStyle = dg;
+          ctx.beginPath();
+          ctx.moveTo(246, 370);
+          ctx.quadraticCurveTo(300, 392, 354, 370);
+          ctx.lineTo(344, 468);
+          ctx.bezierCurveTo(418, 520, 444, 640, 434, 718);
+          ctx.quadraticCurveTo(368, 745, 300, 728);
+          ctx.quadraticCurveTo(232, 745, 166, 718);
+          ctx.bezierCurveTo(156, 640, 182, 520, 256, 468);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Golden waist sash & hem embroidery
+          ctx.fillStyle = "#FFE066";
+          drawRoundedRect(ctx, 252, 456, 96, 22, 10);
+          ctx.fill();
+          ctx.stroke();
+
+          // Gold sparkles on gown
+          ctx.fillStyle = "#FFF5B8";
+          for (const [gx, gy] of [[250, 560], [350, 565], [300, 625], [220, 665], [380, 665]]) {
+            drawStar(ctx, gx, gy, 4, 12, 5);
+            ctx.fill();
+          }
+        } else if (side === 2) {
+          // Bao Tải Thời Trang chắp vá nhiều màu
+          ctx.fillStyle = "#C9A66B";
+          ctx.beginPath();
+          ctx.moveTo(236, 366);
+          ctx.lineTo(364, 366);
+          ctx.lineTo(382, 626);
+          ctx.lineTo(352, 610);
+          ctx.lineTo(324, 634);
+          ctx.lineTo(298, 608);
+          ctx.lineTo(268, 632);
+          ctx.lineTo(242, 612);
+          ctx.lineTo(218, 626);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Rope belt
+          ctx.strokeStyle = "#7F4F24";
+          ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.moveTo(234, 480);
+          ctx.lineTo(366, 480);
+          ctx.stroke();
+
+          // Colorful patches
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 4;
+          ctx.fillStyle = "#FF595E";
+          ctx.fillRect(252, 405, 42, 38);
+          ctx.strokeRect(252, 405, 42, 38);
+          ctx.fillStyle = "#1982C4";
+          ctx.fillRect(312, 505, 44, 40);
+          ctx.strokeRect(312, 505, 44, 40);
+          ctx.fillStyle = "#8AC926";
+          ctx.fillRect(244, 528, 38, 36);
+          ctx.strokeRect(244, 528, 38, 36);
+
+          // Printed "50KG" sack text
+          ctx.fillStyle = "#5C3A21";
+          ctx.font = "900 22px Nunito, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("GẠO 50KG", 300, 464);
+        }
+        ctx.restore();
+      }
+
+      // Layer 8 (z:7) — necklace
+      function drawLayerNecklace(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 4.5;
+        if (side === 1) {
+          // Chuỗi Kim Cương bản lớn
+          ctx.strokeStyle = "#FFD166";
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.arc(300, 344, 46, 0.15 * Math.PI, 0.85 * Math.PI);
+          ctx.stroke();
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 3.5;
+          for (let i = -2; i <= 2; i++) {
+            const a = Math.PI / 2 + i * 0.34;
+            const dx = 300 + Math.cos(a) * 48;
+            const dy = 344 + Math.sin(a) * 48;
+            ctx.fillStyle = i === 0 ? "#48CAE4" : "#E0FBFC";
+            const s = i === 0 ? 15 : 9;
+            ctx.beginPath();
+            ctx.moveTo(dx, dy - s);
+            ctx.lineTo(dx + s * 0.85, dy);
+            ctx.lineTo(dx, dy + s * 1.2);
+            ctx.lineTo(dx - s * 0.85, dy);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+        } else if (side === 2) {
+          // Vòng Cổ Tỏi Trừ Tà kết hợp xích nhựa
+          ctx.strokeStyle = "#FF595E";
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.arc(300, 346, 54, 0.12 * Math.PI, 0.88 * Math.PI);
+          ctx.stroke();
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 4;
+          for (let i = -2; i <= 2; i++) {
+            const a = Math.PI / 2 + i * 0.35;
+            const gx = 300 + Math.cos(a) * 56;
+            const gy = 346 + Math.sin(a) * 56;
+            // Garlic bulb
+            ctx.fillStyle = "#FFF8E7";
+            ctx.beginPath();
+            ctx.moveTo(gx, gy - 16);
+            ctx.quadraticCurveTo(gx + 16, gy - 2, gx + 12, gy + 12);
+            ctx.quadraticCurveTo(gx, gy + 19, gx - 12, gy + 12);
+            ctx.quadraticCurveTo(gx - 16, gy - 2, gx, gy - 16);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+
+      // Layer 1 (z:8) — makeup
+      function drawLayerMakeup(ctx, side, reactType) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5;
+        if (side === 1) {
+          // Layout Nữ Thần: Mắt long lanh, mi cong, má hồng mịn, môi đỏ quyến rũ
+          // Soft glam blush
+          ctx.fillStyle = "rgba(255, 112, 166, 0.42)";
+          ctx.beginPath();
+          ctx.ellipse(234, 266, 20, 11, 0, 0, Math.PI * 2);
+          ctx.ellipse(366, 266, 20, 11, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Sparkling anime eyes + lashes
+          for (const ex of [258, 342]) {
+            ctx.fillStyle = "#3A1C59";
+            ctx.beginPath();
+            ctx.ellipse(ex, 244, 17, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#64DFDF";
+            ctx.beginPath();
+            ctx.ellipse(ex, 248, 12, 13, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#1E1030";
+            ctx.beginPath();
+            ctx.arc(ex, 245, 7, 0, Math.PI * 2);
+            ctx.fill();
+            // Twin star highlights
+            ctx.fillStyle = "#FFFFFF";
+            ctx.beginPath();
+            ctx.arc(ex - 5, 237, 6, 0, Math.PI * 2);
+            ctx.arc(ex + 6, 250, 3.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyelashes
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(ex, 244, 19, Math.PI * 1.1, Math.PI * 1.9);
+            ctx.stroke();
+          }
+
+          // Glam red lips
+          ctx.fillStyle = "#FF2A6D";
+          ctx.beginPath();
+          if (reactType === "shock") {
+            ctx.ellipse(300, 290, 14, 16, 0, 0, Math.PI * 2);
+          } else {
+            ctx.moveTo(282, 286);
+            ctx.quadraticCurveTo(291, 276, 300, 283);
+            ctx.quadraticCurveTo(309, 276, 318, 286);
+            ctx.quadraticCurveTo(300, 304, 282, 286);
+          }
+          ctx.fill();
+          ctx.stroke();
+        } else if (side === 2) {
+          // Mặt Nhọ Nồi: Vệt lọ nghẹ, má hồng loang lổ, răng sún tấu hài
+          // Soot smudges
+          ctx.fillStyle = "rgba(42, 34, 42, 0.72)";
+          ctx.beginPath();
+          ctx.ellipse(240, 212, 22, 12, -0.3, 0, Math.PI * 2);
+          ctx.ellipse(354, 286, 24, 13, 0.4, 0, Math.PI * 2);
+          ctx.ellipse(298, 268, 12, 8, 0.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Oversized clown blush circles
+          ctx.fillStyle = "rgba(255, 42, 92, 0.65)";
+          ctx.beginPath();
+          ctx.arc(230, 266, 22, 0, Math.PI * 2);
+          ctx.arc(370, 266, 22, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Goofy mismatched eyes + unibrow
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.moveTo(234, 216);
+          ctx.quadraticCurveTo(300, 226, 366, 216);
+          ctx.stroke();
+
+          ctx.lineWidth = 5;
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(258, 244, 17, 0, Math.PI * 2);
+          ctx.arc(342, 244, 14, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = INK;
+          ctx.beginPath();
+          ctx.arc(264, 242, 6, 0, Math.PI * 2);
+          ctx.arc(335, 248, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Wide goofy grin with missing tooth (răng sún)
+          ctx.fillStyle = "#9E1B32";
+          ctx.beginPath();
+          ctx.arc(300, 282, 24, 0, Math.PI);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(284, 283, 10, 10);
+          ctx.fillRect(306, 283, 10, 10);
+          ctx.strokeRect(284, 283, 10, 10);
+          ctx.strokeRect(306, 283, 10, 10);
+        }
+        ctx.restore();
+      }
+
+      // Layer 3 (z:9) — earrings
+      function drawLayerEarrings(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 4.5;
+        if (side === 1) {
+          // Khuyên Ngọc Bích dài chạm vai
+          for (const ex of [198, 402]) {
+            ctx.fillStyle = "#FFD166";
+            ctx.beginPath();
+            ctx.arc(ex, 266, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#06D6A0";
+            ctx.beginPath();
+            ctx.moveTo(ex, 276);
+            ctx.lineTo(ex + 14, 306);
+            ctx.lineTo(ex, 336);
+            ctx.lineTo(ex - 14, 306);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#B8FFE9";
+            ctx.beginPath();
+            ctx.arc(ex - 3, 302, 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else if (side === 2) {
+          // Kẹp Phơi Đồ xanh đỏ
+          const colors = ["#00B4D8", "#FF4D6D"];
+          [194, 406].forEach((ex, idx) => {
+            ctx.save();
+            ctx.translate(ex, 266);
+            ctx.rotate(idx === 0 ? 0.25 : -0.25);
+            ctx.fillStyle = colors[idx];
+            drawRoundedRect(ctx, -11, 0, 22, 62, 6);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#CBD5E1";
+            ctx.fillRect(-13, 22, 26, 8);
+            ctx.strokeRect(-13, 22, 26, 8);
+            ctx.restore();
+          });
+        }
+        ctx.restore();
+      }
+
+      // Layer 4 (z:10) — eyewear
+      function drawLayerEyewear(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5;
+        if (side === 1) {
+          // Kính Hiệu Gucci viền vàng quý tộc
+          ctx.fillStyle = "rgba(25, 16, 40, 0.85)";
+          ctx.strokeStyle = "#FFD166";
+          ctx.lineWidth = 7;
+          drawRoundedRect(ctx, 214, 220, 74, 46, 16);
+          ctx.fill();
+          ctx.stroke();
+          drawRoundedRect(ctx, 312, 220, 74, 46, 16);
+          ctx.fill();
+          ctx.stroke();
+          // Bridge
+          ctx.beginPath();
+          ctx.moveTo(288, 236);
+          ctx.lineTo(312, 236);
+          ctx.stroke();
+          // Lens sheen
+          ctx.strokeStyle = "rgba(255,255,255,0.55)";
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(226, 254); ctx.lineTo(246, 228);
+          ctx.moveTo(324, 254); ctx.lineTo(344, 228);
+          ctx.stroke();
+        } else if (side === 2) {
+          // Kính Bơi Mắt Lác hồng neon
+          ctx.strokeStyle = "#FF007F";
+          ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.moveTo(202, 240);
+          ctx.lineTo(398, 240);
+          ctx.stroke();
+
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 5;
+          for (const [gx, px] of [[256, 266], [344, 334]]) {
+            ctx.fillStyle = "#FF66C4";
+            ctx.beginPath();
+            ctx.ellipse(gx, 242, 38, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#B8FBFF";
+            ctx.beginPath();
+            ctx.ellipse(gx, 242, 28, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            // Crossed-eye spiral/pupil
+            ctx.fillStyle = INK;
+            ctx.beginPath();
+            ctx.arc(px, 242, 9, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      // Layer 9 (z:11) — headpiece
+      function drawLayerHeadpiece(ctx, side) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5.5;
+        if (side === 1) {
+          // Vương Miện Nữ Hoàng đính ngọc trai phát sáng
+          const cg = ctx.createLinearGradient(230, 82, 370, 165);
+          cg.addColorStop(0, "#FFF5B8");
+          cg.addColorStop(0.5, "#FFD166");
+          cg.addColorStop(1, "#F4A261");
+          ctx.fillStyle = cg;
+          ctx.beginPath();
+          ctx.moveTo(234, 152);
+          ctx.lineTo(222, 92);
+          ctx.lineTo(266, 122);
+          ctx.lineTo(300, 74);
+          ctx.lineTo(334, 122);
+          ctx.lineTo(378, 92);
+          ctx.lineTo(366, 152);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Pearls & central gem
+          ctx.fillStyle = "#FFFFFF";
+          for (const [px, py] of [[222, 88], [300, 68], [378, 88]]) {
+            ctx.beginPath();
+            ctx.arc(px, py, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+          ctx.fillStyle = "#FF4D8D";
+          ctx.beginPath();
+          ctx.arc(300, 128, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else if (side === 2) {
+          // Nồi Cơm Điện Úp Ngược + Khăn Mặt Vắt Trán
+          // White towel wrapped across forehead
+          ctx.fillStyle = "#FFFDF9";
+          drawRoundedRect(ctx, 206, 146, 188, 28, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          // Upside-down rice cooker pot
+          ctx.fillStyle = "#E2E8F0";
+          ctx.beginPath();
+          ctx.moveTo(212, 154);
+          ctx.lineTo(222, 68);
+          ctx.quadraticCurveTo(300, 52, 378, 68);
+          ctx.lineTo(388, 154);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Cute floral decal & switch panel on rice cooker
+          ctx.fillStyle = "#FF4D8D";
+          ctx.beginPath();
+          ctx.arc(258, 114, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#334155";
+          drawRoundedRect(ctx, 308, 102, 46, 26, 6);
+          ctx.fill();
+          ctx.fillStyle = "#EF4444";
+          ctx.beginPath();
+          ctx.arc(322, 115, 6, 0, Math.PI * 2);
+          ctx.fill();
+          // Handles
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.arc(208, 124, 16, Math.PI * 0.5, Math.PI * 1.5);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(392, 124, 16, -Math.PI * 0.5, Math.PI * 0.5);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Layer 11 (z:12) — handheld_pet
+      function drawLayerHandheldPet(ctx, side, t) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5.5;
+        const bob = Math.sin(t * 7) * 5;
+        if (side === 1) {
+          // Túi Hiệu Dát Vàng (tay trái) & Mèo Quý Tộc đội mũ (bên phải)
+          // Designer handbag
+          ctx.fillStyle = "#FFD166";
+          drawRoundedRect(ctx, 134, 495, 76, 64, 14);
+          ctx.fill();
+          ctx.stroke();
+          ctx.strokeStyle = "#E09F1F";
+          ctx.lineWidth = 7;
+          ctx.beginPath();
+          ctx.arc(172, 495, 22, Math.PI, 0);
+          ctx.stroke();
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 4;
+          ctx.fillStyle = "#FFF5B8";
+          ctx.fillRect(162, 515, 20, 14);
+          ctx.strokeRect(162, 515, 20, 14);
+
+          // Royal Persian Cat wearing tiny crown
+          ctx.save();
+          ctx.translate(456, 628 + bob);
+          ctx.fillStyle = "#FFFDF9";
+          // Body
+          ctx.beginPath();
+          ctx.ellipse(0, 32, 38, 42, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Head
+          ctx.beginPath();
+          ctx.arc(0, -18, 34, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Cat ears
+          ctx.beginPath();
+          ctx.moveTo(-26, -38); ctx.lineTo(-18, -62); ctx.lineTo(-4, -46);
+          ctx.moveTo(26, -38); ctx.lineTo(18, -62); ctx.lineTo(4, -46);
+          ctx.fill();
+          ctx.stroke();
+          // Mini gold crown
+          ctx.fillStyle = "#FFD166";
+          ctx.beginPath();
+          ctx.moveTo(-14, -48); ctx.lineTo(-10, -68); ctx.lineTo(0, -56); ctx.lineTo(10, -68); ctx.lineTo(14, -48);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Cute cat face
+          ctx.fillStyle = INK;
+          ctx.beginPath();
+          ctx.arc(-11, -20, 4.5, 0, Math.PI * 2);
+          ctx.arc(11, -20, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#FF70A6";
+          ctx.beginPath();
+          ctx.arc(0, -12, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (side === 2) {
+          // Muôi Múc Canh (tay trái) & Vịt Kêu (bên phải)
+          // Soup Ladle
+          ctx.save();
+          ctx.translate(168, 512);
+          ctx.rotate(-0.45);
+          ctx.fillStyle = "#CBD5E1";
+          drawRoundedRect(ctx, -8, -82, 16, 130, 8);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#94A3B8";
+          ctx.beginPath();
+          ctx.arc(0, -86, 30, 0, Math.PI);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+
+          // Screaming Yellow Rubber Duck
+          ctx.save();
+          ctx.translate(456, 636 + bob);
+          ctx.fillStyle = "#FFE066";
+          ctx.beginPath();
+          ctx.ellipse(0, 32, 40, 32, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(-6, -12, 30, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Big orange beak open wide
+          ctx.fillStyle = "#FB5607";
+          ctx.beginPath();
+          ctx.ellipse(-34, -8, 18, 12, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Googly eye
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(-14, -18, 9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = INK;
+          ctx.beginPath();
+          ctx.arc(-16, -18, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      // Composite 12-layer Paper Doll Renderer (Zero-Offset 600x900)
+      // Precise Manhua Face Makeup Overlay on charBase (Head Center: cx=300, cy=140)
+      function drawManhuaFaceMakeup(ctx, side, reactType) {
+        ctx.save();
+        if (side === 1) {
+          // Layout Nữ Thần: Má hồng đào thanh tú, mi mắt long lanh, môi đỏ mọng
+          ctx.fillStyle = "rgba(255, 120, 160, 0.45)";
+          ctx.beginPath();
+          ctx.ellipse(284, 146, 12, 7, 0, 0, Math.PI * 2);
+          ctx.ellipse(316, 146, 12, 7, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Delicate eye sparkles
+          ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+          ctx.beginPath();
+          ctx.arc(288, 136, 2.5, 0, Math.PI * 2);
+          ctx.arc(312, 136, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Glossy cherry lips
+          ctx.fillStyle = "#FF3366";
+          ctx.beginPath();
+          ctx.ellipse(300, 164, 7, 3.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Forehead bindi / peach blossom mark
+          ctx.fillStyle = "#FF4081";
+          ctx.beginPath();
+          ctx.ellipse(300, 122, 2.5, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (side === 2) {
+          // Mặt Nhọ Nồi: Vệt nhọ nghẹ tấu hài đáng yêu ngay trên trán và má
+          ctx.fillStyle = "rgba(45, 35, 40, 0.68)";
+          ctx.beginPath();
+          ctx.ellipse(310, 116, 11, 6, 0.25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(320, 150, 9, 5, -0.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(298, 140, 5, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(255, 77, 109, 0.55)";
+          ctx.beginPath();
+          ctx.ellipse(280, 148, 10, 6, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawPaperDoll(ctx, equipped, t, reactType, isRunning) {
+        ctx.save();
+        const runBob = isRunning ? Math.abs(Math.sin(t * 9.5)) * -10 : Math.sin(t * 3.5) * 4;
+        const reactJump = reactType === "happy" ? -Math.abs(Math.sin(t * 15)) * 22 : 0;
+        const reactShake = reactType === "shock" ? Math.sin(t * 42) * 8 : 0;
+        ctx.translate(reactShake, runBob + reactJump);
+
+        const hasManhuaBase = Boolean(CUTOUTS.charBase);
+
+        // 1. Back layers behind base_body
+        if (equipped.bg_aura) drawLayerBgAura(ctx, equipped.bg_aura, t);
+        if (equipped.vehicle) drawLayerVehicleBack(ctx, equipped.vehicle, t);
+
+        // Vehicle Back Sprite
+        if (equipped.vehicle === 1 && CUTOUTS.vehicleCarriage) {
+          const cw = CUTOUTS.vehicleCarriage.width;
+          const ch = CUTOUTS.vehicleCarriage.height;
+          ctx.drawImage(CUTOUTS.vehicleCarriage, 300 - cw / 2, 700 - ch / 2, cw, ch);
+        } else if (equipped.vehicle === 1 && CUTOUTS.vehicleFerrari) {
+          const fw = CUTOUTS.vehicleFerrari.width;
+          const fh = CUTOUTS.vehicleFerrari.height;
+          ctx.drawImage(CUTOUTS.vehicleFerrari, 300 - fw / 2, 740 - fh / 2, fw, fh);
+        } else if (equipped.vehicle === 2 && CUTOUTS.vehiclePig) {
+          const pw = CUTOUTS.vehiclePig.width;
+          const ph = CUTOUTS.vehiclePig.height;
+          ctx.drawImage(CUTOUTS.vehiclePig, 300 - pw / 2, 720 - ph / 2, pw, ph);
+        }
+
+        // Hair back: NEVER draw fallback vector collar when Manhua base is active!
+        if (equipped.hair_back && !hasManhuaBase) {
+          drawLayerHairBack(ctx, equipped.hair_back, t);
+        }
+
+        // 2. Base body (z: 0) — Manhua Model chuẩn tỷ lệ
+        if (hasManhuaBase) {
+          const bw = CUTOUTS.charBase.width;
+          const bh = CUTOUTS.charBase.height;
+          const scale = 880 / bh;
+          const dw = bw * scale;
+          const dh = bh * scale;
+          ctx.drawImage(CUTOUTS.charBase, 300 - dw / 2, 450 - dh / 2 + 10, dw, dh);
+        } else {
+          drawLayerBaseBody(ctx, reactType, Boolean(equipped.makeup), t);
+        }
+
+        // 3. Front layers
+        if (equipped.socks && !hasManhuaBase) drawLayerSocks(ctx, equipped.socks);
+        if (equipped.footwear === 2 && CUTOUTS.shoesSlipper) {
+          const sw = CUTOUTS.shoesSlipper.width * 0.72;
+          const sh = CUTOUTS.shoesSlipper.height * 0.72;
+          ctx.drawImage(CUTOUTS.shoesSlipper, 300 - sw / 2, 775 - sh / 2, sw, sh);
+        } else if (equipped.footwear && !hasManhuaBase) {
+          drawLayerFootwear(ctx, equipped.footwear);
+        }
+
+        // Outfits
+        if (equipped.outfit === 1 && CUTOUTS.outfitFairy) {
+          const ow = CUTOUTS.outfitFairy.width;
+          const oh = CUTOUTS.outfitFairy.height;
+          const scale = 860 / oh;
+          const dw = ow * scale;
+          const dh = oh * scale;
+          ctx.drawImage(CUTOUTS.outfitFairy, 300 - dw / 2, 455 - dh / 2 + 15, dw, dh);
+        } else if (equipped.outfit === 2 && CUTOUTS.outfitTroll) {
+          const ow = CUTOUTS.outfitTroll.width;
+          const oh = CUTOUTS.outfitTroll.height;
+          const scale = 860 / oh;
+          const dw = ow * scale;
+          const dh = oh * scale;
+          ctx.drawImage(CUTOUTS.outfitTroll, 300 - dw / 2, 455 - dh / 2 + 15, dw, dh);
+        } else if (equipped.outfit && !hasManhuaBase) {
+          drawLayerOutfit(ctx, equipped.outfit);
+        }
+
+        if (equipped.necklace && !hasManhuaBase) drawLayerNecklace(ctx, equipped.necklace);
+
+        // Makeup: Use precise face overlay when Manhua model is present
+        if (equipped.makeup) {
+          if (hasManhuaBase) {
+            drawManhuaFaceMakeup(ctx, equipped.makeup, reactType);
+          } else {
+            drawLayerMakeup(ctx, equipped.makeup, reactType);
+          }
+        }
+
+        if (equipped.earrings && !hasManhuaBase) drawLayerEarrings(ctx, equipped.earrings);
+        if (equipped.eyewear && !hasManhuaBase) drawLayerEyewear(ctx, equipped.eyewear);
+
+        // Hair front / Headpiece
+        if (equipped.hair_back === 1 || equipped.headpiece === 1) {
+          if (CUTOUTS.hairFairy) {
+            const hw = CUTOUTS.hairFairy.width;
+            const hh = CUTOUTS.hairFairy.height;
+            const scale = 360 / hw;
+            const dw = hw * scale;
+            const dh = hh * scale;
+            ctx.drawImage(CUTOUTS.hairFairy, 300 - dw / 2, 45, dw, dh);
+          } else if (!hasManhuaBase) {
+            drawLayerHairFront(ctx, 1);
+          }
+        } else if (equipped.hair_back === 2) {
+          if (CUTOUTS.hairTroll) {
+            const hw = CUTOUTS.hairTroll.width;
+            const hh = CUTOUTS.hairTroll.height;
+            const scale = 270 / hw;
+            const dw = hw * scale;
+            const dh = hh * scale;
+            ctx.drawImage(CUTOUTS.hairTroll, 300 - dw / 2, 45, dw, dh);
+          } else if (!hasManhuaBase) {
+            drawLayerHairFront(ctx, 2);
+          }
+        } else if (!hasManhuaBase) {
+          drawLayerHairFront(ctx, 0);
+          if (equipped.headpiece) drawLayerHeadpiece(ctx, equipped.headpiece);
+        }
+
+        // Handheld props
+        if (equipped.handheld_pet === 1 && CUTOUTS.propLantern) {
+          const pw = CUTOUTS.propLantern.width;
+          const ph = CUTOUTS.propLantern.height;
+          const scale = 220 / ph;
+          const dw = pw * scale;
+          const dh = ph * scale;
+          ctx.drawImage(CUTOUTS.propLantern, 410 - dw / 2, 535 - dh / 2, dw, dh);
+        } else if (equipped.handheld_pet === 2 && CUTOUTS.propLadle) {
+          const pw = CUTOUTS.propLadle.width;
+          const ph = CUTOUTS.propLadle.height;
+          const scale = 200 / ph;
+          const dw = pw * scale;
+          const dh = ph * scale;
+          ctx.drawImage(CUTOUTS.propLadle, 410 - dw / 2, 535 - dw / 2, dw, dh);
+        } else if (equipped.handheld_pet && !hasManhuaBase) {
+          drawLayerHandheldPet(ctx, equipped.handheld_pet, t);
+        }
+        if (equipped.vehicle) drawLayerVehicleFront(ctx, equipped.vehicle, t);
+
+        // Cute reaction FX icons on character
+        if (reactType === "happy") {
+          ctx.fillStyle = "#FF4D8D";
+          ctx.font = "900 44px Nunito, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("✨💖✨", 300, 70);
+        } else if (reactType === "shock") {
+          ctx.fillStyle = "#38BDF8";
+          ctx.font = "900 44px Nunito, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("💦😱💦", 300, 70);
+        }
+        ctx.restore();
+      }
+
+      // High-Fidelity 2D Item Preview on Approaching Glass Cards
+      function drawGateItemPreview(ctx, layerId, side, cx, cy, size, t) {
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        // Check if high-resolution sprite cutout is available for this item
+        let sprite = null;
+        let sprScale = 1.0;
+        if (layerId === "outfit") {
+          sprite = side === 1 ? CUTOUTS.outfitFairy : CUTOUTS.outfitTroll;
+          sprScale = (size * 0.88) / 860;
+        } else if (layerId === "hair_back" || layerId === "headpiece") {
+          if (side === 1 && CUTOUTS.hairFairy) {
+            sprite = CUTOUTS.hairFairy;
+            sprScale = (size * 0.82) / 420;
+          } else if (side === 2 && CUTOUTS.hairTroll) {
+            sprite = CUTOUTS.hairTroll;
+            sprScale = (size * 0.82) / 360;
+          }
+        } else if (layerId === "makeup") {
+          if (side === 1 && CUTOUTS.paletteBeauty) {
+            sprite = CUTOUTS.paletteBeauty;
+            sprScale = (size * 0.82) / 260;
+          }
+        } else if (layerId === "handheld_pet") {
+          sprite = side === 1 ? CUTOUTS.propLantern : CUTOUTS.propLadle;
+          sprScale = (size * 0.78) / 300;
+        } else if (layerId === "vehicle") {
+          if (side === 1) sprite = CUTOUTS.vehicleCarriage || CUTOUTS.vehicleFerrari;
+          else sprite = CUTOUTS.vehiclePig;
+          sprScale = (size * 0.92) / (side === 1 ? 520 : 440);
+        } else if (layerId === "footwear" && side === 2 && CUTOUTS.shoesSlipper) {
+          sprite = CUTOUTS.shoesSlipper;
+          sprScale = (size * 0.75) / 220;
+        }
+
+        if (sprite) {
+          const sw = sprite.width * sprScale;
+          const sh = sprite.height * sprScale;
+          ctx.shadowColor = "rgba(0, 0, 0, 0.18)";
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
+          ctx.drawImage(sprite, -sw / 2, -sh / 2, sw, sh);
+          ctx.restore();
+          return;
+        }
+
+        // Fallback: Soft frosted circular badge with vector preview
+        ctx.fillStyle = side === 1 ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 248, 252, 0.92)";
+        ctx.strokeStyle = side === 1 ? "#06D6E8" : "#FF4D8D";
+        ctx.lineWidth = Math.max(1.8, size * 0.045);
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.46, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.42, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Focus coordinates (fx, fy, zoom) in 600x900 space for each layer
+        const focusMap = {
+          makeup:       [300, 255, 2.3],
+          hair_back:    [300, 290, 1.35],
+          earrings:     [198, 300, 3.0],
+          eyewear:      [300, 240, 2.5],
+          socks:        [300, 700, 2.6],
+          footwear:     [300, 775, 2.8],
+          outfit:       [300, 520, 1.45],
+          necklace:     [300, 375, 3.0],
+          headpiece:    [300, 118, 2.3],
+          bg_aura:      [300, 330, 1.05],
+          handheld_pet: [456, 615, 2.4],
+          vehicle:      [300, 715, 1.05]
+        };
+        const [fx, fy, zoom] = focusMap[layerId] || [300, 400, 1.5];
+        const scale = (size / 540) * zoom;
+        ctx.scale(scale, scale);
+        ctx.translate(-fx, -fy);
+
+        if (layerId === "makeup") {
+          ctx.save();
+          ctx.fillStyle = side === 1 ? "#FAF0F2" : "#241E26";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 14;
+          drawRoundedRect(ctx, 220, 160, 160, 160, 24);
+          ctx.fill();
+          ctx.stroke();
+          const pans = side === 1
+            ? ["#FFB5C5", "#FDE2E4", "#FFC6D9", "#F7D6E0", "#FFCAD4", "#E8A598", "#FFE5D9", "#FAD2E1", "#FFF0F5"]
+            : ["#1B1720", "#3E2A47", "#5A189A", "#7B2CBF", "#240046", "#3C096C", "#9D4EDD", "#FF007F", "#10002B"];
+          for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+              ctx.fillStyle = pans[r * 3 + c];
+              drawRoundedRect(ctx, 236 + c * 44, 176 + r * 44, 38, 38, 8);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+        } else if (layerId === "hair_back") {
+          drawLayerHairBack(ctx, side, t);
+          drawLayerHairFront(ctx, side);
+        } else if (layerId === "earrings") {
+          drawLayerEarrings(ctx, side);
+        } else if (layerId === "eyewear") {
+          drawLayerEyewear(ctx, side);
+        } else if (layerId === "socks") {
+          drawLayerSocks(ctx, side);
+        } else if (layerId === "footwear") {
+          drawLayerFootwear(ctx, side);
+        } else if (layerId === "outfit") {
+          drawLayerOutfit(ctx, side);
+        } else if (layerId === "necklace") {
+          drawLayerNecklace(ctx, side);
+        } else if (layerId === "headpiece") {
+          drawLayerHeadpiece(ctx, side);
+        } else if (layerId === "bg_aura") {
+          drawLayerBgAura(ctx, side, t);
+        } else if (layerId === "handheld_pet") {
+          drawLayerHandheldPet(ctx, side, t);
+        } else if (layerId === "vehicle") {
+          drawLayerVehicleBack(ctx, side, t);
+          drawLayerVehicleFront(ctx, side, t);
+        }
+        ctx.restore();
+      }
+
+      /* =====================================================================
+       * 6. GAME ENGINE & STATE MACHINE
+       * ===================================================================== */
+      const canvas = document.getElementById("game-canvas");
+      const ctx = canvas.getContext("2d", { alpha: false });
+      const stageFrame = document.getElementById("stage-frame");
+
+      const sfx = new SoundEngine();
+      const mc = new VirtualMC();
+
+      const state = {
+        phase: STATE_INTRO,
+        scenarioIndex: 0,
+        gateIndex: 0, // 0..11 (Gate 1..12)
+        phaseElapsed: 0,
+        phaseDuration: 5,
+        time: 0,
+        roadOffset: 0,
+        manhuaSubtitle: "Khuôn mặt quyết định thần thái, đậm hơn một chút chăng?",
+
+        // Current gate scores
+        gateScore1: 0,
+        gateScore2: 0,
+        gateShake1: 0,
+        gateShake2: 0,
+        gateLock: null, // { side: 1|2, until: timestampMs, owner: string }
+        lastCountdownSec: 0,
+
+        // Round equipped layers (layerId -> 1 | 2 | null)
+        equipped: {},
+
+        // Character animations & speech bubble
+        reactType: "idle", // 'idle' | 'happy' | 'shock'
+        reactUntil: 0,
+        charBubble: "",
+        charBubbleUntil: 0,
+
+        // Full-screen FX
+        screenShakeUntil: 0,
+        screenShakePower: 0,
+        lightningFlashUntil: 0,
+        lightningSide: 1,
+
+        // Verdict state
+        verdictType: "hybrid", // 'beauty' | 'troll' | 'hybrid'
+        verdictBeautyPct: 50,
+        verdictTrollPct: 50,
+        verdictSpoken: false,
+
+        // Players, Teams & MVPs
+        userTeams: new Map(), // userId -> 1 | 2
+        userLikes: new Map(), // userId -> remainder count
+        userCommentCooldown: new Map(), // `${userId}_${gateIndex}` -> ms
+        userShareCooldown: new Map(), // userId -> ms
+        scoresBeauty: new Map(), // userId -> { name, avatar, score }
+        scoresTroll: new Map(),
+        topBeauty: null,
+        topTroll: null,
+        prevRoundMvpText: "",
+
+        // Combo thermometer (Cơn Mưa Thả Tim)
+        comboValue: 0, // 0..100
+        feverUntil: 0,
+
+        // Entities (strictly capped)
+        particles: [],
+        projectiles: [],
+        floatingTexts: [],
+        gateShards: [],
+
+        // Automation & timers
+        autoBotEnabled: true,
+        lastRealInteractionAt: 0,
+        lastBotTickAt: 0,
+        lastMcIdleAt: 0,
+        lastHudDomUpdateAt: 0,
+        lastTickTime: performance.now(),
+
+        // Canvas logical size
+        W: 540,
+        H: 960,
+        dpr: 2
+      };
+
+      /* ---- DOM Refs ---- */
+      const dom = {
+        roundPill: document.getElementById("hud-round-pill"),
+        scenarioTitle: document.getElementById("hud-scenario-title"),
+        scenarioHook: document.getElementById("hud-scenario-hook"),
+        gateBadge: document.getElementById("hud-gate-badge"),
+        timer: document.getElementById("hud-timer"),
+        tugLeft: document.getElementById("tug-fill-left"),
+        tugPin: document.getElementById("tug-center-pin"),
+        tugLeftText: document.getElementById("tug-left-text"),
+        tugRightText: document.getElementById("tug-right-text"),
+        comboMeter: document.getElementById("combo-meter"),
+        comboFill: document.getElementById("combo-fill"),
+        comboLabel: document.getElementById("combo-label"),
+        prevMvpRibbon: document.getElementById("prev-mvp-ribbon"),
+        toastLayer: document.getElementById("toast-layer"),
+        introOverlay: document.getElementById("intro-overlay"),
+        introKicker: document.getElementById("intro-kicker"),
+        introTitle: document.getElementById("intro-title"),
+        introHook: document.getElementById("intro-hook"),
+        mvpBeautyAv: document.getElementById("mvp-beauty-av"),
+        mvpBeautyName: document.getElementById("mvp-beauty-name"),
+        mvpTrollAv: document.getElementById("mvp-troll-av"),
+        mvpTrollName: document.getElementById("mvp-troll-name"),
+        selectScenario: document.getElementById("select-scenario"),
+        ttStatusDot: document.getElementById("tt-status-dot"),
+        ttConnBadge: document.getElementById("tt-conn-badge"),
+        ttStatusText: document.getElementById("tt-status-text"),
+        ttUsername: document.getElementById("tt-username"),
+        testUser: document.getElementById("test-user"),
+        testSide: document.getElementById("test-side"),
+        controlPanel: document.getElementById("control-panel")
+      };
+
+      // Populate 20 scenarios dropdown
+      SCENARIOS.forEach((sc, idx) => {
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `${sc.id}. ${sc.title}`;
+        dom.selectScenario.appendChild(opt);
+      });
+
+      /* ---- Resize High-DPI Canvas ---- */
+      function resizeCanvas() {
+        const rect = stageFrame.getBoundingClientRect();
+        const w = Math.max(240, Math.round(rect.width));
+        const h = Math.max(426, Math.round(rect.height));
+        const dpr = Math.max(2, Math.min(window.devicePixelRatio || 1, 3));
+        state.W = w;
+        state.H = h;
+        state.dpr = dpr;
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      /* ---- Toast Helper ---- */
+      function showToast(text, cls = "") {
+        const el = document.createElement("div");
+        el.className = `live-toast ${cls}`;
+        el.textContent = text;
+        dom.toastLayer.appendChild(el);
+        while (dom.toastLayer.children.length > 1) {
+          dom.toastLayer.removeChild(dom.toastLayer.firstChild);
+        }
+        setTimeout(() => {
+          el.style.transition = "opacity 0.25s, transform 0.25s";
+          el.style.opacity = "0";
+          el.style.transform = "translateY(-6px)";
+          setTimeout(() => el.remove(), 260);
+        }, 2100);
+      }
+
+      /* ---- Particle & Floating Text Spawners (with strict caps) ---- */
+      function spawnParticles(x, y, color, count = 14, emoji = null) {
+        for (let i = 0; i < count; i++) {
+          if (state.particles.length >= MAX_PARTICLES) state.particles.shift();
+          const ang = Math.random() * Math.PI * 2;
+          const spd = 70 + Math.random() * 210;
+          state.particles.push({
+            x, y,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd - 60,
+            size: 4 + Math.random() * 6,
+            color,
+            emoji,
+            life: 0.55 + Math.random() * 0.45,
+            maxLife: 1.0
+          });
+        }
+      }
+
+      function spawnFloatingText(x, y, text, color = "#FFD166") {
+        if (state.floatingTexts.length >= MAX_FLOATING_TEXTS) state.floatingTexts.shift();
+        state.floatingTexts.push({ x, y, text, color, life: 1.05, maxLife: 1.05 });
+      }
+
+      function getGateTargetPos(side) {
+        const progress = getGateProgress();
+        const y = state.H * (0.255 + progress * 0.072);
+        const spread = state.W * (0.18 + progress * 0.06);
+        return {
+          x: side === 1 ? state.W * 0.5 - spread : state.W * 0.5 + spread,
+          y
+        };
+      }
+
+      function spawnAvatarProjectile(side, user, power = 1, isGift = false, emoji = null) {
+        if (state.projectiles.length >= MAX_PROJECTILES) state.projectiles.shift();
+        const startX = state.W * (0.18 + Math.random() * 0.64);
+        const startY = state.H * 0.78;
+        const target = getGateTargetPos(side);
+        state.projectiles.push({
+          side,
+          user,
+          power,
+          isGift,
+          emoji,
+          startX,
+          startY,
+          x: startX,
+          y: startY,
+          targetX: target.x + (Math.random() - 0.5) * 26,
+          targetY: target.y + (Math.random() - 0.5) * 18,
+          ctrlX: (startX + target.x) * 0.5 + (side === 1 ? -48 : 48),
+          ctrlY: Math.min(startY, target.y) - 90,
+          t: 0,
+          duration: isGift ? 0.42 : 0.48,
+          bounced: false,
+          vx: 0,
+          vy: 0
+        });
+      }
+
+      /* ---- MVP & Scoring Helpers ---- */
+      function addUserScore(side, user, delta) {
+        const map = side === 1 ? state.scoresBeauty : state.scoresTroll;
+        const prevTop = side === 1 ? state.topBeauty : state.topTroll;
+        let rec = map.get(user.uniqueId);
+        if (!rec) {
+          rec = { id: user.uniqueId, name: user.nickname, avatar: user.profilePictureUrl || "", score: 0 };
+          map.set(user.uniqueId, rec);
+        }
+        rec.name = user.nickname || rec.name;
+        if (user.profilePictureUrl) rec.avatar = user.profilePictureUrl;
+        rec.score += delta;
+
+        // Recompute Top 1
+        let best = null;
+        for (const item of map.values()) {
+          if (!best || item.score > best.score) best = item;
+        }
+        if (side === 1) {
+          if (best && (!prevTop || prevTop.id !== best.id) && best.score >= 3) {
+            if (prevTop) {
+              showToast(`👑 ${best.name} soán ngôi Nhà Tạo Mẫu Top 1!`, "dethrone");
+              sfx.share();
+            }
+          }
+          state.topBeauty = best;
+        } else {
+          if (best && (!prevTop || prevTop.id !== best.id) && best.score >= 3) {
+            if (prevTop) {
+              showToast(`🤡 ${best.name} soán ngôi Thánh Troll Top 1!`, "dethrone");
+              sfx.share();
+            }
+          }
+          state.topTroll = best;
+        }
+      }
+
+      function addCombo(amount) {
+        const now = performance.now();
+        if (now < state.feverUntil) return;
+        state.comboValue = Math.min(100, state.comboValue + amount);
+        if (state.comboValue >= 100) {
+          state.comboValue = 0;
+          state.feverUntil = now + 15000;
+          showToast("💖 CƠN MƯA THẢ TIM! Nhân đôi sức mạnh miễn phí trong 15s!", "gift");
+          sfx.verdict("beauty");
+          mc.say("Bùng nổ rồi! Cơn mưa thả tim đã kích hoạt, nhân đôi sức mạnh tương tác miễn phí trong 15 giây!", false);
+        }
+      }
+
+      function isGateLockedFor(otherSide) {
+        if (!state.gateLock) return false;
+        if (performance.now() >= state.gateLock.until) {
+          state.gateLock = null;
+          return false;
+        }
+        return state.gateLock.side !== otherSide;
+      }
+
+      function applyGatePoints(side, pts, hitX, hitY, isGift = false) {
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return;
+        if (isGateLockedFor(side) && !isGift) {
+          sfx.bounce();
+          spawnFloatingText(hitX, hitY - 12, "🔒 ĐÃ KHÓA!", "#FFD166");
+          return;
+        }
+        if (side === 1) {
+          state.gateScore1 += pts;
+          state.gateShake1 = 1;
+        } else {
+          state.gateScore2 += pts;
+          state.gateShake2 = 1;
+        }
+        sfx.pop(side);
+        spawnParticles(hitX, hitY, side === 1 ? "#06D6E8" : "#FF4D8D", isGift ? 14 : 6);
+      }
+
+      /* ---- Core Interaction Handlers ---- */
+      function normalizeText(str) {
+        return String(str || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/đ/g, "d")
+          .trim();
+      }
+
+      function parseCommentSide(raw) {
+        const t = normalizeText(raw);
+        if (!t) return 0;
+        const has1 = /(^|\s)(1|dep|cuu|xanh|xinh|lam dep|giai cuu|my nhan)(\s|$)/.test(t) || (t.includes("1") && !t.includes("2"));
+        const has2 = /(^|\s)(2|xau|troll|do|hong|pha|pha dam|tham hoa)(\s|$)/.test(t) || (t.includes("2") && !t.includes("1"));
+        if (has1 && !has2) return 1;
+        if (has2 && !has1) return 2;
+        return 0;
+      }
+
+      function handleComment(user, comment, isReal = false) {
+        if (isReal) state.lastRealInteractionAt = performance.now();
+        const side = parseCommentSide(comment);
+        if (!side) return;
+
+        // Detect Betrayal / Quay Xe
+        const prevSide = state.userTeams.get(user.uniqueId);
+        if (prevSide && prevSide !== side) {
+          showToast(`⚠️ ${user.nickname} vừa quay xe sang ${side === 1 ? "Phe Giải Cứu" : "Phe Phá Đám"}!`, "betray");
+          sfx.screech();
+          mc.say(`${user.nickname} vừa quay xe khét lẹt sang ${side === 1 ? "Phe Giải Cứu" : "Phe Phá Đám"}!`);
+        }
+        state.userTeams.set(user.uniqueId, side);
+
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return;
+
+        // 3s anti-spam cooldown per user per gate
+        const now = performance.now();
+        const cdKey = `${user.uniqueId}_${state.gateIndex}`;
+        const lastAt = state.userCommentCooldown.get(cdKey) || 0;
+        if (now - lastAt < 3000) return;
+        state.userCommentCooldown.set(cdKey, now);
+
+        const mult = now < state.feverUntil ? 2 : 1;
+        const pts = 1 * mult;
+        addCombo(6);
+        addUserScore(side, user, pts);
+        if (user.profilePictureUrl) getAvatarImage(user.profilePictureUrl);
+        spawnAvatarProjectile(side, user, pts, false);
+      }
+
+      function handleLike(user, likeCount, isReal = false) {
+        if (isReal) state.lastRealInteractionAt = performance.now();
+        const count = Math.max(1, Number(likeCount) || 1);
+        addCombo(Math.min(18, count * 0.9));
+
+        const prev = state.userLikes.get(user.uniqueId) || 0;
+        const total = prev + count;
+        const triggers = Math.floor(total / 10);
+        state.userLikes.set(user.uniqueId, total % 10);
+        if (triggers <= 0) return;
+
+        let side = state.userTeams.get(user.uniqueId);
+        if (!side) {
+          side = state.gateScore1 <= state.gateScore2 ? 1 : 2;
+        }
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return;
+
+        const now = performance.now();
+        const mult = now < state.feverUntil ? 2 : 1;
+        const pts = triggers * 2 * mult;
+        addUserScore(side, user, pts);
+        const pos = getGateTargetPos(side);
+        applyGatePoints(side, pts, pos.x, pos.y, false);
+        spawnFloatingText(pos.x, pos.y - 18, `⚡ Tia Sét Tim`, side === 1 ? "#06D6E8" : "#FF4D8D");
+      }
+
+      function handleShare(user, isReal = false) {
+        if (isReal) state.lastRealInteractionAt = performance.now();
+        const now = performance.now();
+        const last = state.userShareCooldown.get(user.uniqueId) || 0;
+        if (now - last < 5000) return;
+        state.userShareCooldown.set(user.uniqueId, now);
+
+        let side = state.userTeams.get(user.uniqueId);
+        if (!side) side = state.gateScore1 <= state.gateScore2 ? 1 : 2;
+
+        const mult = now < state.feverUntil ? 2 : 1;
+        const pts = 10 * mult;
+        addCombo(16);
+        addUserScore(side, user, pts);
+        sfx.share();
+        showToast(`🔗 Cảm ơn ${user.nickname} đã chia sẻ LIVE! Tiếp sức cực mạnh!`, "share");
+        mc.say(`Cảm ơn ${user.nickname} đã chia sẻ phiên live, tiếp thêm sức mạnh cho ${side === 1 ? "Phe Giải Cứu" : "Phe Phá Đám"}!`);
+
+        if (state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12) {
+          const pos = getGateTargetPos(side);
+          applyGatePoints(side, pts, pos.x, pos.y, true);
+          spawnParticles(pos.x, pos.y, "#80FFDB", 18, "🔗");
+        }
+      }
+
+      function handleGift(user, tierOrDiamonds, forcedSide = null, isReal = false, explicitTier = null) {
+        if (isReal) state.lastRealInteractionAt = performance.now();
+        let side = forcedSide || state.userTeams.get(user.uniqueId);
+        if (!side) {
+          side = state.gateScore1 <= state.gateScore2 ? 1 : 2;
+        }
+        state.userTeams.set(user.uniqueId, side);
+        if (user.profilePictureUrl) getAvatarImage(user.profilePictureUrl);
+
+        let tier = explicitTier;
+        if (!tier) {
+          const d = Number(tierOrDiamonds) || 1;
+          tier = d >= 100 ? 3 : (d >= 10 ? 2 : 1);
+        }
+
+        const climaxMult = state.phase === STATE_CLIMAX_GATE_12 ? 2 : 1;
+        const now = performance.now();
+
+        if (tier === 1) {
+          const pts = 25 * climaxMult;
+          addUserScore(side, user, pts);
+          addCombo(15);
+          const emoji = side === 1 ? "🌹" : "🍅";
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => spawnAvatarProjectile(side, user, pts / 5, true, emoji), i * 55);
+          }
+          showToast(`${emoji} ${user.nickname} tung chiêu Trợ Lực cho ${side === 1 ? "Phe Giải Cứu" : "Phe Phá Đám"}!`, "gift");
+          mc.say(`Cảm ơn ${user.nickname} vừa tung chiêu trợ lực cực chất!`);
+        } else if (tier === 2) {
+          const pts = 150 * climaxMult;
+          addUserScore(side, user, pts);
+          addCombo(30);
+          state.gateLock = { side, until: now + 4000, owner: user.nickname };
+          const pos = getGateTargetPos(side);
+          applyGatePoints(side, pts, pos.x, pos.y, true);
+          sfx.lock();
+          spawnParticles(pos.x, pos.y, "#FFD166", 24, "🔒");
+          showToast(`🔒 ${user.nickname} KHÓA XÍCH CỔNG ${side === 1 ? "GIẢI CỨU" : "PHÁ ĐÁM"} 4 giây!`, "gift");
+          mc.say(`Quá đỉnh! ${user.nickname} vừa khóa xích cổng ${side === 1 ? "Giải Cứu" : "Phá Đám"} trong 4 giây!`, true);
+        } else {
+          const pts = 500 * climaxMult;
+          addUserScore(side, user, pts);
+          addCombo(50);
+          state.screenShakeUntil = now + 1500;
+          state.screenShakePower = 14;
+          state.lightningFlashUntil = now + 900;
+          state.lightningSide = side;
+          sfx.thunder();
+
+          // Lột Xác Toàn Bộ / Nguyền Rủa Toàn Tập: đổi toàn bộ các lớp đã mặc sang 100% phe này!
+          for (const g of GATES) {
+            if (state.equipped[g.layerId]) {
+              state.equipped[g.layerId] = side;
+            }
+          }
+          // Đảm bảo cổng hiện tại cũng dẫn tuyệt đối
+          if (state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12) {
+            const pos = getGateTargetPos(side);
+            applyGatePoints(side, pts, pos.x, pos.y, true);
+          }
+          state.reactType = side === 1 ? "happy" : "shock";
+          state.reactUntil = now + 2200;
+          state.charBubble = side === 1 ? "LỘT XÁC TOÀN BỘ! ✨" : "TOANG TOÀN TẬP RỒI! 😱";
+          state.charBubbleUntil = now + 2600;
+          spawnParticles(state.W * 0.5, state.H * 0.54, side === 1 ? "#FFD166" : "#FF4D8D", 36, side === 1 ? "⭐" : "⚡");
+
+          const skillName = side === 1 ? "LỘT XÁC TOÀN BỘ" : "NGUYỀN RỦA TOÀN TẬP";
+          showToast(`⚡ ${user.nickname} kích hoạt ${skillName}!`, "gift");
+          mc.say(`Chấn động toàn phòng live! ${user.nickname} vừa kích hoạt chiêu ${skillName}!`, true);
+        }
+      }
+
+      /* ---- Phase Transitions (4-Phase 145s Loop) ---- */
+      function startRound(scenarioIdx = null) {
+        if (scenarioIdx !== null) {
+          state.scenarioIndex = ((scenarioIdx % SCENARIOS.length) + SCENARIOS.length) % SCENARIOS.length;
+        }
+        // Save previous round MVP to ribbon
+        if (state.topBeauty || state.topTroll) {
+          const bestPrev = (!state.topTroll || (state.topBeauty && state.topBeauty.score >= state.topTroll.score))
+            ? `👑 ${state.topBeauty.name}`
+            : `🤡 ${state.topTroll.name}`;
+          state.prevRoundMvpText = `🏆 Hiệp trước: ${bestPrev}`;
+          dom.prevMvpRibbon.textContent = state.prevRoundMvpText;
+          dom.prevMvpRibbon.classList.add("visible");
+        }
+
+        state.phase = STATE_INTRO;
+        state.gateIndex = 0;
+        state.phaseElapsed = 0;
+        state.phaseDuration = 5;
+        state.equipped = {};
+        state.gateScore1 = 0;
+        state.gateScore2 = 0;
+        state.gateLock = null;
+        state.scoresBeauty.clear();
+        state.scoresTroll.clear();
+        state.topBeauty = null;
+        state.topTroll = null;
+        state.userCommentCooldown.clear();
+        for (const k of state.userTeams.keys()) {
+          if (k.startsWith("bot_")) state.userTeams.delete(k);
+        }
+        state.projectiles = [];
+        state.gateShards = [];
+        state.reactType = "idle";
+        state.charBubble = "Bắt đầu thôi nào! ✨";
+        state.charBubbleUntil = performance.now() + 3000;
+        state.verdictSpoken = false;
+
+        const sc = SCENARIOS[state.scenarioIndex];
+        dom.selectScenario.value = String(state.scenarioIndex);
+        dom.introKicker.textContent = `✨ HIỆP ${sc.id}/20 • 12 CỔNG ĐỊNH MỆNH ✨`;
+        dom.introTitle.textContent = sc.title;
+        dom.introHook.textContent = sc.hook;
+        dom.introOverlay.classList.add("visible");
+
+        sfx.whistle();
+        mc.say(`Hiệp mới bắt đầu! Kịch bản: ${sc.title}. ${sc.hook}`, true);
+        syncHudDom(true);
+      }
+
+      function startGate(idx) {
+        dom.introOverlay.classList.remove("visible");
+        state.gateIndex = idx;
+        state.phase = idx === 11 ? STATE_CLIMAX_GATE_12 : STATE_GATE_RUN;
+        state.phaseElapsed = 0;
+        state.phaseDuration = idx === 11 ? 15 : 10;
+        state.gateScore1 = 0;
+        state.gateScore2 = 0;
+        state.gateLock = null;
+        state.lastCountdownSec = 0;
+
+        const g = GATES[idx];
+        const scenarioSubtitles = [
+          "Khuôn mặt quyết định thần thái, đậm hơn một chút chăng?",
+          "Kiểu tóc thì chọn bừa một kiểu thôi hay tiên nữ bồng bềnh?",
+          "Đôi khuyên tai này phải khiến cả sảnh tiệc ngoái nhìn!",
+          "Đeo kính râm quý tộc hay kính bơi tấu hài đây?",
+          "Soi kỹ tới tận đôi tất chân, phong cách không thể sơ sài!",
+          "Một bước lên tiên hay đôi dép tổ ong huyền thoại?",
+          "Hôm nay xuất hiện phải khiến người cũ ngước nhìn!",
+          "Chuỗi ngọc quý phái hay vòng tỏi trừ tà đây?",
+          "Vương miện kiêu sa đội lên đầu hay nồi cơm điện?",
+          "Mang cả hào quang rực rỡ bước vào buổi tiệc!",
+          "Trên tay chắc chắn phải cầm thứ gì đó thật ngầu...",
+          "Chắc chắn phải là xuất hành bằng kiệu rồng siêu xe rồi!"
+        ];
+        state.manhuaSubtitle = scenarioSubtitles[idx] || "Mặc gì cho thật ngầu hôm nay?";
+        if (idx === 11) {
+          showToast("🔥 CỔNG 12 SUDDEN DEATH — X2 SỨC MẠNH QUÀ TẶNG!", "gift");
+          sfx.thunder();
+          mc.say("Cổng cuối cùng rồi! X2 sức mạnh quà tặng! Siêu xe Ferrari hay cưỡi lợn hồng đây cả nhà ơi!", true);
+        } else if (idx === 0) {
+          mc.say(`Cổng 1: ${g.leftName} hay ${g.rightName}? Gõ 1 hoặc 2 ngay nào!`);
+        }
+        syncHudDom(true);
+      }
+
+      function resolveCurrentGate() {
+        const g = GATES[state.gateIndex];
+        let winner = 1;
+        if (state.gateLock && performance.now() < state.gateLock.until) {
+          winner = state.gateLock.side;
+        } else if (state.gateScore1 > state.gateScore2) {
+          winner = 1;
+        } else if (state.gateScore2 > state.gateScore1) {
+          winner = 2;
+        } else {
+          winner = Math.random() < 0.5 ? 1 : 2;
+        }
+
+        // Equip the winning layer
+        state.equipped[g.layerId] = winner;
+        state.gateLock = null;
+
+        // Visual bursts: winner sparkles, loser shatters
+        const winPos = getGateTargetPos(winner);
+        const losePos = getGateTargetPos(winner === 1 ? 2 : 1);
+        spawnParticles(winPos.x, winPos.y, winner === 1 ? "#06D6E8" : "#FF4D8D", 28, winner === 1 ? "✨" : "💥");
+        spawnParticles(state.W * 0.5, state.H * 0.54, winner === 1 ? "#FFD166" : "#FF4D8D", 20);
+
+        for (let i = 0; i < 12; i++) {
+          state.gateShards.push({
+            x: losePos.x + (Math.random() - 0.5) * 50,
+            y: losePos.y + (Math.random() - 0.5) * 40,
+            vx: (Math.random() - 0.5) * 260,
+            vy: -80 - Math.random() * 140,
+            rot: Math.random() * Math.PI,
+            vrot: (Math.random() - 0.5) * 10,
+            size: 10 + Math.random() * 12,
+            color: winner === 1 ? "#FF4D8D" : "#06D6E8",
+            life: 0.75
+          });
+        }
+
+        state.reactType = winner === 1 ? "happy" : "shock";
+        state.reactUntil = performance.now() + 2000;
+        state.charBubble = winner === 1 ? `Yay! ${g.leftName}! 💖` : `Á á! ${g.rightName}!! 😱`;
+        state.charBubbleUntil = performance.now() + 2400;
+        state.manhuaSubtitle = winner === 1
+          ? `✨ Quá xuất sắc! ${g.leftName} đã được chọn!`
+          : `😱 Trời ơi! ${g.rightName} cứu em với làng nước ơi!`;
+
+        sfx.gateWin(winner);
+        mc.say(winner === 1 ? g.ttsLeft : g.ttsRight, true);
+
+        if (state.gateIndex < 11) {
+          startGate(state.gateIndex + 1);
+        } else {
+          startVerdict();
+        }
+      }
+
+      function startVerdict() {
+        dom.introOverlay.classList.remove("visible");
+        // Fill any skipped gates (if streamer jumped straight to verdict)
+        for (const g of GATES) {
+          if (!state.equipped[g.layerId]) {
+            state.equipped[g.layerId] = Math.random() < 0.5 ? 1 : 2;
+          }
+        }
+        let bCount = 0;
+        let tCount = 0;
+        for (const g of GATES) {
+          if (state.equipped[g.layerId] === 1) bCount++;
+          else tCount++;
+        }
+        const bPct = Math.round((bCount / 12) * 100);
+        const tPct = 100 - bPct;
+        state.verdictBeautyPct = bPct;
+        state.verdictTrollPct = tPct;
+        state.verdictType = bPct >= 60 ? "beauty" : (tPct >= 60 ? "troll" : "hybrid");
+
+        state.phase = STATE_VERDICT;
+        state.phaseElapsed = 0;
+        state.phaseDuration = 15;
+        state.gateLock = null;
+        state.reactType = state.verdictType === "beauty" ? "happy" : (state.verdictType === "troll" ? "shock" : "idle");
+        state.reactUntil = performance.now() + 15000;
+
+        sfx.verdict(state.verdictType);
+        if (state.verdictType === "beauty") {
+          state.charBubble = "Nữ Thần Đăng Quang! 👑✨";
+          mc.say(`Chúc mừng Phe Giải Cứu! Với ${bPct} phần trăm đồ siêu phẩm, nhân vật chính thức đăng quang Nữ Thần rực rỡ!`, true);
+        } else if (state.verdictType === "troll") {
+          state.charBubble = "Thảm Họa Huyền Thoại! 🤡💥";
+          mc.say(`Trời ơi cười xỉu! Phe Phá Đám thắng áp đảo ${tPct} phần trăm, tạo nên Thảm Họa Thời Trang Huyền Thoại!`, true);
+        } else {
+          state.charBubble = "Phong cách ngoài hành tinh?! ❓";
+          mc.say("Một phong cách thời trang lai tạo kỳ dị vượt ngoài sức tưởng tượng của loài người!", true);
+        }
+        state.charBubbleUntil = performance.now() + 6000;
+        syncHudDom(true);
+      }
+
+      function getGateProgress() {
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return 0;
+        return Math.min(1, Math.max(0, state.phaseElapsed / state.phaseDuration));
+      }
+
+      /* ---- Smart Idle Auto-Bot ---- */
+      function updateSmartBot(now) {
+        if (!state.autoBotEnabled) return;
+        // Nghỉ tối thiểu 8.5 giây khi có tương tác thật từ người xem TikTok Live
+        if (now - state.lastRealInteractionAt < 8500) return;
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return;
+        if (now - state.lastBotTickAt < 920) return;
+        state.lastBotTickAt = now;
+
+        const botName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+        const botUser = { uniqueId: `bot_${botName}`, nickname: botName, profilePictureUrl: "" };
+        // Gán cố định phe cho mỗi bot trong 1 hiệp (chỉ 8% xác suất đổi phe quay xe)
+        let botSide = state.userTeams.get(botUser.uniqueId);
+        if (!botSide) {
+          botSide = Math.random() < 0.5 ? 1 : 2;
+        } else if (Math.random() < 0.08) {
+          botSide = botSide === 1 ? 2 : 1;
+        }
+        const roll = Math.random();
+        if (roll < 0.72) {
+          handleComment(botUser, botSide === 1 ? "1" : "2", false);
+        } else if (roll < 0.90) {
+          state.userTeams.set(botUser.uniqueId, botSide);
+          handleLike(botUser, 10, false);
+        } else if (roll < 0.96) {
+          state.userTeams.set(botUser.uniqueId, botSide);
+          handleShare(botUser, false);
+        } else {
+          handleGift(botUser, 1, botSide, false, 1);
+        }
+      }
+
+      /* ---- Main Fixed-Step Update ---- */
+      function update(dt) {
+        const now = performance.now();
+        state.time += dt;
+        state.phaseElapsed += dt;
+
+        // Road scroll speed
+        const isRunning = state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12;
+        if (isRunning) {
+          state.roadOffset = (state.roadOffset + dt * (state.phase === STATE_CLIMAX_GATE_12 ? 3.2 : 2.1)) % 1;
+        } else if (state.phase === STATE_INTRO) {
+          state.roadOffset = (state.roadOffset + dt * 0.9) % 1;
+        }
+
+        // Decay gate shakes & react state
+        state.gateShake1 = Math.max(0, state.gateShake1 - dt * 5);
+        state.gateShake2 = Math.max(0, state.gateShake2 - dt * 5);
+        if (state.reactType !== "idle" && now > state.reactUntil && state.phase !== STATE_VERDICT) {
+          state.reactType = "idle";
+        }
+        if (state.gateLock && now >= state.gateLock.until) {
+          state.gateLock = null;
+        }
+
+        // Phase state machine
+        if (state.phase === STATE_INTRO) {
+          if (state.phaseElapsed >= state.phaseDuration) {
+            startGate(0);
+          }
+        } else if (state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12) {
+          const remaining = Math.max(0, state.phaseDuration - state.phaseElapsed);
+          if (remaining <= 3 && remaining > 0) {
+            const sec = Math.ceil(remaining);
+            if (sec !== state.lastCountdownSec) {
+              state.lastCountdownSec = sec;
+              sfx.tick(true);
+            }
+          }
+          if (state.phaseElapsed >= state.phaseDuration) {
+            resolveCurrentGate();
+          }
+        } else if (state.phase === STATE_VERDICT) {
+          // Celebratory fireworks for beauty verdict
+          if (state.verdictType === "beauty" && Math.random() < dt * 4.5) {
+            spawnParticles(
+              state.W * (0.15 + Math.random() * 0.7),
+              state.H * (0.24 + Math.random() * 0.28),
+              ["#FFD166", "#FF4D8D", "#06D6E8", "#FFFFFF"][Math.floor(Math.random() * 4)],
+              10,
+              "✨"
+            );
+          }
+          if (state.phaseElapsed >= state.phaseDuration) {
+            startRound((state.scenarioIndex + 1) % SCENARIOS.length);
+          }
+        }
+
+        // Update Avatar Projectiles (parabolic curve)
+        for (let i = state.projectiles.length - 1; i >= 0; i--) {
+          const p = state.projectiles[i];
+          if (p.bounced) {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.vy += 680 * dt;
+            p.t += dt;
+            if (p.t > 0.6) state.projectiles.splice(i, 1);
+            continue;
+          }
+          p.t += dt / p.duration;
+          const u = Math.min(1, p.t);
+          const inv = 1 - u;
+          p.x = inv * inv * p.startX + 2 * inv * u * p.ctrlX + u * u * p.targetX;
+          p.y = inv * inv * p.startY + 2 * inv * u * p.ctrlY + u * u * p.targetY;
+          if (p.t >= 1) {
+            if (isGateLockedFor(p.side) && !p.isGift) {
+              p.bounced = true;
+              p.t = 0;
+              p.vx = (p.side === 1 ? -1 : 1) * (140 + Math.random() * 90);
+              p.vy = -180;
+              sfx.bounce();
+              spawnParticles(p.x, p.y, "#FFD166", 6);
+            } else {
+              applyGatePoints(p.side, p.power, p.x, p.y, p.isGift);
+              state.projectiles.splice(i, 1);
+            }
+          }
+        }
+
+        // Update Particles
+        for (let i = state.particles.length - 1; i >= 0; i--) {
+          const pt = state.particles[i];
+          pt.x += pt.vx * dt;
+          pt.y += pt.vy * dt;
+          pt.vy += 320 * dt;
+          pt.life -= dt;
+          if (pt.life <= 0) state.particles.splice(i, 1);
+        }
+
+        // Update Gate Shards
+        for (let i = state.gateShards.length - 1; i >= 0; i--) {
+          const sh = state.gateShards[i];
+          sh.x += sh.vx * dt;
+          sh.y += sh.vy * dt;
+          sh.vy += 520 * dt;
+          sh.rot += sh.vrot * dt;
+          sh.life -= dt;
+          if (sh.life <= 0) state.gateShards.splice(i, 1);
+        }
+
+        // Update Floating Texts
+        for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+          const ft = state.floatingTexts[i];
+          ft.y -= 42 * dt;
+          ft.life -= dt;
+          if (ft.life <= 0) state.floatingTexts.splice(i, 1);
+        }
+
+        // Smart Auto-Bot & Idle MC commentary every ~9s
+        updateSmartBot(now);
+        if (isRunning && now - state.lastMcIdleAt > 9500) {
+          state.lastMcIdleAt = now;
+          if (!mc.speaking) {
+            mc.say(MC_IDLE_LINES[Math.floor(Math.random() * MC_IDLE_LINES.length)], false);
+          }
+        }
+
+        // Throttled DOM HUD update (>= 80ms)
+        if (now - state.lastHudDomUpdateAt >= 80) {
+          syncHudDom(false);
+        }
+      }
+
+      /* ---- Sync HUD DOM (Throttled) ---- */
+      function syncHudDom(force = false) {
+        state.lastHudDomUpdateAt = performance.now();
+        const sc = SCENARIOS[state.scenarioIndex];
+        dom.roundPill.textContent = `HIỆP ${sc.id}/20`;
+        dom.scenarioTitle.textContent = sc.title;
+        dom.scenarioHook.textContent = sc.hook;
+
+        const remaining = Math.max(0, state.phaseDuration - state.phaseElapsed);
+        dom.timer.textContent = `⏱ ${remaining.toFixed(1)}s`;
+        const isUrgent = (state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12) && remaining <= 3;
+        dom.timer.classList.toggle("urgent", isUrgent);
+
+        if (state.phase === STATE_INTRO) {
+          dom.gateBadge.textContent = "CHUẨN BỊ";
+          dom.gateBadge.classList.remove("climax");
+        } else if (state.phase === STATE_CLIMAX_GATE_12) {
+          dom.gateBadge.textContent = "🔥 CỔNG 12 • X2";
+          dom.gateBadge.classList.add("climax");
+        } else if (state.phase === STATE_VERDICT) {
+          dom.gateBadge.textContent = "🏆 PHÁN QUYẾT";
+          dom.gateBadge.classList.remove("climax");
+        } else {
+          dom.gateBadge.textContent = `CỔNG ${state.gateIndex + 1} / 12`;
+          dom.gateBadge.classList.remove("climax");
+        }
+
+        // Tug-of-war ratio
+        let pct1 = 50;
+        if (state.phase === STATE_VERDICT) {
+          pct1 = state.verdictBeautyPct;
+        } else if (state.gateScore1 + state.gateScore2 > 0) {
+          pct1 = Math.round((state.gateScore1 / (state.gateScore1 + state.gateScore2)) * 100);
+          pct1 = Math.max(8, Math.min(92, pct1));
+        }
+        const pct2 = 100 - pct1;
+        dom.tugLeft.style.width = `${pct1}%`;
+        dom.tugPin.style.left = `${Math.max(38, Math.min(62, pct1))}%`;
+        dom.tugLeftText.textContent = `💙 GIẢI CỨU ${pct1}%`;
+        dom.tugRightText.textContent = `${pct2}% PHÁ ĐÁM 🤡`;
+
+        // Combo thermometer
+        const now = performance.now();
+        if (now < state.feverUntil) {
+          const secLeft = Math.ceil((state.feverUntil - now) / 1000);
+          dom.comboMeter.classList.add("fever");
+          dom.comboFill.style.width = `${(secLeft / 15) * 100}%`;
+          dom.comboLabel.textContent = `💖 CƠN MƯA THẢ TIM X2 (${secLeft}s)`;
+        } else {
+          dom.comboMeter.classList.remove("fever");
+          dom.comboFill.style.width = `${Math.round(state.comboValue)}%`;
+          dom.comboLabel.textContent = `🔥 Cơn Mưa Thả Tim: ${Math.round(state.comboValue)}%`;
+        }
+
+        // MVPs
+        updateMvpCard(dom.mvpBeautyAv, dom.mvpBeautyName, state.topBeauty, "👑");
+        updateMvpCard(dom.mvpTrollAv, dom.mvpTrollName, state.topTroll, "🤡");
+      }
+
+      function updateMvpCard(avEl, nameEl, mvp, fallbackIcon) {
+        if (!mvp) {
+          nameEl.textContent = "Đang chờ...";
+          avEl.style.backgroundImage = "";
+          avEl.textContent = fallbackIcon;
+          return;
+        }
+        nameEl.textContent = mvp.name;
+        if (mvp.avatar) {
+          avEl.style.backgroundImage = `url("${mvp.avatar}")`;
+          avEl.textContent = "";
+        } else {
+          avEl.style.backgroundImage = "";
+          avEl.style.background = hashColor(mvp.name);
+          avEl.textContent = nameInitial(mvp.name);
+        }
+      }
+
+      /* =====================================================================
+       * 7. FULL-SCENE CANVAS RENDERER (3D AVENUE, GATES, PAPER DOLL, VERDICT)
+       * ===================================================================== */
+      function drawSkyAndVenueBackdrop(W, H, venue, isVerdict) {
+        // High-Resolution 2D Flower Garden Runway (matching Thế Giới Hoa Viên!)
+        if (!isVerdict && ASSETS.bgGarden.complete && ASSETS.bgGarden.naturalWidth > 0) {
+          const img = ASSETS.bgGarden;
+          const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+          const dw = img.naturalWidth * scale;
+          const dh = img.naturalHeight * scale;
+          const dx = (W - dw) / 2;
+          const dy = (H - dh) / 2;
+          ctx.drawImage(img, dx, dy, dw, dh);
+
+          // Moving perspective center road dashes
+          const horizonY = H * 0.285;
+          const roadBottomY = H * 0.85;
+          const lines = 8;
+          for (let i = 0; i < lines; i++) {
+            const p = ((i / lines) + state.roadOffset) % 1;
+            const depth = p * p;
+            const y = horizonY + depth * (roadBottomY - horizonY);
+            const dashH = 4 + depth * 30;
+            const dashW = 3 + depth * 9;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.52)";
+            ctx.fillRect(W * 0.5 - dashW / 2, y, dashW, dashH);
+          }
+
+          // 60 FPS Falling flower petals
+          updateAndDrawPetals(ctx, W, H, state.time);
+          return;
+        }
+        const sky = ctx.createLinearGradient(0, 0, 0, H * 0.45);
+        if (venue === "wedding") {
+          sky.addColorStop(0, "#FFE5F1");
+          sky.addColorStop(1, "#FFF5D6");
+        } else if (venue === "mansion") {
+          sky.addColorStop(0, "#CFEFFF");
+          sky.addColorStop(1, "#FFF2E2");
+        } else if (venue === "redcarpet") {
+          sky.addColorStop(0, "#2E1A47");
+          sky.addColorStop(1, "#7B2CBF");
+        } else if (venue === "office") {
+          sky.addColorStop(0, "#C7F0FF");
+          sky.addColorStop(1, "#E8ECFF");
+        } else {
+          sky.addColorStop(0, "#3D246C");
+          sky.addColorStop(1, "#FF9EBB");
+        }
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        // Decorative pastel clouds / spotlights
+        const horizonY = H * 0.27;
+        if (venue === "redcarpet" || venue === "gala") {
+          // Animated stage spotlights
+          ctx.save();
+          for (let i = 0; i < 4; i++) {
+            const sx = W * (0.15 + i * 0.23);
+            const sway = Math.sin(state.time * 1.4 + i) * 60;
+            const g = ctx.createLinearGradient(sx, 0, sx + sway, H * 0.65);
+            g.addColorStop(0, "rgba(255, 240, 170, 0.25)");
+            g.addColorStop(1, "rgba(255, 240, 170, 0)");
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(sx - 18, 0);
+            ctx.lineTo(sx + 18, 0);
+            ctx.lineTo(sx + sway + 80, H * 0.68);
+            ctx.lineTo(sx + sway - 80, H * 0.68);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+        } else {
+          // Soft pastel clouds
+          ctx.fillStyle = "rgba(255,255,255,0.68)";
+          for (let i = 0; i < 4; i++) {
+            const cx = ((i * 170 + state.time * 12) % (W + 120)) - 60;
+            const cy = H * (0.16 + (i % 2) * 0.05);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+            ctx.arc(cx + 22, cy - 8, 22, 0, Math.PI * 2);
+            ctx.arc(cx - 22, cy - 4, 20, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Distant silhouettes (palace / floral arch / city skyline)
+        ctx.fillStyle = venue === "redcarpet" || venue === "gala"
+          ? "rgba(25, 14, 48, 0.45)"
+          : "rgba(180, 155, 215, 0.35)";
+        ctx.fillRect(0, horizonY - 26, W, 30);
+        for (let i = 0; i < 9; i++) {
+          const bx = i * (W / 8);
+          const bh = 28 + ((i * 29) % 45);
+          ctx.fillRect(bx, horizonY - bh, W / 10, bh);
+        }
+
+        if (!isVerdict) {
+          // 3D Perspective Runway Road extending cleanly through bottom 15% Safe Zone
+          const roadGrad = ctx.createLinearGradient(0, horizonY, 0, H);
+          if (venue === "redcarpet") {
+            roadGrad.addColorStop(0, "#D81B60");
+            roadGrad.addColorStop(1, "#7A0C38");
+          } else {
+            roadGrad.addColorStop(0, "#B8A9FF");
+            roadGrad.addColorStop(0.45, "#8E7CE8");
+            roadGrad.addColorStop(1, "#5C4D9E");
+          }
+          ctx.fillStyle = roadGrad;
+          ctx.fillRect(0, horizonY, W, H - horizonY);
+
+          // Left & right pastel grass/sidewalk borders
+          ctx.fillStyle = venue === "redcarpet" ? "#3A1C59" : "#80ED99";
+          ctx.beginPath();
+          ctx.moveTo(0, horizonY);
+          ctx.lineTo(W * 0.34, horizonY);
+          ctx.lineTo(-W * 0.08, H);
+          ctx.lineTo(0, H);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(W, horizonY);
+          ctx.lineTo(W * 0.66, horizonY);
+          ctx.lineTo(W * 1.08, H);
+          ctx.lineTo(W, H);
+          ctx.closePath();
+          ctx.fill();
+
+          // Road edge golden stripes
+          ctx.strokeStyle = "#FFD166";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(W * 0.34, horizonY);
+          ctx.lineTo(-W * 0.08, H);
+          ctx.moveTo(W * 0.66, horizonY);
+          ctx.lineTo(W * 1.08, H);
+          ctx.stroke();
+
+          // Scrolling 3D center dashes & speed horizon strips
+          const lines = 9;
+          for (let i = 0; i < lines; i++) {
+            const p = ((i / lines) + state.roadOffset) % 1;
+            const depth = p * p; // perspective acceleration
+            const y = horizonY + depth * (H - horizonY);
+            const dashH = 6 + depth * 36;
+            const dashW = 4 + depth * 12;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
+            ctx.fillRect(W * 0.5 - dashW / 2, y, dashW, dashH);
+
+            // Subtle horizontal perspective ribs
+            const halfW = W * (0.16 + depth * 0.42);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(W * 0.5 - halfW, y);
+            ctx.lineTo(W * 0.5 + halfW, y);
+            ctx.stroke();
+          }
+
+          // Side lane glowing chevrons (Cyan Left / Pink Right)
+          ctx.fillStyle = "rgba(6, 214, 232, 0.16)";
+          ctx.beginPath();
+          ctx.moveTo(W * 0.34, horizonY);
+          ctx.lineTo(W * 0.5, horizonY);
+          ctx.lineTo(W * 0.5, H);
+          ctx.lineTo(-W * 0.08, H);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = "rgba(255, 77, 141, 0.16)";
+          ctx.beginPath();
+          ctx.moveTo(W * 0.5, horizonY);
+          ctx.lineTo(W * 0.66, horizonY);
+          ctx.lineTo(W * 1.08, H);
+          ctx.lineTo(W * 0.5, H);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Verdict Grand Stage Floor (extends cleanly to bottom)
+          const floorY = H * 0.56;
+          const fg = ctx.createLinearGradient(0, floorY, 0, H);
+          fg.addColorStop(0, "#FF4D8D");
+          fg.addColorStop(0.5, "#B51753");
+          fg.addColorStop(1, "#4A0E2E");
+          ctx.fillStyle = fg;
+          ctx.fillRect(0, floorY, W, H - floorY);
+
+          // Stage spotlight circle under character
+          const spot = ctx.createRadialGradient(W * 0.5, H * 0.62, 10, W * 0.5, H * 0.62, W * 0.42);
+          spot.addColorStop(0, "rgba(255, 244, 179, 0.72)");
+          spot.addColorStop(1, "rgba(255, 244, 179, 0)");
+          ctx.fillStyle = spot;
+          ctx.beginPath();
+          ctx.ellipse(W * 0.5, H * 0.63, W * 0.44, H * 0.08, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Venue Archway (Wedding floral arch / Mansion pillars / Red carpet backdrop)
+          ctx.strokeStyle = "#FFD166";
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.arc(W * 0.5, H * 0.52, W * 0.42, Math.PI, 0);
+          ctx.stroke();
+
+          // Reacting NPC Crowd on Left & Right
+          drawVerdictCrowd(W, H, state.verdictType, state.time);
+        }
+      }
+
+      function drawVerdictCrowd(W, H, type, t) {
+        const npcPositions = [
+          { x: W * 0.12, y: H * 0.61, flip: 1, col: "#72EFDD" },
+          { x: W * 0.23, y: H * 0.64, flip: 1, col: "#FFB703" },
+          { x: W * 0.88, y: H * 0.61, flip: -1, col: "#FF99C8" },
+          { x: W * 0.77, y: H * 0.64, flip: -1, col: "#A9DEF9" }
+        ];
+        npcPositions.forEach((npc, idx) => {
+          ctx.save();
+          ctx.translate(npc.x, npc.y);
+          if (type === "troll") {
+            // Fainting / falling backward!
+            ctx.rotate(npc.flip * -0.68);
+          } else if (type === "beauty") {
+            // Jumping & cheering!
+            ctx.translate(0, -Math.abs(Math.sin(t * 7 + idx)) * 12);
+          } else {
+            // Tilting head in confusion
+            ctx.rotate(Math.sin(t * 3 + idx) * 0.14);
+          }
+          // Chibi NPC body
+          ctx.fillStyle = npc.col;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -16, 4, 32, 34, 10);
+          ctx.fill();
+          ctx.stroke();
+          // NPC Head
+          ctx.fillStyle = "#FFE1CE";
+          ctx.beginPath();
+          ctx.arc(0, -14, 18, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Emoji reaction above NPC
+          ctx.font = "900 18px Nunito, sans-serif";
+          ctx.textAlign = "center";
+          const em = type === "beauty" ? (idx === 1 ? "🧎‍♂️💔" : "😍👏") : (type === "troll" ? "😵‍💫🤣" : "❓🤨");
+          ctx.fillText(em, 0, -38);
+          ctx.restore();
+        });
+      }
+
+      /* ---- Approaching Dual Gates Renderer ---- */
+      function drawApproachingGates(W, H) {
+        if (state.phase !== STATE_GATE_RUN && state.phase !== STATE_CLIMAX_GATE_12) return;
+        const g = GATES[state.gateIndex];
+        const progress = getGateProgress();
+        const remaining = Math.max(0, state.phaseDuration - state.phaseElapsed);
+        const urgent = remaining <= 3;
+
+        // Scale smoothly as gate approaches (giữ gọn nửa trên đường chạy, đáy cổng <= 0.405)
+        const scale = 0.56 + progress * 0.44;
+        const gateW = W * 0.37 * scale;
+        const gateH = H * 0.152 * scale;
+        const baseY = H * (0.255 + progress * 0.072);
+        const gapX = W * (0.18 + progress * 0.06);
+
+        const leadingSide = state.gateScore1 > state.gateScore2 ? 1 : (state.gateScore2 > state.gateScore1 ? 2 : 0);
+
+        [1, 2].forEach((side) => {
+          const cx = side === 1 ? W * 0.5 - gapX : W * 0.5 + gapX;
+          const shake = (side === 1 ? state.gateShake1 : state.gateShake2) * 7;
+          const sx = (Math.random() - 0.5) * shake;
+          const sy = (Math.random() - 0.5) * shake;
+          const gx = cx - gateW / 2 + sx;
+          const gy = baseY - gateH / 2 + sy;
+
+          ctx.save();
+          // Leading glow
+          if (leadingSide === side) {
+            ctx.shadowColor = side === 1 ? "#06D6E8" : "#FF4D8D";
+            ctx.shadowBlur = 18;
+          }
+
+          // Frosted Glass Card Body (matching Thế Giới Hoa Viên!)
+          const glass = ctx.createLinearGradient(gx, gy, gx + gateW, gy + gateH);
+          if (side === 1) {
+            glass.addColorStop(0, "rgba(255, 255, 255, 0.90)");
+            glass.addColorStop(0.35, "rgba(230, 252, 255, 0.78)");
+            glass.addColorStop(1, "rgba(205, 245, 255, 0.72)");
+          } else {
+            glass.addColorStop(0, "rgba(255, 255, 255, 0.90)");
+            glass.addColorStop(0.35, "rgba(255, 238, 246, 0.78)");
+            glass.addColorStop(1, "rgba(255, 218, 236, 0.72)");
+          }
+          ctx.fillStyle = glass;
+          ctx.strokeStyle = urgent && Math.floor(state.time * 10) % 2 === 0
+            ? "#FFD166"
+            : (side === 1 ? "rgba(6, 214, 232, 0.92)" : "rgba(255, 77, 141, 0.92)");
+          ctx.lineWidth = Math.max(2.2, 3.6 * scale);
+          ctx.shadowColor = side === 1 ? "rgba(6, 214, 232, 0.38)" : "rgba(255, 77, 141, 0.38)";
+          ctx.shadowBlur = 14 * scale;
+          drawRoundedRect(ctx, gx, gy, gateW, gateH, 18 * scale);
+          ctx.fill();
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Inner white highlight reflection line (glass edge)
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.88)";
+          ctx.lineWidth = 1.5 * scale;
+          drawRoundedRect(ctx, gx + 2.5 * scale, gy + 2.5 * scale, gateW - 5 * scale, gateH - 5 * scale, 16 * scale);
+          ctx.stroke();
+
+          // Gate Header Pill ("✨ GÕ 1" / "⚡ GÕ 2")
+          const tagH = 22 * scale;
+          const tagW = gateW * 0.76;
+          const tagX = cx + sx - tagW / 2;
+          const tagY = gy - tagH * 0.45;
+          const tagBg = ctx.createLinearGradient(tagX, tagY, tagX + tagW, tagY + tagH);
+          if (side === 1) {
+            tagBg.addColorStop(0, "#00B4D8");
+            tagBg.addColorStop(1, "#0077B6");
+          } else {
+            tagBg.addColorStop(0, "#FF4D8D");
+            tagBg.addColorStop(1, "#D81159");
+          }
+          ctx.fillStyle = tagBg;
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.lineWidth = Math.max(1.5, 2 * scale);
+          drawRoundedRect(ctx, tagX, tagY, tagW, tagH, 99);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = `900 ${Math.round(12.5 * scale)}px "Baloo 2", cursive`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(side === 1 ? "✨ GÕ 1" : "⚡ GÕ 2", cx + sx, tagY + tagH / 2 + 1);
+
+          // Item Preview inside the glass card
+          const previewSize = Math.min(gateW * 0.72, gateH * 0.62);
+          drawGateItemPreview(ctx, g.layerId, side, cx + sx, gy + gateH * 0.48, previewSize, state.time);
+
+          // Translucent dark bottom pill for the item name
+          const labelH = 21 * scale;
+          const labelW = gateW - 16 * scale;
+          const labelX = cx + sx - labelW / 2;
+          const labelY = gy + gateH - labelH - 7 * scale;
+          ctx.fillStyle = "rgba(30, 27, 24, 0.76)";
+          drawRoundedRect(ctx, labelX, labelY, labelW, labelH, 10 * scale);
+          ctx.fill();
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = `800 ${Math.round(11 * scale)}px "Nunito", sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          const itemLabel = side === 1 ? g.leftName : g.rightName;
+          ctx.fillText(itemLabel, cx + sx, labelY + labelH / 2 + 1, labelW - 8 * scale);
+
+          // Golden Padlock & Chains when Gate Locked!
+          if (state.gateLock && state.gateLock.side === side && performance.now() < state.gateLock.until) {
+            const secLeft = Math.ceil((state.gateLock.until - performance.now()) / 1000);
+            ctx.strokeStyle = "#CBD5E1";
+            ctx.lineWidth = Math.max(4, 6 * scale);
+            ctx.setLineDash([8 * scale, 5 * scale]);
+            ctx.beginPath();
+            ctx.moveTo(gx, gy);
+            ctx.lineTo(gx + gateW, gy + gateH);
+            ctx.moveTo(gx + gateW, gy);
+            ctx.lineTo(gx, gy + gateH);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Giant Golden Padlock
+            ctx.fillStyle = "#FFD166";
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 3 * scale;
+            const lx = cx + sx;
+            const ly = gy + gateH * 0.5;
+            ctx.beginPath();
+            ctx.arc(lx, ly - 16 * scale, 16 * scale, Math.PI, 0);
+            ctx.stroke();
+            drawRoundedRect(ctx, lx - 22 * scale, ly - 16 * scale, 44 * scale, 36 * scale, 8 * scale);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = INK;
+            ctx.font = `800 ${Math.round(14 * scale)}px "Baloo 2", cursive`;
+            ctx.fillText(`🔒${secLeft}s`, lx, ly + 3 * scale);
+          }
+          ctx.restore();
+        });
+
+        // Big Pulsing 3... 2... 1... Countdown in final 3s
+        if (urgent) {
+          const sec = Math.ceil(remaining);
+          const pulse = 1 + (remaining - Math.floor(remaining)) * 0.35;
+          ctx.save();
+          ctx.translate(W * 0.5, H * 0.37);
+          ctx.scale(pulse, pulse);
+          ctx.font = '800 54px "Baloo 2", cursive';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 9;
+          ctx.strokeText(String(sec), 0, 0);
+          ctx.fillStyle = "#FFD166";
+          ctx.fillText(String(sec), 0, 0);
+          ctx.restore();
+        }
+      }
+
+      /* ---- MVP Floating Aura & Crown Directly in Arena ---- */
+      function drawArenaMvpAura(W, H) {
+        const leadingSide = state.gateScore1 >= state.gateScore2 ? 1 : 2;
+        const mvp = leadingSide === 1 ? (state.topBeauty || state.topTroll) : (state.topTroll || state.topBeauty);
+        if (!mvp) return;
+
+        const cx = W * 0.5;
+        ctx.save();
+        // Rotating golden aura halo behind character
+        ctx.translate(cx, H * 0.54);
+        ctx.rotate(state.time * 0.7);
+        ctx.strokeStyle = "rgba(255, 209, 102, 0.55)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([12, 10]);
+        ctx.beginPath();
+        ctx.arc(0, 0, W * 0.25, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+
+      function drawArenaMvpCrown(W, H) {
+        const leadingSide = state.gateScore1 >= state.gateScore2 ? 1 : 2;
+        const mvp = leadingSide === 1 ? (state.topBeauty || state.topTroll) : (state.topTroll || state.topBeauty);
+        if (!mvp) return;
+
+        const cx = W * 0.5;
+        const cy = H * 0.632;
+        // Floating MVP badge neatly positioned beneath character's feet
+        ctx.save();
+        const label = `👑 ${mvp.name}`;
+        ctx.font = '800 12px "Baloo 2", cursive';
+        const tw = Math.min(W * 0.5, ctx.measureText(label).width + 22);
+        const bx = cx - tw / 2;
+        const by = cy - 11;
+        ctx.fillStyle = "rgba(255, 241, 168, 0.95)";
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 2.5;
+        drawRoundedRect(ctx, bx, by, tw, 22, 99);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = INK;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, cx, cy + 1, tw - 10);
+        ctx.restore();
+      }
+
+      /* ---- Verdict Overlay Inside Stage (Strictly Above 15% Safe Zone) ---- */
+      function drawVerdictBanner(W, H) {
+        if (state.phase !== STATE_VERDICT) return;
+        ctx.save();
+
+        // Top Verdict Title Banner
+        const bx = W * 0.08;
+        const by = H * 0.215;
+        const bw = W * 0.84;
+        const bh = H * 0.102;
+
+        const grad = ctx.createLinearGradient(bx, by, bx + bw, by + bh);
+        if (state.verdictType === "beauty") {
+          grad.addColorStop(0, "#FFE066");
+          grad.addColorStop(1, "#FF9F1C");
+        } else if (state.verdictType === "troll") {
+          grad.addColorStop(0, "#FF4D8D");
+          grad.addColorStop(1, "#9B5DE5");
+        } else {
+          grad.addColorStop(0, "#06D6E8");
+          grad.addColorStop(1, "#FF70A6");
+        }
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 4;
+        drawRoundedRect(ctx, bx, by, bw, bh, 18);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 5;
+        ctx.font = `800 ${Math.round(W * 0.052)}px "Baloo 2", cursive`;
+        const headline = state.verdictType === "beauty"
+          ? "👑 NỮ THẦN ĐĂNG QUANG!"
+          : (state.verdictType === "troll" ? "🤡 THẢM HỌA HUYỀN THOẠI!" : "❓ LAI TẠO KỲ DỊ!");
+        ctx.strokeText(headline, W * 0.5, by + bh * 0.38, bw - 16);
+        ctx.fillText(headline, W * 0.5, by + bh * 0.38, bw - 16);
+
+        ctx.font = `800 ${Math.round(W * 0.032)}px "Nunito", sans-serif`;
+        const sub = `Giải Cứu ${state.verdictBeautyPct}%  •  Phá Đám ${state.verdictTrollPct}%`;
+        ctx.fillStyle = "#FFF9F2";
+        ctx.strokeStyle = INK;
+        ctx.lineWidth = 3.5;
+        ctx.strokeText(sub, W * 0.5, by + bh * 0.74, bw - 16);
+        ctx.fillText(sub, W * 0.5, by + bh * 0.74, bw - 16);
+
+        // Next Round 3-second retention countdown (at seconds 12..15)
+        const rem = Math.max(0, state.phaseDuration - state.phaseElapsed);
+        if (rem <= 3.5) {
+          const nextSc = SCENARIOS[(state.scenarioIndex + 1) % SCENARIOS.length];
+          const nx = W * 0.07;
+          const ny = H * 0.325;
+          const nw = W * 0.86;
+          const nh = 34;
+          ctx.fillStyle = "rgba(255, 249, 242, 0.96)";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, nx, ny, nw, nh, 14);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#D81B60";
+          ctx.font = `800 ${Math.round(W * 0.031)}px "Baloo 2", cursive`;
+          ctx.fillText(`⏭ Tiếp theo (${Math.ceil(rem)}s): ${nextSc.title}`, W * 0.5, ny + nh * 0.52, nw - 16);
+        }
+        ctx.restore();
+      }
+
+      /* ---- Main Render Frame ---- */
+      function render() {
+        const W = state.W;
+        const H = state.H;
+        ctx.fillStyle = "#FFF5F8";
+        ctx.fillRect(0, 0, W, H);
+        const now = performance.now();
+        const sc = SCENARIOS[state.scenarioIndex];
+
+        ctx.save();
+        // Screen shake on big gift / climax
+        if (now < state.screenShakeUntil) {
+          const p = state.screenShakePower * ((state.screenShakeUntil - now) / 1500);
+          ctx.translate((Math.random() - 0.5) * p, (Math.random() - 0.5) * p);
+        }
+
+        // 1. Background & 3D Road / Verdict Venue
+        drawSkyAndVenueBackdrop(W, H, sc.venue, state.phase === STATE_VERDICT);
+
+        // 2. Approaching Dual Gates (upper half of center 50%)
+        drawApproachingGates(W, H);
+
+        // 3. MVP Aura behind Character
+        drawArenaMvpAura(W, H);
+
+        // 4. 12-Layer Paper Doll Character (Zero-Offset 600x900)
+        ctx.save();
+        const isVerdict = state.phase === STATE_VERDICT;
+        const targetCharH = H * (isVerdict ? 0.38 : 0.33);
+        const charScale = targetCharH / 900;
+        const charCenterX = W * 0.5;
+        const charTopY = isVerdict ? H * 0.31 : H * 0.335;
+        ctx.translate(charCenterX - 300 * charScale, charTopY);
+        ctx.scale(charScale, charScale);
+        drawPaperDoll(
+          ctx,
+          state.equipped,
+          state.time,
+          state.reactType,
+          state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12
+        );
+        ctx.restore();
+
+        // 4b. MVP badge on road removed to prevent overlapping character body
+
+        // 4c. Dynamic Manhua Story Subtitle Overlay (exact match to Thế Giới Hoa Viên ad!)
+        if (state.manhuaSubtitle) {
+          ctx.save();
+          const subY = isVerdict ? H * 0.725 : H * 0.705;
+          ctx.font = `900 ${Math.round(W * 0.044)}px "Baloo 2", cursive`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.strokeStyle = "#1E1B18";
+          ctx.lineWidth = 5;
+          ctx.lineJoin = "round";
+          ctx.strokeText(state.manhuaSubtitle, W * 0.5, subY);
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillText(state.manhuaSubtitle, W * 0.5, subY);
+          ctx.restore();
+        }
+
+        // 5. Character Speech Bubble (khe thoáng trên đỉnh đầu nhân vật)
+        if (state.charBubble && now < state.charBubbleUntil) {
+          ctx.save();
+          ctx.font = '800 12.5px "Baloo 2", cursive';
+          const tw = Math.min(W * 0.62, ctx.measureText(state.charBubble).width + 24);
+          const bx = W * 0.5 - tw / 2;
+          const by = H * 0.305;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 2.5;
+          drawRoundedRect(ctx, bx, by, tw, 26, 13);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = INK;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(state.charBubble, W * 0.5, by + 13.5, tw - 14);
+          ctx.restore();
+        }
+
+        // 6. Avatar Projectiles
+        for (const p of state.projectiles) {
+          ctx.save();
+          const r = p.isGift ? 17 : 13;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r + 2, 0, Math.PI * 2);
+          ctx.fillStyle = p.side === 1 ? "#06D6E8" : "#FF4D8D";
+          ctx.fill();
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          const img = getAvatarImage(p.user.profilePictureUrl);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.clip();
+          if (img) {
+            ctx.drawImage(img, p.x - r, p.y - r, r * 2, r * 2);
+          } else {
+            ctx.fillStyle = hashColor(p.user.nickname);
+            ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+            ctx.fillStyle = "#fff";
+            ctx.font = `800 ${Math.round(r * 1.1)}px "Baloo 2", cursive`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(nameInitial(p.user.nickname), p.x, p.y + 1);
+          }
+          ctx.restore();
+
+          if (p.emoji) {
+            ctx.font = "16px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(p.emoji, p.x, p.y - r - 4);
+          }
+          ctx.restore();
+        }
+
+        // 7. Gate Shards & Particles
+        for (const sh of state.gateShards) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, sh.life / 0.75);
+          ctx.translate(sh.x, sh.y);
+          ctx.rotate(sh.rot);
+          ctx.fillStyle = sh.color;
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 2;
+          ctx.fillRect(-sh.size / 2, -sh.size / 2, sh.size, sh.size * 0.7);
+          ctx.strokeRect(-sh.size / 2, -sh.size / 2, sh.size, sh.size * 0.7);
+          ctx.restore();
+        }
+
+        for (const pt of state.particles) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+          if (pt.emoji) {
+            ctx.font = `${Math.round(pt.size * 2.3)}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.fillText(pt.emoji, pt.x, pt.y);
+          } else {
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // 8. Floating Texts
+        for (const ft of state.floatingTexts) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, ft.life / ft.maxLife);
+          ctx.font = '800 16px "Baloo 2", cursive';
+          ctx.textAlign = "center";
+          ctx.strokeStyle = INK;
+          ctx.lineWidth = 4;
+          ctx.strokeText(ft.text, ft.x, ft.y);
+          ctx.fillStyle = ft.color;
+          ctx.fillText(ft.text, ft.x, ft.y);
+          ctx.restore();
+        }
+
+        // 9. Cơn Mưa Thả Tim (Fever soft hearts rain)
+        if (now < state.feverUntil) {
+          ctx.save();
+          ctx.font = "18px sans-serif";
+          for (let i = 0; i < 8; i++) {
+            const hx = ((i * 73 + state.time * 40) % W);
+            const hy = ((i * 97 + state.time * 130) % (H * 0.76)) + H * 0.08;
+            ctx.globalAlpha = 0.65;
+            ctx.fillText(i % 2 === 0 ? "💖" : "✨", hx, hy);
+          }
+          ctx.restore();
+        }
+
+        // 10. Verdict Banner
+        drawVerdictBanner(W, H);
+
+        // 11. Climax Gate 12 Neon Fire / Electric Border
+        if (state.phase === STATE_CLIMAX_GATE_12) {
+          ctx.save();
+          const pulse = 0.55 + Math.sin(state.time * 12) * 0.35;
+          ctx.strokeStyle = `rgba(255, 77, 141, ${pulse})`;
+          ctx.lineWidth = 10;
+          ctx.strokeRect(5, 5, W - 10, H - 10);
+          ctx.strokeStyle = `rgba(255, 209, 102, ${pulse})`;
+          ctx.lineWidth = 4;
+          ctx.strokeRect(10, 10, W - 20, H - 20);
+          ctx.restore();
+        }
+
+        // 12. Tier 3 Lightning Flash
+        if (now < state.lightningFlashUntil) {
+          const alpha = (state.lightningFlashUntil - now) / 900;
+          ctx.fillStyle = state.lightningSide === 1
+            ? `rgba(255, 245, 180, ${alpha * 0.55})`
+            : `rgba(255, 77, 141, ${alpha * 0.45})`;
+          ctx.fillRect(0, 0, W, H);
+        }
+
+        ctx.restore();
+      }
+
+      /* =====================================================================
+       * 8. WEB WORKER 60FPS CLOCK (ANTI-THROTTLING IN BACKGROUND WINDOWS)
+       * ===================================================================== */
+      function startWorkerLoop() {
+        const workerCode = `setInterval(() => postMessage(1), 1000 / 60);`;
+        try {
+          const blob = new Blob([workerCode], { type: "application/javascript" });
+          const worker = new Worker(URL.createObjectURL(blob));
+          worker.onmessage = () => {
+            const now = performance.now();
+            const dt = Math.min(0.05, Math.max(0.001, (now - state.lastTickTime) / 1000));
+            state.lastTickTime = now;
+            update(dt);
+            render();
+          };
+        } catch (_) {
+          // Fallback to rAF if Worker blocked
+          const loop = () => {
+            const now = performance.now();
+            const dt = Math.min(0.05, Math.max(0.001, (now - state.lastTickTime) / 1000));
+            state.lastTickTime = now;
+            update(dt);
+            render();
+            requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        }
+      }
+
+      /* =====================================================================
+       * 9. SHARED SOCKET.IO CONNECTION (server.js / core/tiktok-service.js)
+       * ===================================================================== */
+      let socket = null;
+      if (typeof io === "function") {
+        socket = io(window.location.origin, { transports: ["websocket", "polling"] });
+
+        socket.on("tiktok_status", (st) => {
+          dom.ttStatusText.textContent = st.message || (st.connected ? `Đang kết nối @${st.username}` : "Chưa kết nối");
+          dom.ttStatusDot.className = "status-dot " + (st.connected ? "ok" : (st.connecting ? "wait" : ""));
+          dom.ttConnBadge.textContent = st.connected ? `@${st.username}` : (st.connecting ? "Đang nối..." : "Offline");
+          if (st.username && !dom.ttUsername.value) dom.ttUsername.value = st.username;
+        });
+
+        socket.on("tiktok_chat", (payload) => {
+          handleComment(payload, payload.comment, true);
+        });
+
+        socket.on("tiktok_like", (payload) => {
+          handleLike(payload, payload.likeCount, true);
+        });
+
+        socket.on("tiktok_gift", (payload) => {
+          handleGift(payload, payload.totalDiamonds || payload.diamondCount || 1, null, true);
+        });
+
+        socket.on("tiktok_share", (payload) => {
+          handleShare(payload, true);
+        });
+
+        socket.on("tiktok_member", (payload) => {
+          // Warm welcome toast without spamming
+          if (Math.random() < 0.25 && payload?.nickname) {
+            showToast(`👋 Chào mừng ${payload.nickname} vào phòng Đường Đua Lột Xác!`);
+          }
+        });
+      }
+
+      /* =====================================================================
+       * 10. CONTROL PANEL & HOTKEY (H) WIRING
+       * ===================================================================== */
+      function getTestUser() {
+        const name = (dom.testUser.value || "Khán Giả").trim();
+        return { uniqueId: `test_${name.toLowerCase()}`, nickname: name, profilePictureUrl: "" };
+      }
+
+      function getTestSide() {
+        return Number(dom.testSide.value) === 2 ? 2 : 1;
+      }
+
+      function togglePanel() {
+        if (window.innerWidth <= 780) {
+          dom.controlPanel.classList.toggle("drawer-open");
+        } else {
+          document.body.classList.toggle("panel-hidden");
+          setTimeout(resizeCanvas, 30);
+        }
+      }
+
+      document.getElementById("btn-hide-panel").addEventListener("click", togglePanel);
+      document.getElementById("panel-toggle-fab").addEventListener("click", togglePanel);
+      window.addEventListener("keydown", (e) => {
+        if (e.target && ["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+        if (e.key === "h" || e.key === "H") togglePanel();
+      });
+
+      document.getElementById("btn-tt-connect").addEventListener("click", () => {
+        if (!socket) return;
+        const username = dom.ttUsername.value.trim();
+        socket.emit("connect_tiktok", { username });
+      });
+
+      document.getElementById("btn-tt-disconnect").addEventListener("click", () => {
+        if (!socket) return;
+        socket.emit("disconnect_tiktok");
+      });
+
+      dom.selectScenario.addEventListener("change", () => {
+        startRound(Number(dom.selectScenario.value));
+      });
+
+      document.getElementById("btn-next-gate").addEventListener("click", () => {
+        if (state.phase === STATE_INTRO) startGate(0);
+        else if (state.phase === STATE_GATE_RUN || state.phase === STATE_CLIMAX_GATE_12) resolveCurrentGate();
+        else startRound((state.scenarioIndex + 1) % SCENARIOS.length);
+      });
+
+      document.getElementById("btn-goto-gate12").addEventListener("click", () => {
+        for (let i = 0; i < 11; i++) {
+          if (!state.equipped[GATES[i].layerId]) state.equipped[GATES[i].layerId] = (i % 2) + 1;
+        }
+        startGate(11);
+      });
+
+      document.getElementById("btn-goto-verdict").addEventListener("click", () => {
+        startVerdict();
+      });
+
+      document.getElementById("btn-reset-round").addEventListener("click", () => {
+        startRound(state.scenarioIndex);
+      });
+
+      // Stage quick buttons & Control Panel Simulator buttons
+      document.getElementById("btn-quick-1").addEventListener("click", () => {
+        handleComment(getTestUser(), "1", false);
+      });
+      document.getElementById("btn-quick-2").addEventListener("click", () => {
+        handleComment(getTestUser(), "2", false);
+      });
+      document.getElementById("btn-sim-c1").addEventListener("click", () => {
+        const u = getTestUser();
+        state.userCommentCooldown.delete(`${u.uniqueId}_${state.gateIndex}`);
+        handleComment(u, "1", false);
+      });
+      document.getElementById("btn-sim-c2").addEventListener("click", () => {
+        const u = getTestUser();
+        state.userCommentCooldown.delete(`${u.uniqueId}_${state.gateIndex}`);
+        handleComment(u, "2", false);
+      });
+      document.getElementById("btn-sim-like").addEventListener("click", () => {
+        const u = getTestUser();
+        state.userTeams.set(u.uniqueId, getTestSide());
+        handleLike(u, 10, false);
+      });
+      document.getElementById("btn-sim-share").addEventListener("click", () => {
+        const u = getTestUser();
+        state.userTeams.set(u.uniqueId, getTestSide());
+        state.userShareCooldown.delete(u.uniqueId);
+        handleShare(u, false);
+      });
+      document.getElementById("btn-sim-gift1").addEventListener("click", () => {
+        handleGift(getTestUser(), 1, getTestSide(), false, 1);
+      });
+      document.getElementById("btn-sim-gift2").addEventListener("click", () => {
+        handleGift(getTestUser(), 20, getTestSide(), false, 2);
+      });
+      document.getElementById("btn-sim-gift3").addEventListener("click", () => {
+        handleGift(getTestUser(), 100, getTestSide(), false, 3);
+      });
+      document.getElementById("btn-sim-betray").addEventListener("click", () => {
+        const u = getTestUser();
+        const cur = state.userTeams.get(u.uniqueId) || 1;
+        const nextSide = cur === 1 ? 2 : 1;
+        state.userTeams.set(u.uniqueId, cur);
+        state.userCommentCooldown.delete(`${u.uniqueId}_${state.gateIndex}`);
+        handleComment(u, String(nextSide), false);
+      });
+
+      document.getElementById("toggle-bot").addEventListener("change", (e) => {
+        state.autoBotEnabled = e.target.checked;
+      });
+      document.getElementById("toggle-tts").addEventListener("change", (e) => {
+        mc.enabled = e.target.checked;
+        if (!mc.enabled && "speechSynthesis" in window) {
+          try { window.speechSynthesis.cancel(); } catch (_) {}
+        }
+      });
+      document.getElementById("toggle-sfx").addEventListener("change", (e) => {
+        sfx.enabled = e.target.checked;
+      });
+
+      // Expose read-only debug hook for automated stress-testing
+      window.__DUONG_DUA_STATE__ = state;
+      window.__DUONG_DUA_META__ = { SCENARIOS, GATES, LAYER_META };
+
+      // Boot game!
+      startRound(0);
+      startWorkerLoop();
+    })();
+  </script>
+</body>
+</html>

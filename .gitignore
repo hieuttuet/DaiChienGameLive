@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs & Debug
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime Data & Local State
+database.json
+*.db
+*.sqlite
+
+# Scratch & Temporary Dev Scripts
+scratch/
+temp/
+tmp/
+
+# Temporary Test Captures & Recordings
+clean_game_screen.png
+game_screen.png
+screenshot*.png
+*.mp4
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:encryptable
+desktop.ini
+
+# IDE & Editor Configurations
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project

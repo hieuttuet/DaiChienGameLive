@@ -1,0 +1,15 @@
+{
+  "name": "dai-chien-63-tinh-thanh-tiktok-live",
+  "version": "1.0.0",
+  "description": "Backend TikTok Live Interactive Game - Đại Chiến 63 Tỉnh Thành Việt Nam",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "tiktok-live-connector": "^2.5.0"
+  }
+}
